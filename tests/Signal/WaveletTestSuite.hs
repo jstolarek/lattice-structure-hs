@@ -1,6 +1,5 @@
 module Main ( main ) where
 
---import Distribution.TestSuite
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2
 

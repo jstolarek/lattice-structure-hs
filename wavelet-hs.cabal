@@ -14,7 +14,7 @@ category:            Math
 build-type:          Simple
 cabal-version:       >=1.8
 tested-with:         GHC>=7.4
-extra-source-files:  README
+--extra-source-files:  README
 
 -- source-repository head
 --   type:     git
@@ -29,8 +29,9 @@ library
 
 test-suite wavelet-hs-test
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    tests, src
+  hs-source-dirs:    src, tests
   main-is:           Signal/WaveletTestSuite.hs
+  ghc-options:       -Wall
   build-depends:     base,
                      Cabal,
                      QuickCheck >= 2.5,

@@ -1,12 +1,9 @@
 module Signal.WaveletTest where
 
-import Test.QuickCheck
 import Signal.Wavelet
 
-propIdentityShift1 xs = 
-    not (null xs) ==>
-        shiftLeft (shiftRight xs) == id xs
+propIdentityShift1 :: [Double] -> Bool
+propIdentityShift1 xs = cyclicShiftLeft (cyclicShiftRight xs) == id xs
 
-propIdentityShift2 xs = 
-    not (null xs) ==>
-        shiftRight (shiftLeft xs) == id xs
+propIdentityShift2 :: [Double] -> Bool
+propIdentityShift2 xs = cyclicShiftRight (cyclicShiftLeft xs) == id xs
