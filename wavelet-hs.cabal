@@ -1,0 +1,38 @@
+name:                wavelet-hs
+version:             0.0.1
+license:             GPL-3
+license-file:        LICENSE
+author:              Jan Stolarek <jan.stolarek@p.lodz.pl>
+maintainer:          jan.stolarek@p.lodz.pl
+copyright:           (c) 2012 Jan Stolarek
+-- bug-reports
+-- homepage
+synopsis:            Wavelet transform library
+description:         Wavelet-hs provides function to calculate wavelet transform
+stability:           experimental
+category:            Math
+build-type:          Simple
+cabal-version:       >=1.8
+tested-with:         GHC>=7.4
+extra-source-files:  README
+
+-- source-repository head
+--   type:     git
+--   location: git://github.com/...
+
+library
+  hs-source-dirs:      src
+  -- exposed-modules:     
+  -- other-modules:       
+  build-depends:       base == 4.5.*
+  ghc-options:         -Wall
+
+test-suite wavelet-hs-test
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    tests, src
+  main-is:           Signal/WaveletTestSuite.hs
+  build-depends:     base,
+                     Cabal,
+                     QuickCheck >= 2.5,
+                     test-framework,
+                     test-framework-quickcheck2
