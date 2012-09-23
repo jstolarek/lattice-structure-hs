@@ -34,6 +34,8 @@ test-suite wavelet-hs-test
   ghc-options:       -Wall
   build-depends:     base,
                      Cabal,
+                     HUnit,
                      QuickCheck >= 2.5,
                      test-framework,
+                     test-framework-hunit,
                      test-framework-quickcheck2
