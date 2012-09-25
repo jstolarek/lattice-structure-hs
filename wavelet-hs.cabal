@@ -35,7 +35,7 @@ test-suite wavelet-hs-test
   build-depends:     base,
                      Cabal,
                      HUnit,
-                     QuickCheck >= 2.5,
+                     QuickCheck >= 2.4.2,
                      test-framework,
                      test-framework-hunit,
                      test-framework-quickcheck2

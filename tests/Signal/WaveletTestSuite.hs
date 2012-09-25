@@ -1,9 +1,11 @@
-module Main ( main ) where
+module Main ( 
+    main 
+ ) where
 
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2
-import Test.Framework.Providers.HUnit
-import qualified Test.HUnit as HU
+--import Test.Framework.Providers.HUnit
+import Test.Utils
 
 import Signal.WaveletTest
 
@@ -29,10 +31,3 @@ tests =
     , testProperty "Rad-Deg identity"            propRadDegInvertible
     ]
   ]
-
-testWithProvider :: String -> (a -> HU.Assertion) -> [a] -> Test
-testWithProvider testGroupName testFunction =
-    testGroup testGroupName . map createTest . zipWith assignName [1 :: Int ..]
-      where 
-        createTest (name, dataSet)   = testCase name $ testFunction dataSet
-        assignName setNumber dataSet = ("Data set " ++ show setNumber, dataSet)

@@ -1,16 +1,9 @@
 module Signal.WaveletTest where
 
-import Signal.Utils
 import Signal.Wavelet
 import Test.HUnit
 import Test.QuickCheck
-
--- wyrzucić to do osobnego modułu testującego
-(@==?) :: (Show a, AEq a) => a -> a -> Assertion
-(@==?) expected actual  = expected ~=~ actual @? assertionMsg
-    where
-      assertionMsg = "Expected: " ++ show expected ++ 
-                     "\nActual: " ++ show actual
+import Test.Utils
 
 -- DWT & IDWT
 
