@@ -30,7 +30,7 @@ library
 test-suite wavelet-hs-test
   type:              exitcode-stdio-1.0
   hs-source-dirs:    src, tests
-  main-is:           Signal/WaveletTestSuite.hs
+  main-is:           MainTestSuite.hs
   ghc-options:       -Wall
   build-depends:     base,
                      Cabal,

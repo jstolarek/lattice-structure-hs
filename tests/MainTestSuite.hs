@@ -4,7 +4,6 @@ module Main (
 
 import Test.Framework
 import Test.Framework.Providers.QuickCheck2
---import Test.Framework.Providers.HUnit
 import Test.Utils
 
 import Signal.WaveletTest

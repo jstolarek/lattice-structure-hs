@@ -10,11 +10,11 @@ import Test.Utils
 propDWTInvertible :: LS -> [Double] -> Property
 propDWTInvertible ls sig = 
     (not . odd . length $ sig) ==>
-        idwt (invLS ls) (dwt ls sig) ~=~ sig
+        idwt (invLS ls) (dwt ls sig) =~ sig
 
 testDwt :: (LS, [Double], [Double]) -> Assertion
 testDwt (ls, sig, expected) = 
-    expected @==? dwt ls sig
+    expected @=~? dwt ls sig
 
 dataProviderDwt :: [(LS, [Double], [Double])] 
 dataProviderDwt =
@@ -64,7 +64,7 @@ dataProviderCyclicShiftRight =
 
 -- toDeg & toRad
 propDegRadInvertible :: [Double] -> Bool
-propDegRadInvertible xs = toDeg (toRad xs) ~=~ xs
+propDegRadInvertible xs = toDeg (toRad xs) =~ xs
 
 propRadDegInvertible :: [Double] -> Bool
-propRadDegInvertible xs = toRad (toDeg xs) ~=~ xs
+propRadDegInvertible xs = toRad (toDeg xs) =~ xs
