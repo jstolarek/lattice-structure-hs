@@ -24,7 +24,8 @@ library
   hs-source-dirs:      src
   -- exposed-modules:     
   -- other-modules:       
-  build-depends:       base == 4.5.*
+  build-depends:       base == 4.5.*,
+                       repa >= 3.0
   ghc-options:         -Wall -O2
 
 test-suite wavelet-hs-test
@@ -35,7 +36,8 @@ test-suite wavelet-hs-test
   build-depends:     base,
                      Cabal,
                      HUnit,
-                     QuickCheck >= 2.4.2,
+                     QuickCheck >= 2.4.2 && < 2.6,
+                     repa,
                      test-framework,
                      test-framework-hunit,
                      test-framework-quickcheck2

@@ -7,6 +7,7 @@ import Test.Framework.Providers.QuickCheck2
 import Test.Utils
 
 import Signal.WaveletTest
+import Signal.Repa.WaveletTest
 
 main :: IO ()
 main = defaultMain tests
@@ -28,5 +29,10 @@ tests =
                                                  dataProviderCyclicShiftRight
     , testProperty "Deg-Rad identity"            propDegRadInvertible
     , testProperty "Rad-Deg identity"            propRadDegInvertible
+    ], 
+    testGroup "Repa wavelets"
+    [
+      testProperty "List-Pairs-List identity"    propPairsIdentity1
+    , testProperty "Pairs-List-Pairs identity"   propPairsIdentity2
     ]
   ]
