@@ -40,4 +40,6 @@ test-suite wavelet-hs-test
                      repa,
                      test-framework,
                      test-framework-hunit,
-                     test-framework-quickcheck2
+                     test-framework-quickcheck2,
+                     vector
+

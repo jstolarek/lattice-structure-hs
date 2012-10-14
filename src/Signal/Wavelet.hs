@@ -30,7 +30,7 @@ invLS = reverse
 
 cyclicShiftLeft :: [Double] -> [Double]
 cyclicShiftLeft [] = []
-cyclicShiftLeft xs = tail xs ++ [head xs]
+cyclicShiftLeft (x:xs) = xs ++ [x]
 
 cyclicShiftRight :: [Double] -> [Double]
 cyclicShiftRight [] = []
