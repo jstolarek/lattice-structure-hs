@@ -16,8 +16,8 @@ testDwt :: (LS, [Double], [Double]) -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwt ls sig
 
-dataProviderDwt :: [(LS, [Double], [Double])] 
-dataProviderDwt =
+dataDwt :: [(LS, [Double], [Double])] 
+dataDwt =
     [
       (toRad [30,25,40], [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
       [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
@@ -50,14 +50,14 @@ testCyclicShiftRight :: ([Double], [Double]) -> Assertion
 testCyclicShiftRight (input, expected) = 
     expected @=? cyclicShiftRight input
 
-dataProviderCyclicShiftLeft :: [([Double], [Double])]
-dataProviderCyclicShiftLeft = 
+dataCyclicShiftLeft :: [([Double], [Double])]
+dataCyclicShiftLeft = 
     [
      ( [1,2,3,4], [2,3,4,1] )
     ]
 
-dataProviderCyclicShiftRight :: [([Double], [Double])]
-dataProviderCyclicShiftRight = 
+dataCyclicShiftRight :: [([Double], [Double])]
+dataCyclicShiftRight = 
     [
      ( [1,2,3,4], [4,1,2,3] )
     ]

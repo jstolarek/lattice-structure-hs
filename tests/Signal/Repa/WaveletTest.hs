@@ -1,5 +1,6 @@
 module Signal.Repa.WaveletTest where
 
+import Control.Monad
 import Test.HUnit
 import Test.QuickCheck
 import Test.Utils
@@ -7,6 +8,53 @@ import Test.Utils
 import Data.Array.Repa
 import qualified Data.Vector.Unboxed as V
 import Signal.Repa.Wavelet
+
+testDwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
+        -> Assertion
+testDwt (ls, sig, expected) = 
+    expected @=~? computeS (dwtR ls sig)
+
+dataDwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
+dataDwt =
+    [
+      (toRadR $ fromListUnboxed (Z :. (3::Int))  [30,25,40], 
+      delay . fromListUnboxed (Z :. (16::Int)) $ 
+                [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
+      fromListUnboxed (Z :. (16::Int)) 
+      [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
+         3.2735751058710300, -2.639689358691720, -1.392299200715840,
+         0.0624400001370536, -1.159888007129840,  0.979063355853563,  
+         0.7634941595614190, -4.563606712907260, -4.766738951689430, 
+        -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
+        -1.3307460249419300
+       ] )
+    ]
+
+testIdwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
+        -> Assertion
+testIdwt (ls, sig, expected) = 
+    expected @=~? computeS (idwtR ls sig)
+
+dataIdwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
+dataIdwt =
+    [
+      (toRadR $ fromListUnboxed (Z :. (3::Int))  [40,25,30], 
+      delay . fromListUnboxed (Z :. (16::Int)) $
+      [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
+         3.2735751058710300, -2.639689358691720, -1.392299200715840,
+         0.0624400001370536, -1.159888007129840,  0.979063355853563,  
+         0.7634941595614190, -4.563606712907260, -4.766738951689430, 
+        -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
+        -1.3307460249419300
+       ],
+       fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3])
+    ]
+
+propDWTInvertible :: Property
+propDWTInvertible = 
+    forAll genRepaUnboxedArrayPair (\(xs, ls) ->
+        (even . size . extent $ xs) ==>
+                computeS (idwtR (invLSR ls) (dwtR ls (delay xs))) =~ xs)
 
 propPairsIdentity1 :: Property
 propPairsIdentity1 =
@@ -59,6 +107,13 @@ genRepaUnboxedArray = do
     randomList <- listOf1 arbitrary
     let listLength = length randomList
     return $ fromListUnboxed ( Z :. listLength ) randomList
+
+genRepaDelayedArray :: (Arbitrary a, V.Unbox a) => Gen (Array D DIM1 a)
+genRepaDelayedArray = liftM delay genRepaUnboxedArray
+
+genRepaUnboxedArrayPair :: (Arbitrary a, V.Unbox a, Arbitrary b, V.Unbox b) 
+                           => Gen (Array U DIM1 a, Array U DIM1 b)
+genRepaUnboxedArrayPair = liftM2 (,) (resize 4 genRepaUnboxedArray) (resize 4 genRepaUnboxedArray)
 
 testLatticeLayer :: ((Double, Double), 
                      Array U DIM1 Double,

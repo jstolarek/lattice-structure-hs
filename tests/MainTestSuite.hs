@@ -17,22 +17,27 @@ tests =
   [ 
     testGroup "Signal shifts" 
     [ 
-      testProperty "Inverting DWT"               W.propDWTInvertible
+      testProperty "DWT-IDWT identity"           W.propDWTInvertible
     , testWithProvider "DWT"                     W.testDwt
-                                                 W.dataProviderDwt
+                                                 W.dataDwt
     , testProperty "Inverting lattice structure" W.propDoubleLatticeInverse
     , testProperty "L/R shift composition"       W.propIdentityShift1
     , testProperty "R/L shift composition"       W.propIdentityShift2
     , testWithProvider "Cyclic shift left"       W.testCyclicShiftLeft
-                                                 W.dataProviderCyclicShiftLeft
+                                                 W.dataCyclicShiftLeft
     , testWithProvider "Cyclic shift right"      W.testCyclicShiftRight
-                                                 W.dataProviderCyclicShiftRight
+                                                 W.dataCyclicShiftRight
     , testProperty "Deg-Rad identity"            W.propDegRadInvertible
     , testProperty "Rad-Deg identity"            W.propRadDegInvertible
   ],
     testGroup "Repa wavelets"
     [
-      testProperty "List-Pairs-List identity"    R.propPairsIdentity1
+      testWithProvider "DWT"                     R.testDwt
+                                                 R.dataDwt
+    , testWithProvider "IDWT"                    R.testIdwt
+                                                 R.dataIdwt
+    , testProperty "DWT-IDWT identity"           R.propDWTInvertible
+    , testProperty "List-Pairs-List identity"    R.propPairsIdentity1
     , testProperty "Pairs-List-Pairs identity"   R.propPairsIdentity2
     , testProperty "Inverting lattice structure" R.propDoubleLatticeInverse
     , testProperty "L/R shift composition"       R.propIdentityShift1

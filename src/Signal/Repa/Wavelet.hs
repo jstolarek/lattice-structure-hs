@@ -4,6 +4,24 @@ module Signal.Repa.Wavelet where
 
 import Data.Array.Repa as R
 
+dwtR :: Source r Double => Array r DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
+dwtR angles signal = go layers signal
+    where
+      go 0 sig        = cyclicShiftRightR sig
+      go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
+      doLayer sig wei = cyclicShiftLeftR . latticeLayerR wei $ sig
+      weights         = anglesToWeightsR angles
+      layers          = size . extent $ angles
+
+idwtR :: Source r Double => Array r DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
+idwtR angles signal = go layers signal
+    where
+      go 0 sig        = cyclicShiftLeftR sig
+      go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
+      doLayer sig wei = cyclicShiftRightR . latticeLayerR wei $ sig
+      weights         = anglesToWeightsR angles
+      layers          = size . extent $ angles
+
 latticeLayerR :: (Source r Double) 
                 => (Double, Double) 
                 -> Array r DIM1 Double
@@ -40,18 +58,6 @@ invLSR xs = backpermute ext reversedIndex xs
       reversedIndex (Z :. i) = (Z :. (sh - i - 1))
       ext = extent xs
       sh = size ext
-
--- dwt :: LS -> [Double] -> [Double]
--- dwt angles signal = cyclicShiftRightR $ foldP doLayer signal weights
---     where
---       doLayer sig wei = cyclicShiftLeftR . latticeLayerR wei $ sig
---       weights = anglesToWeightsR angles
-
--- idwt :: LS -> [Double] -> [Double]
--- idwt angles signal = cyclicShiftLeft $ foldl doLayer signal weights
---     where
---       doLayer sig wei = cyclicShiftRight (latticeLayer wei sig)
---       weights = anglesToWeights angles
 
 cyclicShiftLeftR :: (Source r Double) => Array r DIM1 Double -> Array D DIM1 Double
 cyclicShiftLeftR xs = backpermute ext shift xs
