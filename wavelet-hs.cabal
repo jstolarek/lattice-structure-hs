@@ -43,3 +43,10 @@ test-suite wavelet-hs-test
                      test-framework-quickcheck2,
                      vector
 
+benchmark wavelet-hs-bench
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   src, bench
+  main-is:          MainBenchmarkSuite.hs
+  build-depends:    base,
+                    criterion,
+                    random

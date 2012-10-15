@@ -113,7 +113,7 @@ genRepaDelayedArray = liftM delay genRepaUnboxedArray
 
 genRepaUnboxedArrayPair :: (Arbitrary a, V.Unbox a, Arbitrary b, V.Unbox b) 
                            => Gen (Array U DIM1 a, Array U DIM1 b)
-genRepaUnboxedArrayPair = liftM2 (,) (resize 4 genRepaUnboxedArray) (resize 4 genRepaUnboxedArray)
+genRepaUnboxedArrayPair = liftM2 (,) genRepaUnboxedArray (resize 4 genRepaUnboxedArray)
 
 testLatticeLayer :: ((Double, Double), 
                      Array U DIM1 Double,
@@ -124,7 +124,7 @@ testLatticeLayer (baseOperation, sig, expected) =
 
 dataLatticeLayer :: [((Double, Double), 
                       Array U DIM1 Double,
-                      Array U DIM1 Double)] 
+                      Array U DIM1 Double)]
 dataLatticeLayer =
     [
       ((0.5, 0.8660254038), 
