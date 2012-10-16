@@ -50,3 +50,4 @@ benchmark wavelet-hs-bench
   build-depends:    base,
                     criterion,
                     random
+  ghc-options:      -Wall -O2
