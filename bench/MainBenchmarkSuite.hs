@@ -6,7 +6,8 @@ import Criterion.Config
 import Criterion.Main
 import System.Random
 
-import Signal.WaveletBench
+import qualified Signal.WaveletBench as L
+import qualified Signal.Repa.WaveletBench as R
 
 main :: IO ()
 main = newStdGen >>= defaultMainWith benchConfig (return ()) . benchmarks
@@ -14,9 +15,10 @@ main = newStdGen >>= defaultMainWith benchConfig (return ()) . benchmarks
 benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
   [ 
-   bgroup "Lists"  
+   bgroup "DWT" . (:[])  $ bcompare  
     [ 
-     bench "DWT" $ nf benchDwt (dataDwt gen) 
+     bench "Lists" $ nf L.benchDwt (L.dataDwt gen),
+     bench "Repa"  $ whnf R.benchDwt (R.dataDwt gen) 
     ] 
   ]
 
