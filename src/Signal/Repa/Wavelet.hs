@@ -4,8 +4,8 @@ module Signal.Repa.Wavelet where
 
 import Data.Array.Repa as R
 
-dwtR :: (Source r0 Double, Source r1 Double) => Array r0 DIM1 Double -> Array r1 DIM1 Double -> Array D DIM1 Double
-dwtR angles signal = go layers (delay signal)
+dwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
+dwtR angles signal = go layers signal
     where
       go 0 sig        = cyclicShiftRightR sig
       go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
@@ -13,8 +13,8 @@ dwtR angles signal = go layers (delay signal)
       weights         = anglesToWeightsR angles
       layers          = size . extent $ angles
 
-idwtR :: (Source r0 Double, Source r1 Double) => Array r0 DIM1 Double -> Array r1 DIM1 Double -> Array D DIM1 Double
-idwtR angles signal = go layers (delay signal)
+idwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
+idwtR angles signal = go layers signal
     where
       go 0 sig        = cyclicShiftLeftR sig
       go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))

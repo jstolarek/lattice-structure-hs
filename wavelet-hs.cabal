@@ -57,7 +57,8 @@ benchmark wavelet-hs-bench
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
-                    -rtsopts 
+                    -rtsopts
+                    -eventlog
                     -threaded 
                     -fno-liberate-case 
                     -funfolding-use-threshold1000 

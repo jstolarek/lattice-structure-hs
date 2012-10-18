@@ -14,12 +14,12 @@ main = newStdGen >>= defaultMainWith benchConfig (return ()) . benchmarks
 
 benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
-  [ 
-   bgroup "DWT" . (:[])  $ bcompare  
+  [
+    bgroup "DWT" . (:[])  $ bcompare  
     [ 
-     bench "Lists" $ nf L.benchDwt (L.dataDwt gen),
-     bench "Repa"  $ whnf R.benchDwt (R.dataDwt gen) 
-    ] 
+      bench "Lists" $ nf   L.benchDwt (L.dataDwt gen),
+      bench "Repa"  $ whnf R.benchDwt (R.dataDwt gen)
+    ]
   ]
 
 benchConfig :: Config
