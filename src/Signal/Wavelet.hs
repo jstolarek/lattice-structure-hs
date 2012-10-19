@@ -1,5 +1,7 @@
 module Signal.Wavelet where
 
+import Control.Arrow
+
 type LS = [Double]
 
 dwt :: LS -> [Double] -> [Double]
@@ -23,7 +25,7 @@ latticeLayer (s, c) (x1:x2:xs) = x1 * c + x2 * s :
 latticeLayer _ _ = error "Odd length"
 
 anglesToWeights :: [Double] -> [(Double,Double)]
-anglesToWeights = map (\x -> (sin x, cos x))
+anglesToWeights = map (sin &&& cos)
 
 invLS :: LS -> LS
 invLS = reverse

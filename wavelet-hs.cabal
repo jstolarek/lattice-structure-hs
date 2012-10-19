@@ -61,7 +61,6 @@ benchmark wavelet-hs-bench
   main-is:          MainBenchmarkSuite.hs
   build-depends:    base,
                     criterion,
-                    deepseq,
                     mtl,
                     random,
                     repa >= 3.0,
@@ -77,3 +76,4 @@ benchmark wavelet-hs-bench
                     -funfolding-keeness-factor1000 
                     -fllvm 
                     -optlo-O3
+

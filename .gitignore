@@ -2,3 +2,8 @@ dist
 #*
 *#
 *.eventlog
+*.html
+*.txt
+.dist-buildwrapper
+.externalToolBuilders
+
