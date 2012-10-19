@@ -17,25 +17,31 @@ forceS = computeS
 
 {-# INLINE forceS #-}
 
-dwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array U DIM1 Double
-dwtR !angles !signal = forceP $ go layers signal
+dwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array U DIM1 Double -> Array U DIM1 Double
+dwtR !angles !signal = go layers signal
     where
-      go 0 !sig         = cyclicShiftRightR sig
-      go !n !sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
-      doLayer !sig !wei = cyclicShiftLeftR . forceP . latticeLayerR wei $ sig
+      go  1 !sig      = doLayer sig 1
+      go !n !sig      = go (n-1) (forceS . cyclicShiftLeftR $ doLayer sig n)
+      doLayer !sig !n = forceP . latticeLayerR (weights ! (Z :. (layers - n))) $ sig
+      {-# INLINE doLayer #-}
       weights         = anglesToWeightsR angles
+      {-# INLINE weights #-}
       layers          = size . extent $ angles
-
+      {-# INLINE layers #-}
+      
 {-# INLINE dwtR #-}
 
-idwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array U DIM1 Double
-idwtR !angles !signal = forceP $ go layers signal
+idwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array U DIM1 Double -> Array U DIM1 Double
+idwtR !angles !signal = go layers signal
     where
-      go 0 !sig        = cyclicShiftLeftR sig
-      go !n !sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
-      doLayer !sig !wei = cyclicShiftRightR . forceP . latticeLayerR wei $ sig
+      go  1 !sig      = doLayer sig 1
+      go !n !sig      = go (n-1) (forceS . cyclicShiftRightR $ doLayer sig n)
+      doLayer !sig !n = forceP . latticeLayerR (weights ! (Z :. (layers - n))) $ sig
+      {-# INLINE doLayer #-}
       weights         = anglesToWeightsR angles
+      {-# INLINE weights #-}
       layers          = size . extent $ angles
+      {-# INLINE layers #-}
 
 {-# INLINE idwtR #-}
 

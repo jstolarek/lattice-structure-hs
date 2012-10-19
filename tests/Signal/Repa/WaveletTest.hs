@@ -9,17 +9,16 @@ import Data.Array.Repa
 import qualified Data.Vector.Unboxed as V
 import Signal.Repa.Wavelet
 
-testDwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
+testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwtR ls sig
 
-dataDwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
+dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataDwt =
     [
-      (toRadR $ fromListUnboxed (Z :. (3::Int))  [30,25,40], 
-      delay . fromListUnboxed (Z :. (16::Int)) $ 
-                [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
+     (computeS . toRadR $ fromListUnboxed (Z :. (3::Int))  [30,25,40], 
+      fromListUnboxed (Z :. (16::Int)) $ [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
       fromListUnboxed (Z :. (16::Int)) 
       [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
          3.2735751058710300, -2.639689358691720, -1.392299200715840,
@@ -30,16 +29,16 @@ dataDwt =
        ] )
     ]
 
-testIdwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
+testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testIdwt (ls, sig, expected) = 
     expected @=~? idwtR ls sig
 
-dataIdwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
+dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataIdwt =
     [
-      (toRadR $ fromListUnboxed (Z :. (3::Int))  [40,25,30], 
-      delay . fromListUnboxed (Z :. (16::Int)) $
+      (computeS . toRadR $ fromListUnboxed (Z :. (3::Int))  [40,25,30], 
+      fromListUnboxed (Z :. (16::Int)) $
       [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
          3.2735751058710300, -2.639689358691720, -1.392299200715840,
          0.0624400001370536, -1.159888007129840,  0.979063355853563,  
@@ -54,7 +53,7 @@ propDWTInvertible :: Property
 propDWTInvertible = 
     forAll genRepaUnboxedArrayPair (\(xs, ls) ->
         (even . size . extent $ xs) ==>
-                idwtR (invLSR ls) (delay $ dwtR ls (delay xs)) =~ xs)
+                idwtR (invLSR ls) (dwtR ls xs) =~ xs)
 
 propPairsIdentity1 :: Property
 propPairsIdentity1 =
