@@ -12,7 +12,7 @@ import Signal.Repa.Wavelet
 testDwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testDwt (ls, sig, expected) = 
-    expected @=~? computeS (dwtR ls sig)
+    expected @=~? dwtR ls sig
 
 dataDwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
 dataDwt =
@@ -33,7 +33,7 @@ dataDwt =
 testIdwt :: (Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testIdwt (ls, sig, expected) = 
-    expected @=~? computeS (idwtR ls sig)
+    expected @=~? idwtR ls sig
 
 dataIdwt :: [(Array D DIM1 Double, Array D DIM1 Double, Array U DIM1 Double)]
 dataIdwt =
@@ -54,7 +54,7 @@ propDWTInvertible :: Property
 propDWTInvertible = 
     forAll genRepaUnboxedArrayPair (\(xs, ls) ->
         (even . size . extent $ xs) ==>
-                computeS (idwtR (invLSR ls) (dwtR ls (delay xs))) =~ xs)
+                idwtR (invLSR ls) (delay $ dwtR ls (delay xs)) =~ xs)
 
 propPairsIdentity1 :: Property
 propPairsIdentity1 =

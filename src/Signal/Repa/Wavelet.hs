@@ -2,23 +2,31 @@
 
 module Signal.Repa.Wavelet where
 
+import Control.Monad.Identity (runIdentity)
+
 import Data.Array.Repa as R
 
-dwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
-dwtR angles signal = go layers signal
+forceP :: Array D DIM1 Double -> Array U DIM1 Double
+forceP = runIdentity . computeP
+
+forceS :: Array D DIM1 Double -> Array U DIM1 Double
+forceS = computeS
+
+dwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array U DIM1 Double
+dwtR angles signal = forceP $ go layers signal
     where
       go 0 sig        = cyclicShiftRightR sig
       go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
-      doLayer sig wei = cyclicShiftLeftR . latticeLayerR wei $ sig
+      doLayer sig wei = cyclicShiftLeftR . forceP . latticeLayerR wei $ sig
       weights         = anglesToWeightsR angles
       layers          = size . extent $ angles
 
-idwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array D DIM1 Double
-idwtR angles signal = go layers signal
+idwtR :: (Source r0 Double) => Array r0 DIM1 Double -> Array D DIM1 Double -> Array U DIM1 Double
+idwtR angles signal = forceP $ go layers signal
     where
       go 0 sig        = cyclicShiftLeftR sig
       go n sig        = go (n-1) (doLayer sig (weights ! (Z :. (layers - n))))
-      doLayer sig wei = cyclicShiftRightR . latticeLayerR wei $ sig
+      doLayer sig wei = cyclicShiftRightR . forceP . latticeLayerR wei $ sig
       weights         = anglesToWeightsR angles
       layers          = size . extent $ angles
 

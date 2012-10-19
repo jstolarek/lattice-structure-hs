@@ -1,19 +1,19 @@
-name:                wavelet-hs
-version:             0.0.1
-license:             GPL-3
-license-file:        LICENSE
-author:              Jan Stolarek <jan.stolarek@p.lodz.pl>
-maintainer:          jan.stolarek@p.lodz.pl
-copyright:           (c) 2012 Jan Stolarek
+name:               wavelet-hs
+version:            0.0.1
+license:            GPL-3
+license-file:       LICENSE
+author:             Jan Stolarek <jan.stolarek@p.lodz.pl>
+maintainer:         jan.stolarek@p.lodz.pl
+copyright:          (c) 2012 Jan Stolarek
 -- bug-reports
 -- homepage
-synopsis:            Wavelet transform library
-description:         Wavelet-hs provides function to calculate wavelet transform
-stability:           experimental
-category:            Math
-build-type:          Simple
-cabal-version:       >=1.8
-tested-with:         GHC>=7.4
+synopsis:           Wavelet transform library
+description:        Wavelet-hs provides function to calculate wavelet transform
+stability:          experimental
+category:           Math
+build-type:         Simple
+cabal-version:      >=1.8
+tested-with:        GHC>=7.4
 --extra-source-files:  README
 
 -- source-repository head
@@ -21,28 +21,39 @@ tested-with:         GHC>=7.4
 --   location: git://github.com/...
 
 library
-  hs-source-dirs:      src
+  hs-source-dirs:   src
   -- exposed-modules:     
   -- other-modules:       
-  build-depends:       base == 4.5.*,
-                       repa >= 3.0
-  ghc-options:         -Wall 
-                       -O2
+  build-depends:    base == 4.5.*,
+                    mtl,
+                    repa >= 3.0
+  ghc-options:      -Wall 
+                    -O2 
+                    -Odph 
+                    -rtsopts
+                    -eventlog
+                    -threaded 
+                    -fno-liberate-case 
+                    -funfolding-use-threshold1000 
+                    -funfolding-keeness-factor1000 
+                    -fllvm 
+                    -optlo-O3
 
 test-suite wavelet-hs-test
-  type:              exitcode-stdio-1.0
-  hs-source-dirs:    src, tests
-  main-is:           MainTestSuite.hs
-  ghc-options:       -Wall
-  build-depends:     base,
-                     Cabal,
-                     HUnit,
-                     QuickCheck >= 2.4.2 && < 2.6,
-                     repa,
-                     test-framework,
-                     test-framework-hunit,
-                     test-framework-quickcheck2,
-                     vector
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   src, tests
+  main-is:          MainTestSuite.hs
+  ghc-options:      -Wall
+  build-depends:    base,
+                    Cabal,
+                    HUnit,
+                    mtl,
+                    QuickCheck >= 2.4.2 && < 2.6,
+                    repa,
+                    test-framework,
+                    test-framework-hunit,
+                    test-framework-quickcheck2,
+                    vector
 
 benchmark wavelet-hs-bench
   type:             exitcode-stdio-1.0
@@ -51,6 +62,7 @@ benchmark wavelet-hs-bench
   build-depends:    base,
                     criterion,
                     deepseq,
+                    mtl,
                     random,
                     repa >= 3.0,
                     repa-algorithms

@@ -17,8 +17,8 @@ benchmarks gen =
   [
     bgroup "DWT" . (:[])  $ bcompare  
     [ 
-      bench "Lists" $ nf   L.benchDwt (L.dataDwt gen),
-      bench "Repa"  $ whnf R.benchDwt (R.dataDwt gen)
+      bench "Lists" $ nf   L.benchDwt (L.dataDwt gen)
+    , bench "Repa"  $ whnf R.benchDwt (R.dataDwt gen)
     ]
   ]
 

@@ -7,7 +7,7 @@ import System.Random
 import Signal.Repa.Wavelet
 
 benchDwt :: (Array U DIM1 Double, Array D DIM1 Double) -> Array U DIM1 Double
-benchDwt (ls, sig) = computeS $ dwtR ls sig
+benchDwt (ls, sig) = dwtR ls sig
 
 dataDwt :: RandomGen g => g -> (Array U DIM1 Double, Array D DIM1 Double)
 dataDwt gen = (randomishDoubleArray (Z :. 6   ) 0 255 seed, 
