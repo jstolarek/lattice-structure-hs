@@ -76,4 +76,3 @@ benchmark wavelet-hs-bench
                     -funfolding-keeness-factor1000 
                     -fllvm 
                     -optlo-O3
-

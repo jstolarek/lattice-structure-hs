@@ -1,13 +1,16 @@
-module Signal.Repa.WaveletBench where
+module Signal.Wavelet.Repa1Bench where
 
 import Data.Array.Repa
 import Data.Array.Repa.Algorithms.Randomish
 import System.Random
 
-import Signal.Repa.Wavelet
+import Signal.Wavelet.Repa1
 
 benchDwt :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
-benchDwt (ls, sig) = dwtR ls sig
+benchDwt (ls, sig) = dwt ls sig
+
+benchIdwt :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
+benchIdwt (ls, sig) = idwt ls sig
 
 dataDwt :: RandomGen g => g -> (Array U DIM1 Double, Array U DIM1 Double)
 dataDwt gen = (randomishDoubleArray (Z :. 8   ) 0 255 seed, 
