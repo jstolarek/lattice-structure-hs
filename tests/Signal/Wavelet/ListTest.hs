@@ -46,7 +46,7 @@ dataIdwt =
 
 propDWTInvertible :: LS -> [Double] -> Property
 propDWTInvertible ls sig = 
-    (not . odd . length $ sig) ==>
+    (even . length $ sig) ==>
         idwt (inv ls) (dwt ls sig) =~ sig
 
 

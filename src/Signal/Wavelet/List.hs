@@ -6,18 +6,20 @@ type LS = [Double]
 
 
 dwt :: LS -> [Double] -> [Double]
-dwt angles signal = csr $ foldl doLayer signal weights
-    where
-      doLayer sig wei = csl $ lattice wei sig
-      weights = a2w angles
+dwt angles signal =  dwtWorker csl angles signal
 
 
 idwt :: LS -> [Double] -> [Double]
-idwt angles signal = csl $ foldl doLayer signal weights
-    where
-      doLayer sig wei = csr $ lattice wei sig
-      weights = a2w angles
+idwt angles signal = dwtWorker csr angles signal
 
+
+dwtWorker :: ([Double] -> [Double]) -> [Double] -> [Double] -> [Double]
+dwtWorker cs angles signal = go weights signal
+    where
+      go [w] sig    = lattice w sig
+      go (w:ws) sig = go ws (cs $ lattice w sig)
+      go _ sig      = sig
+      weights       = a2w angles
 
 lattice :: (Double, Double) -> [Double] -> [Double]
 lattice _ [] = []
