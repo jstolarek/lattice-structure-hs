@@ -6,6 +6,8 @@ import Control.Arrow
 import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 
+
+{-# INLINE dwt #-}
 dwt :: (Source r Double) 
        => Array r DIM1 Double 
        -> Array U DIM1 Double 
@@ -14,15 +16,15 @@ dwt !angles !signal = go layers signal
     where
       go  1 !sig      = doLayer sig 1
       go !n !sig      = go (n-1) (forceS . csl $ doLayer sig n)
-      doLayer !sig !n = forceP . lattice (weights ! (Z :. (layers - n))) $ sig
       {-# INLINE doLayer #-}
-      weights         = a2w angles
+      doLayer !sig !n = forceP . lattice (weights ! (Z :. (layers - n))) $ sig
       {-# INLINE weights #-}
-      layers          = size . extent $ angles
+      weights         = a2w angles
       {-# INLINE layers #-}
-      
-{-# INLINE dwt #-}
+      layers          = size . extent $ angles
 
+      
+{-# INLINE idwt #-}
 idwt :: (Source r Double) 
         => Array r DIM1 Double 
         -> Array U DIM1 Double 
@@ -31,15 +33,15 @@ idwt !angles !signal = go layers signal
     where
       go  1 !sig      = doLayer sig 1
       go !n !sig      = go (n-1) (forceS . csr $ doLayer sig n)
-      doLayer !sig !n = forceP . lattice (weights ! (Z :. (layers - n))) $ sig
       {-# INLINE doLayer #-}
-      weights         = a2w angles
+      doLayer !sig !n = forceP . lattice (weights ! (Z :. (layers - n))) $ sig
       {-# INLINE weights #-}
-      layers          = size . extent $ angles
+      weights         = a2w angles
       {-# INLINE layers #-}
+      layers          = size . extent $ angles
 
-{-# INLINE idwt #-}
 
+{-# INLINE lattice #-}
 lattice :: (Source r Double) 
            => (Double, Double) 
            -> Array r DIM1 Double
@@ -48,8 +50,8 @@ lattice (!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
     where
       baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c )
 
-{-# INLINE lattice #-}
-                                 
+
+{-# INLINE toPairs #-}
 toPairs :: (Source r Double) 
            => Array r DIM1 Double 
            -> Array D DIM1 (Double, Double)
@@ -58,8 +60,8 @@ toPairs !xs = traverse xs twiceShorter wrapPairs
       twiceShorter (Z :. s) = Z :. s `div` 2
       wrapPairs f  (Z :. i) = ( f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
 
-{-# INLINE toPairs #-}
 
+{-# INLINE fromPairs #-}
 fromPairs :: (Source r (Double,Double))
              => Array r DIM1 (Double, Double)
              -> Array D DIM1 Double
@@ -70,15 +72,15 @@ fromPairs !xs = traverse xs twiceLonger unwrapPairs
                       | even (i `mod` 2) = fst .f $ ( Z :. i `div` 2)
                       | otherwise        = snd .f $ ( Z :. i `div` 2)
 
-{-# INLINE fromPairs #-}
 
+{-# INLINE a2w #-}
 a2w :: (Source r Double) 
        => Array r DIM1 Double 
        -> Array D DIM1 (Double, Double)
 a2w = R.map (sin &&& cos)
 
-{-# INLINE a2w #-}
 
+{-# INLINE inv #-}
 inv :: (Source r Double) 
        => Array r DIM1 Double 
        -> Array D DIM1 Double
@@ -88,8 +90,8 @@ inv !xs = backpermute ext reversedIndex xs
       ext = extent xs
       sh = size ext
 
-{-# INLINE inv #-}
 
+{-# INLINE csl #-}
 csl :: (Source r Double) 
        => Array r DIM1 Double 
        -> Array D DIM1 Double
@@ -99,8 +101,8 @@ csl !xs = backpermute ext shift xs
       ext = extent xs
       sh = size ext
 
-{-# INLINE csl #-}
 
+{-# INLINE csr #-}
 csr :: (Source r Double) 
        => Array r DIM1 Double 
        -> Array D DIM1 Double
@@ -110,5 +112,3 @@ csr xs = backpermute ext shift xs
       shift (Z :. i) = Z :. (i-1)
       ext = extent xs
       sh = size ext
-
-{-# INLINE csr #-}

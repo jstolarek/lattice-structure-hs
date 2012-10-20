@@ -5,9 +5,11 @@ import Test.HUnit
 import Test.QuickCheck
 import Test.Utils
 
+
 testDwt :: (LS, [Double], [Double]) -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwt ls sig
+
 
 dataDwt :: [(LS, [Double], [Double])] 
 dataDwt =
@@ -22,9 +24,11 @@ dataDwt =
        ] )
     ]
 
+
 testIdwt :: (LS, [Double], [Double]) -> Assertion
 testIdwt (ls, sig, expected) = 
     expected @=~? idwt ls sig
+
 
 dataIdwt :: [(LS, [Double], [Double])] 
 dataIdwt =
@@ -39,14 +43,17 @@ dataIdwt =
        [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] )
     ]
 
+
 propDWTInvertible :: LS -> [Double] -> Property
 propDWTInvertible ls sig = 
     (not . odd . length $ sig) ==>
         idwt (inv ls) (dwt ls sig) =~ sig
 
+
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
 testLattice (baseOp, sig, expected) = 
     expected @=~? lattice baseOp sig
+
 
 dataLattice :: [((Double, Double), [Double], [Double])]
 dataLattice =
@@ -60,12 +67,15 @@ dataLattice =
       )
     ]
 
+
 propDoubleLatticeInverse :: LS -> Bool
 propDoubleLatticeInverse xs = inv (inv xs) == xs
+
 
 testCsl :: ([Double], [Double]) -> Assertion
 testCsl (input, expected) = 
     expected @=? csl input
+
 
 dataCsl :: [([Double], [Double])]
 dataCsl = 
@@ -73,9 +83,11 @@ dataCsl =
      ( [1,2,3,4], [2,3,4,1] )
     ]
 
+
 testCsr :: ([Double], [Double]) -> Assertion
 testCsr (input, expected) = 
     expected @=? csr input
+
 
 dataCsr :: [([Double], [Double])]
 dataCsr = 
@@ -83,14 +95,18 @@ dataCsr =
      ( [1,2,3,4], [4,1,2,3] )
     ]
 
+
 propIdentityShift1 :: [Double] -> Bool
 propIdentityShift1 xs = csl (csr xs) == xs
+
 
 propIdentityShift2 :: [Double] -> Bool
 propIdentityShift2 xs = csr (csl xs) == xs
 
+
 propDegRadInvertible :: [Double] -> Bool
 propDegRadInvertible xs = toDeg (toRad xs) =~ xs
+
 
 propRadDegInvertible :: [Double] -> Bool
 propRadDegInvertible xs = toRad (toDeg xs) =~ xs

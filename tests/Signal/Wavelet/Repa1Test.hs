@@ -8,10 +8,12 @@ import Test.QuickCheck
 import Test.Repa
 import Test.Utils
 
+
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwt ls sig
+
 
 dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataDwt =
@@ -28,10 +30,12 @@ dataDwt =
        ] )
     ]
 
+
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testIdwt (ls, sig, expected) = 
     expected @=~? idwt ls sig
+
 
 dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataIdwt =
@@ -48,11 +52,13 @@ dataIdwt =
        fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3])
     ]
 
+
 propDWTInvertible :: Property
 propDWTInvertible = 
     forAll genRepaUnboxedArrayPair (\(xs, ls) ->
         (even . size . extent $ xs) ==>
                 idwt (inv ls) (dwt ls xs) =~ xs)
+
 
 testLattice :: ((Double, Double), 
                 Array U DIM1 Double,
@@ -61,9 +67,10 @@ testLattice :: ((Double, Double),
 testLattice (baseOp, sig, expected) = 
     expected @=~? computeS (lattice baseOp sig)
 
+
 dataLattice :: [((Double, Double), 
-                      Array U DIM1 Double,
-                      Array U DIM1 Double)]
+                 Array U DIM1 Double,
+                 Array U DIM1 Double)]
 dataLattice =
     [
       ((0.5, 0.8660254038), 
@@ -78,14 +85,17 @@ dataLattice =
       )
     ]
 
+
 propDoubleLatticeInverse :: Property
 propDoubleLatticeInverse = 
     forAll genRepaUnboxedArray (\xs ->
         computeS (inv . inv $ xs) == xs)
 
+
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsl (input, expected) = 
     expected @=? (computeS $ csl input)
+
 
 dataCsl :: [(Array U DIM1 Double, Array U DIM1 Double)]
 dataCsl = 
@@ -93,9 +103,11 @@ dataCsl =
      ( fromListUnboxed (Z :. 4) [1,2,3,4], fromListUnboxed (Z :. 4) [2,3,4,1] )
     ]
 
+
 testCsr :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsr (input, expected) = 
     expected @=? (computeS $ csr input)
+
 
 dataCsr :: [(Array U DIM1 Double, Array U DIM1 Double)]
 dataCsr = 
@@ -103,21 +115,25 @@ dataCsr =
      ( fromListUnboxed (Z :. 4) [1,2,3,4], fromListUnboxed (Z :. 4) [4,1,2,3] )
     ]
 
+
 propIdentityShift1 :: Property
 propIdentityShift1 = 
     forAll genRepaUnboxedArray (\xs ->
         computeS (csl . csr $ xs) == xs)
+
 
 propIdentityShift2 :: Property
 propIdentityShift2 = 
     forAll genRepaUnboxedArray (\xs ->
         computeS (csr . csl $ xs) == xs)
 
+
 propPairsIdentity1 :: Property
 propPairsIdentity1 =
     forAll genRepaUnboxedArray (\xs -> 
         (even . size . extent $ xs) ==>
              computeS (fromPairs . toPairs $ xs) == xs)
+
 
 propPairsIdentity2 :: Property
 propPairsIdentity2 = 

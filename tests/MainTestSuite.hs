@@ -10,8 +10,10 @@ import qualified Signal.Wavelet.ListTest        as L
 import qualified Signal.Wavelet.Repa.CommonTest as C
 import qualified Signal.Wavelet.Repa1Test       as R
 
+
 main :: IO ()
 main = defaultMain tests
+
 
 tests :: [Test]
 tests = 
