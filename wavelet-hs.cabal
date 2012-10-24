@@ -68,7 +68,8 @@ benchmark wavelet-hs-bench
                     mtl,
                     random,
                     repa >= 3.0,
-                    repa-algorithms
+                    repa-algorithms,
+                    vector
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
