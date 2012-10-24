@@ -55,7 +55,7 @@ dataIdwt =
 
 propDWTInvertible :: Property
 propDWTInvertible = 
-    forAll genRepaUnboxedArrayPair (\(xs, ls) ->
+    forAll genRepaUnboxedArrayPair (\(ls, xs) ->
         (even . size . extent $ xs) ==>
                 idwt (inv ls) (dwt ls xs) =~ xs)
 
@@ -119,13 +119,13 @@ dataCsr =
 propIdentityShift1 :: Property
 propIdentityShift1 = 
     forAll genRepaUnboxedArray (\xs ->
-        computeS (csl . csr $ xs) == xs)
+        computeS (csl . computeS . csr $ xs) == xs)
 
 
 propIdentityShift2 :: Property
 propIdentityShift2 = 
     forAll genRepaUnboxedArray (\xs ->
-        computeS (csr . csl $ xs) == xs)
+        computeS (csr . computeS . csl $ xs) == xs)
 
 
 propPairsIdentity1 :: Property

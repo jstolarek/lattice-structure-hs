@@ -1,6 +1,7 @@
 dist
 #*
 *#
+*.o
 *.eventlog
 *.html
 *.txt

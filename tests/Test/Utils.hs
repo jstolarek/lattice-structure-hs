@@ -5,10 +5,11 @@ module Test.Utils (
   , (=~)
  ) where
 
+import qualified Data.Array.Repa                as R
+import qualified Data.Vector.Storable           as VS
 import qualified Test.Framework                 as TF
 import qualified Test.Framework.Providers.HUnit as TFH
 import qualified Test.HUnit                     as HU
-import qualified Data.Array.Repa                as R
 
 
 class AEq a where
@@ -25,7 +26,7 @@ instance AEq Int where
 
 instance (AEq a) => AEq [a] where
     xs =~ ys = (length xs == length ys) && 
-                (all (\(x,y) -> x =~ y) $ zip xs ys)
+               (all (\(x,y) -> x =~ y) $ zip xs ys)
 
 
 instance (AEq a) => AEq (Maybe a) where
@@ -48,7 +49,12 @@ instance (AEq a, AEq b, AEq c, AEq d) => AEq (a, b, c, d) where
 
 
 instance (AEq e, R.Shape sh, R.Source r e) => AEq (R.Array r sh e) where
-    xs =~ ys = (R.extent xs == R.extent ys) && (R.foldAllS (&&) True $ R.zipWith (=~) xs ys)
+    xs =~ ys = (R.extent xs == R.extent ys) && 
+               (R.foldAllS (&&) True $ R.zipWith (=~) xs ys)
+
+
+instance (AEq a, VS.Storable a) => AEq (VS.Vector a) where
+    xs =~ ys = (VS.toList xs) =~ (VS.toList ys)
 
 
 -- This function takes the name for the test, a testing function and a data

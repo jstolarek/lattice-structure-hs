@@ -38,6 +38,8 @@ library
                     -funfolding-keeness-factor1000 
                     -fllvm 
                     -optlo-O3
+  cc-options:       -std=c99 -O3 -Wall
+  c-sources:        src/Signal/Wavelet/C/dwt.c
 
 test-suite wavelet-hs-test
   type:             exitcode-stdio-1.0
@@ -54,6 +56,8 @@ test-suite wavelet-hs-test
                     test-framework-hunit,
                     test-framework-quickcheck2,
                     vector
+  cc-options:       -std=c99 -Wall
+  c-sources:        src/Signal/Wavelet/C/dwt.c
 
 benchmark wavelet-hs-bench
   type:             exitcode-stdio-1.0
@@ -76,3 +80,5 @@ benchmark wavelet-hs-bench
                     -funfolding-keeness-factor1000 
                     -fllvm 
                     -optlo-O3
+  cc-options:       -std=c99 -O3 -Wall
+  c-sources:        src/Signal/Wavelet/C/dwt.c

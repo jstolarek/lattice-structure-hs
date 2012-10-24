@@ -6,8 +6,9 @@ import Test.Framework
 import Test.Framework.Providers.QuickCheck2
 import Test.Utils
 
+import qualified Signal.Wavelet.CTest           as C
 import qualified Signal.Wavelet.ListTest        as L
-import qualified Signal.Wavelet.Repa.CommonTest as C
+import qualified Signal.Wavelet.Repa.CommonTest as RC
 import qualified Signal.Wavelet.Repa1Test       as R
 
 
@@ -16,10 +17,17 @@ main = defaultMain tests
 
 
 tests :: [Test]
-tests = 
-  [ 
-  testGroup "Lists" 
-    [ 
+tests = [ 
+  testGroup "C" [
+      testWithProvider "DWT"                     C.testDwt
+                                                 C.dataDwt
+    , testWithProvider "IDWT"                    C.testIdwt
+                                                 C.dataIdwt
+    , testProperty "DWT-IDWT identity"           C.propDWTInvertible
+    , testProperty  "DWT identical to List imp." C.propDWTIdenticalToList
+    , testProperty "IDWT identical to List imp." C.propIDWTIdenticalToList
+  ],
+  testGroup "Lists" [ 
       testWithProvider "DWT"                     L.testDwt
                                                  L.dataDwt
     , testWithProvider "IDWT"                    L.testIdwt
@@ -37,13 +45,11 @@ tests =
     , testProperty "Deg-Rad identity"            L.propDegRadInvertible
     , testProperty "Rad-Deg identity"            L.propRadDegInvertible
   ],
-  testGroup "Repa common"
-    [
-      testProperty "Deg-Rad identity"            C.propDegRadInvertible
-    , testProperty "Rad-Deg identity"            C.propRadDegInvertible
+  testGroup "Repa common" [
+      testProperty "Deg-Rad identity"            RC.propDegRadInvertible
+    , testProperty "Rad-Deg identity"            RC.propRadDegInvertible
   ],
-  testGroup "Repa1"
-    [
+  testGroup "Repa1" [
       testWithProvider "DWT"                     R.testDwt
                                                  R.dataDwt
     , testWithProvider "IDWT"                    R.testIdwt
