@@ -31,6 +31,7 @@ dwtWorker :: (Source r Double)
           -> Array U DIM1 Double
 dwtWorker cs !angles !signal = go layers signal
     where
+      go  0 !sig      = sig
       go  1 !sig      = doLayer sig 1
       go !n !sig      = go (n-1) (forceS . cs $ doLayer sig n)
       {-# INLINE doLayer #-}
