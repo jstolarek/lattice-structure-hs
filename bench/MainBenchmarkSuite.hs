@@ -12,7 +12,8 @@ import qualified Signal.Wavelet.Repa1Bench as R
 
 
 main :: IO ()
-main = newStdGen >>= defaultMainWith benchConfig (return ()) . benchmarks
+main = return (mkStdGen 1232134332) >>= 
+       defaultMainWith benchConfig (return ()) . benchmarks
 
 
 benchmarks :: RandomGen g => g -> [Benchmark]
