@@ -22,11 +22,14 @@ tested-with:        GHC>=7.4
 
 library
   hs-source-dirs:   src
-  -- exposed-modules:     
-  -- other-modules:       
+  exposed-modules:  Signal.Wavelet.C,
+                    Signal.Wavelet.List,
+                    Signal.Wavelet.Repa1
+  other-modules:    Signal.Wavelet.Repa.Common
   build-depends:    base == 4.5.*,
                     mtl,
-                    repa >= 3.0
+                    repa >= 3.0,
+                    vector
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
@@ -36,7 +39,7 @@ library
                     -fno-liberate-case 
                     -funfolding-use-threshold1000 
                     -funfolding-keeness-factor1000 
-                    -fllvm 
+                    -fllvm
                     -optlo-O3
   cc-options:       -std=c99 -O3 -Wall
   c-sources:        src/Signal/Wavelet/C/dwt.c
@@ -61,7 +64,7 @@ test-suite wavelet-hs-test
 
 benchmark wavelet-hs-bench
   type:             exitcode-stdio-1.0
-  hs-source-dirs:   src, bench
+  hs-source-dirs:   bench
   main-is:          MainBenchmarkSuite.hs
   build-depends:    base,
                     criterion,
@@ -69,7 +72,8 @@ benchmark wavelet-hs-bench
                     random,
                     repa >= 3.0,
                     repa-algorithms,
-                    vector
+                    vector,
+                    wavelet-hs
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
@@ -79,7 +83,5 @@ benchmark wavelet-hs-bench
                     -fno-liberate-case 
                     -funfolding-use-threshold1000 
                     -funfolding-keeness-factor1000 
-                    -fllvm 
+                    -fllvm
                     -optlo-O3
-  cc-options:       -std=c99 -O3 -Wall
-  c-sources:        src/Signal/Wavelet/C/dwt.c
