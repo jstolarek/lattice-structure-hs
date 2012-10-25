@@ -1,4 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
+{-# CFILES C/dwt.c #-}
 
 module Signal.Wavelet.C where
 
