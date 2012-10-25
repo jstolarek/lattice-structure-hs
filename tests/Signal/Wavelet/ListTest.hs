@@ -2,15 +2,8 @@ module Signal.Wavelet.ListTest where
 
 import Signal.Wavelet.List
 import Test.HUnit
-import Test.QuickCheck
+import Test.ArbitraryInstances
 import Test.Utils
-
-
-newtype DwtInputList = DwtInputList ([Double], [Double]) deriving (Show)
-
-
-instance Arbitrary DwtInputList where
-    arbitrary = genDwtInput >>= return . DwtInputList
 
 
 testDwt :: (LS, [Double], [Double]) -> Assertion

@@ -3,17 +3,9 @@ module Signal.Wavelet.CTest where
 import Data.Vector.Storable as V
 import Signal.Wavelet.C
 import qualified Signal.Wavelet.List  as L
+import Test.ArbitraryInstances
 import Test.HUnit
-import Test.QuickCheck
 import Test.Utils
-
-
-newtype DwtInputC = DwtInputC (Vector Double, Vector Double) deriving (Show)
-
-instance Arbitrary DwtInputC where
-    arbitrary = do
-        (ls, sig) <- genDwtInput
-        return $ DwtInputC (fromList ls, fromList sig)
 
 
 testDwt :: (Vector Double, Vector Double, Vector Double) -> Assertion

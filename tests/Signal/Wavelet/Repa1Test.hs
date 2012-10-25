@@ -5,30 +5,10 @@ module Signal.Wavelet.Repa1Test where
 import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
+import Test.ArbitraryInstances
 import Test.HUnit
 import Test.QuickCheck
 import Test.Utils
-
-
-newtype DwtInputRepa = DwtInputRepa (Array U DIM1 Double, Array U DIM1 Double) 
-    deriving (Show)
-
-newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double) deriving (Show)
-
-instance Arbitrary DwtInputRepa where
-    arbitrary = do
-        (ls, sig) <- genDwtInput
-        let lsSize  = length ls
-            sigSize = length sig
-        return $ DwtInputRepa (fromListUnboxed (Z :. lsSize ) ls, 
-                               fromListUnboxed (Z :. sigSize) sig)
-
-
-instance Arbitrary RepaDIM1Array where
-    arbitrary = sized $ \s -> do
-        arrSize <- choose (1, s)
-        list    <- vector arrSize
-        return . RepaDIM1Array . fromListUnboxed ( Z :. arrSize ) $ list
 
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
