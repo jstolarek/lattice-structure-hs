@@ -3,6 +3,7 @@ module Test.Utils (
   , (@=~?)
   , (?=~@)
   , (=~)
+  , genDwtInput
  ) where
 
 import qualified Data.Array.Repa                as R
@@ -10,7 +11,7 @@ import qualified Data.Vector.Storable           as VS
 import qualified Test.Framework                 as TF
 import qualified Test.Framework.Providers.HUnit as TFH
 import qualified Test.HUnit                     as HU
-
+import qualified Test.QuickCheck                as QC
 
 class AEq a where
     (=~) :: a -> a -> Bool
@@ -80,3 +81,12 @@ testWithProvider testGroupName testFunction =
     where
       assertionMsg = "Actual   : " ++ show actual ++
                      "\nExpected : " ++ show expected
+
+
+genDwtInput ::QC.Gen ([Double],[Double])
+genDwtInput = QC.sized $ \s -> do
+        lsSize  <- QC.choose (1, 2 + s `rem` 8)
+        sigSize <- QC.choose (1 + s `mod` 4, 2 + s `mod` 2)
+        ls      <- QC.vector lsSize
+        sig     <- QC.vector (2 * sigSize)
+        return (ls, sig)

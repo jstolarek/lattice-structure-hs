@@ -2,18 +2,17 @@ module Signal.Wavelet.Repa.CommonTest where
 
 import Data.Array.Repa
 import Signal.Wavelet.Repa.Common
-import Test.QuickCheck
-import Test.Repa
 import Test.Utils
 
-
-propDegRadInvertible :: Property
-propDegRadInvertible = 
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (toDeg (toRad xs)) =~ xs)
+--FIXME
+import Signal.Wavelet.Repa1Test
 
 
-propRadDegInvertible :: Property
-propRadDegInvertible =
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (toRad (toDeg xs)) =~ xs)
+propDegRadInvertible :: RepaDIM1Array -> Bool
+propDegRadInvertible (RepaDIM1Array xs) = 
+    computeS (toDeg (toRad xs)) =~ xs
+
+
+propRadDegInvertible :: RepaDIM1Array -> Bool
+propRadDegInvertible (RepaDIM1Array xs) =
+    computeS (toRad (toDeg xs)) =~ xs

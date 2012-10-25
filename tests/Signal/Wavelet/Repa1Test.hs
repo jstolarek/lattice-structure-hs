@@ -1,12 +1,34 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Signal.Wavelet.Repa1Test where
 
-import Data.Array.Repa
+import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
 import Test.HUnit
 import Test.QuickCheck
-import Test.Repa
 import Test.Utils
+
+
+newtype DwtInputRepa = DwtInputRepa (Array U DIM1 Double, Array U DIM1 Double) 
+    deriving (Show)
+
+newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double) deriving (Show)
+
+instance Arbitrary DwtInputRepa where
+    arbitrary = do
+        (ls, sig) <- genDwtInput
+        let lsSize  = length ls
+            sigSize = length sig
+        return $ DwtInputRepa (fromListUnboxed (Z :. lsSize ) ls, 
+                               fromListUnboxed (Z :. sigSize) sig)
+
+
+instance Arbitrary RepaDIM1Array where
+    arbitrary = sized $ \s -> do
+        arrSize <- choose (1, s)
+        list    <- vector arrSize
+        return . RepaDIM1Array . fromListUnboxed ( Z :. arrSize ) $ list
 
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
@@ -53,11 +75,9 @@ dataIdwt =
     ]
 
 
-propDWTInvertible :: Property
-propDWTInvertible = 
-    forAll genRepaUnboxedArrayPair (\(ls, xs) ->
-        (even . size . extent $ xs) ==>
-                idwt (inv ls) (dwt ls xs) =~ xs)
+propDWTInvertible :: DwtInputRepa -> Bool
+propDWTInvertible (DwtInputRepa (ls, sig)) = 
+    idwt (inv ls) (dwt ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), 
@@ -86,10 +106,9 @@ dataLattice =
     ]
 
 
-propDoubleLatticeInverse :: Property
-propDoubleLatticeInverse = 
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (inv . inv $ xs) == xs)
+propDoubleLatticeInverse :: RepaDIM1Array -> Bool
+propDoubleLatticeInverse (RepaDIM1Array ls) = 
+    computeS (inv . inv $ ls) == ls
 
 
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
@@ -116,26 +135,25 @@ dataCsr =
     ]
 
 
-propIdentityShift1 :: Property
-propIdentityShift1 = 
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (csl . computeS . csr $ xs) == xs)
+propIdentityShift1 :: RepaDIM1Array -> Bool
+propIdentityShift1 (RepaDIM1Array xs) = 
+    computeS (csl . computeS . csr $ xs) == xs
 
 
-propIdentityShift2 :: Property
-propIdentityShift2 = 
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (csr . computeS . csl $ xs) == xs)
+propIdentityShift2 :: RepaDIM1Array -> Bool
+propIdentityShift2 (RepaDIM1Array xs) = 
+    computeS (csr . computeS . csl $ xs) == xs
 
 
-propPairsIdentity1 :: Property
-propPairsIdentity1 =
-    forAll genRepaUnboxedArray (\xs -> 
-        (even . size . extent $ xs) ==>
-             computeS (fromPairs . toPairs $ xs) == xs)
+propPairsIdentity1 :: RepaDIM1Array -> Property
+propPairsIdentity1 (RepaDIM1Array xs) =
+    (even . size . extent $ xs) ==>
+        computeS (fromPairs . toPairs $ xs) == xs
 
 
-propPairsIdentity2 :: Property
-propPairsIdentity2 = 
-    forAll genRepaUnboxedArray (\xs ->
-        computeS (toPairs . fromPairs $ xs) == xs)
+propPairsIdentity2 :: RepaDIM1Array -> Bool
+propPairsIdentity2 (RepaDIM1Array xs) = 
+    computeS (toPairs . fromPairs $ ys) == ys
+        where 
+          ys :: (Source U (Double, Double)) => Array U DIM1 (Double,Double)
+          ys = computeS $ R.zipWith (,) xs xs

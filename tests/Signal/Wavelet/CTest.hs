@@ -3,10 +3,17 @@ module Signal.Wavelet.CTest where
 import Data.Vector.Storable as V
 import Signal.Wavelet.C
 import qualified Signal.Wavelet.List  as L
-import Test.Vector.Storable
 import Test.HUnit
 import Test.QuickCheck
 import Test.Utils
+
+
+newtype DwtInputC = DwtInputC (Vector Double, Vector Double) deriving (Show)
+
+instance Arbitrary DwtInputC where
+    arbitrary = do
+        (ls, sig) <- genDwtInput
+        return $ DwtInputC (fromList ls, fromList sig)
 
 
 testDwt :: (Vector Double, Vector Double, Vector Double) -> Assertion
@@ -47,32 +54,26 @@ dataIdwt =
     ]
 
 
-propDWTInvertible :: Property
-propDWTInvertible = 
-    forAll genVectorPair (\(ls, xs) ->
-        (even . V.length $ xs) ==>
-                idwt (inv ls) (dwt ls xs) =~ xs)
+propDWTInvertible :: DwtInputC -> Bool
+propDWTInvertible (DwtInputC (ls, sig)) = 
+    idwt (inv ls) (dwt ls sig) =~ sig
 
 
-propDWTIdenticalToList :: Property
-propDWTIdenticalToList = 
-    forAll genVectorPair (\(ls, xs) ->
-        (even . V.length $ xs) ==>
-               listDwt ls xs =~ cDwt ls xs)
-    where
-      listDwt ls xs = L.dwt (toList ls) (toList xs)
-      cDwt    ls xs = shifts L.csl (V.length ls - 1) $ toList (dwt ls xs)
+propDWTIdenticalToList :: DwtInputC -> Bool
+propDWTIdenticalToList (DwtInputC (ls, sig)) = 
+    listDwt =~ cDwt
+        where
+          listDwt = L.dwt (toList ls) (toList sig)
+          cDwt    = shifts L.csl (V.length ls - 1) $ toList (dwt ls sig)
 
 
-propIDWTIdenticalToList :: Property
-propIDWTIdenticalToList = 
-    forAll genVectorPair (\(ls, xs) ->
-        (even . V.length $ xs) ==>
-               listIdwt ls xs =~ cIdwt ls xs)
-    where
-      listIdwt ls xs     = L.idwt (toList ls) (toList xs)
-      cIdwt    ls xs     = toList . idwt ls . shiftedInput ls $ xs
-      shiftedInput ls xs = fromList (shifts L.csr (V.length ls - 1) (toList xs))
+propIDWTIdenticalToList :: DwtInputC -> Bool
+propIDWTIdenticalToList (DwtInputC (ls, sig)) = 
+    listIdwt =~ cIdwt
+        where
+          listIdwt     = L.idwt (toList ls) (toList sig)
+          cIdwt        = toList . idwt ls . shiftedInput ls $ sig
+          shiftedInput xs ys = fromList (shifts L.csr (V.length xs - 1) (toList ys))
 
 
 -- FIXME move somewhere else

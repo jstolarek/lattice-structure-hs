@@ -6,6 +6,13 @@ import Test.QuickCheck
 import Test.Utils
 
 
+newtype DwtInputList = DwtInputList ([Double], [Double]) deriving (Show)
+
+
+instance Arbitrary DwtInputList where
+    arbitrary = genDwtInput >>= return . DwtInputList
+
+
 testDwt :: (LS, [Double], [Double]) -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwt ls sig
@@ -44,10 +51,9 @@ dataIdwt =
     ]
 
 
-propDWTInvertible :: LS -> [Double] -> Property
-propDWTInvertible ls sig = 
-    (even . length $ sig) ==>
-        idwt (inv ls) (dwt ls sig) =~ sig
+propDWTInvertible :: DwtInputList -> Bool
+propDWTInvertible (DwtInputList (ls, sig)) = 
+    idwt (inv ls) (dwt ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
