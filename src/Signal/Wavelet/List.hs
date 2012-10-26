@@ -47,9 +47,15 @@ csr [] = []
 csr xs = last xs : init xs
 
 
-toDeg :: [Double] -> [Double]
-toDeg = map (\x -> x * 180 / pi)
+cslN :: Int -> [Double] -> [Double]
+cslN n sig
+    | n > 0     = cslN (n-1) (csl sig)
+    | n == 0    = sig
+    | otherwise = csrN (-n) sig
 
 
-toRad :: [Double] -> [Double]
-toRad = map (\x -> x * pi / 180)
+csrN :: Int -> [Double] -> [Double]
+csrN n sig
+    | n > 0     = csrN (n-1) (csr sig)
+    | n == 0    = sig
+    | otherwise = cslN (-n) sig

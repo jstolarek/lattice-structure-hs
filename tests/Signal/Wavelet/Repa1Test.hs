@@ -143,14 +143,82 @@ dataCsr =
     ]
 
 
+testCslN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCslN (n, input, expected) = 
+    expected @=? (computeS $ cslN n input)
+
+
+dataCslN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
+dataCslN = 
+    [
+     ( 1, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [2,3,4,1]
+     ),
+     ( 0, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [1,2,3,4] 
+     ),
+     ( 4, 
+       fromListUnboxed (Z :. 0) [], 
+       fromListUnboxed (Z :. 0) []
+     )
+    ]
+
+
+testCsrN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCsrN (n, input, expected) = 
+    expected @=? (computeS $ csrN n input)
+
+
+dataCsrN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
+dataCsrN = 
+    [
+     ( 1, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [4,1,2,3] 
+     ),
+     ( 0, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [1,2,3,4]
+     ),
+     ( 4, 
+       fromListUnboxed (Z :. 0) [], 
+       fromListUnboxed (Z :. 0) []
+     )
+    ]
+
+
 propIdentityShift1 :: RepaDIM1Array -> Bool
 propIdentityShift1 (RepaDIM1Array xs) = 
-    computeS (csl . computeS . csr $ xs) == xs
+    computeS (csl . csr $ xs) == xs
 
 
 propIdentityShift2 :: RepaDIM1Array -> Bool
 propIdentityShift2 (RepaDIM1Array xs) = 
-    computeS (csr . computeS . csl $ xs) == xs
+    computeS (csr . csl $ xs) == xs
+
+
+propIdentityShift3 :: Int -> RepaDIM1Array -> Bool
+propIdentityShift3 n (RepaDIM1Array xs) =
+    computeS (cslN n . csrN n $ xs) == xs
+
+
+propIdentityShift4 :: Int -> RepaDIM1Array -> Bool
+propIdentityShift4 n (RepaDIM1Array xs) =
+    computeS (csrN n . cslN n $ xs) == xs
+
+
+propIdentityShift5 :: RepaDIM1Array -> Bool
+propIdentityShift5 (RepaDIM1Array xs) = 
+    computeS (cslN n xs) == xs
+        where n = size . extent $ xs
+
+
+propIdentityShift6 :: RepaDIM1Array -> Bool
+propIdentityShift6 (RepaDIM1Array xs) = 
+    computeS (csrN n xs) == xs
+        where n = size . extent $ xs
 
 
 propPairsIdentity1 :: RepaDIM1Array -> Property

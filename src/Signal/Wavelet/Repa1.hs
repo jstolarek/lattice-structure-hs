@@ -83,31 +83,61 @@ a2w = R.map (sin &&& cos)
 
 {-# INLINE inv #-}
 inv :: (Source r Double)
-    =>  Array r DIM1 Double 
+    => Array r DIM1 Double 
     -> Array D DIM1 Double
 inv !xs = backpermute ext reversedIndex xs
     where
       reversedIndex (Z :. i) = Z :. (sh - i - 1)
       ext = extent xs
-      sh = size ext
+      sh  = size ext
 
 
 {-# INLINE csl #-}
-csl :: Array U DIM1 Double 
+csl :: (Source r Double)
+    => Array r DIM1 Double 
     -> Array D DIM1 Double
 csl !xs = backpermute ext shift xs
     where
       shift (Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
       ext = extent xs
-      sh = size ext
+      sh  = size ext
 
 
 {-# INLINE csr #-}
-csr :: Array U DIM1 Double 
+csr :: (Source r Double)
+    => Array r DIM1 Double 
     -> Array D DIM1 Double
 csr xs = backpermute ext shift xs
     where
       shift (Z :. 0) = Z :. (sh-1)
       shift (Z :. i) = Z :. (i-1)
+      ext = extent xs
+      sh  = size ext
+
+
+{-# INLINE cslN #-}
+cslN :: (Source r Double) 
+     => Int
+     -> Array r DIM1 Double 
+     -> Array D DIM1 Double
+cslN n !xs = backpermute ext shift xs
+    where
+      shift (Z :. i) = if i < (sh - n) 
+                       then Z :. (i + n) 
+                       else Z :. ( i + n - sh )
+      ext = extent xs
+      sh  = size ext
+
+
+{-# INLINE csrN #-}
+csrN :: (Source r Double)
+     => Int
+     -> Array r DIM1 Double 
+     -> Array D DIM1 Double
+csrN n xs = backpermute ext shift xs
+    where
+      shift (Z :. i) = if i >= n
+                       then Z :. (i - n) 
+                       else Z :. ( i - n + sh )
       ext = extent xs
       sh = size ext

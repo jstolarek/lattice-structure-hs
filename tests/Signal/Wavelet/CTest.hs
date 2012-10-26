@@ -82,19 +82,13 @@ propDWTIdenticalToList (DwtInputC (ls, sig)) =
     listDwt =~ cDwt
         where
           listDwt = L.dwt (toList ls) (toList sig)
-          cDwt    = shifts L.csl (V.length ls - 1) $ toList (dwt ls sig)
+          cDwt    = L.cslN (V.length ls - 1) $ toList (dwt ls sig)
 
 
 propIDWTIdenticalToList :: DwtInputC -> Bool
 propIDWTIdenticalToList (DwtInputC (ls, sig)) = 
     listIdwt =~ cIdwt
         where
-          listIdwt     = L.idwt (toList ls) (toList sig)
-          cIdwt        = toList . idwt ls . shiftedInput ls $ sig
-          shiftedInput xs ys = fromList (shifts L.csr (V.length xs - 1) (toList ys))
-
-
--- FIXME move somewhere else
-shifts :: ([Double] -> [Double]) -> Int -> [Double] -> [Double]
-shifts  _ 0 sig = sig
-shifts cs n sig = shifts cs (n-1) (cs sig)
+          listIdwt         = L.idwt (toList ls) (toList sig)
+          cIdwt            = toList . idwt ls . shiftedSig ls $ sig
+          shiftedSig xs ys = fromList (L.csrN (V.length xs - 1) (toList ys))
