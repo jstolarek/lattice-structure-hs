@@ -2,9 +2,10 @@ dist
 #*
 *#
 *.o
+*.hcr
+*.hi
 *.eventlog
 *.html
 *.txt
 .dist-buildwrapper
 .externalToolBuilders
-

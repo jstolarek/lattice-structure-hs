@@ -1,4 +1,5 @@
-{-# LANGUAGE FlexibleContexts, BangPatterns #-}
+{-# LANGUAGE FlexibleContexts, TypeOperators, BangPatterns #-}
+{-# OPTIONS_GHC -Wall -O2 -Odph -rtsopts -fno-liberate-case #-}
 
 module Signal.Wavelet.Repa1 where
 
@@ -31,6 +32,7 @@ dwtWorker :: (Source r Double)
           -> Array U DIM1 Double
 dwtWorker cs !angles !signal = go layers signal
     where
+      go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go  0 !sig      = sig
       go  1 !sig      = doLayer sig 1
       go !n !sig      = go (n-1) (forceS . cs $ doLayer sig n)
@@ -49,7 +51,7 @@ lattice :: (Source r Double)
         -> Array D DIM1 Double
 lattice (!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
     where
-      baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c )
+      baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
 
 
 {-# INLINE toPairs #-}
@@ -58,8 +60,10 @@ toPairs :: (Source r Double)
         -> Array D DIM1 (Double, Double)
 toPairs !xs = traverse xs twiceShorter wrapPairs
     where
+      twiceShorter :: (Z :. Int) -> (Z :. Int)
       twiceShorter (Z :. s) = Z :. s `div` 2
-      wrapPairs f  (Z :. i) = ( f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
+      wrapPairs :: ((Z :. Int) -> Double) -> (Z :. Int) -> (Double, Double)
+      wrapPairs f  (Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
 
 
 {-# INLINE fromPairs #-}
@@ -68,10 +72,12 @@ fromPairs :: (Source r (Double,Double))
           -> Array D DIM1 Double
 fromPairs !xs = traverse xs twiceLonger unwrapPairs
     where
-      twiceLonger   (Z :. s) = Z :. 2 * s
+      twiceLonger :: (Z :. Int) -> (Z :. Int)
+      twiceLonger (Z :. s) = Z :. 2 * s
+      unwrapPairs :: ((Z :. Int) -> (Double, Double)) -> (Z :. Int) -> Double
       unwrapPairs f (Z :. i) 
-                      | even (i `mod` 2) = fst .f $ ( Z :. i `div` 2)
-                      | otherwise        = snd .f $ ( Z :. i `div` 2)
+                      | even i    = fst . f $ ( Z :. i `div` 2)
+                      | otherwise = snd . f $ ( Z :. i `div` 2)
 
 
 {-# INLINE a2w #-}
