@@ -1,10 +1,10 @@
 {-# LANGUAGE FlexibleContexts, TypeOperators, BangPatterns #-}
-{-# OPTIONS_GHC -Wall -O2 -Odph -rtsopts -fno-liberate-case #-}
 
 module Signal.Wavelet.Repa1 where
 
 import Control.Arrow
 import Data.Array.Repa as R
+import Data.Array.Repa.Unsafe
 import Signal.Wavelet.Repa.Common
 
 
@@ -58,7 +58,7 @@ lattice (!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
 toPairs :: (Source r Double) 
         => Array r DIM1 Double 
         -> Array D DIM1 (Double, Double)
-toPairs !xs = traverse xs twiceShorter wrapPairs
+toPairs !xs = unsafeTraverse xs twiceShorter wrapPairs
     where
       twiceShorter :: (Z :. Int) -> (Z :. Int)
       twiceShorter (Z :. s) = Z :. s `div` 2
@@ -70,7 +70,7 @@ toPairs !xs = traverse xs twiceShorter wrapPairs
 fromPairs :: (Source r (Double,Double))
           => Array r DIM1 (Double, Double)
           -> Array D DIM1 Double
-fromPairs !xs = traverse xs twiceLonger unwrapPairs
+fromPairs !xs = unsafeTraverse xs twiceLonger unwrapPairs
     where
       twiceLonger :: (Z :. Int) -> (Z :. Int)
       twiceLonger (Z :. s) = Z :. 2 * s
@@ -91,9 +91,9 @@ a2w = R.map (sin &&& cos)
 inv :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-inv !xs = backpermute ext reversedIndex xs
+inv !xs = unsafeBackpermute ext reversedIndex xs
     where
-      reversedIndex (Z :. i) = Z :. (sh - i - 1)
+      reversedIndex !(Z :. i) = Z :. (sh - i - 1)
       ext = extent xs
       sh  = size ext
 
@@ -102,7 +102,7 @@ inv !xs = backpermute ext reversedIndex xs
 csl :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-csl !xs = backpermute ext shift xs
+csl !xs = unsafeBackpermute ext shift xs
     where
       shift (Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
       ext = extent xs
@@ -113,10 +113,10 @@ csl !xs = backpermute ext shift xs
 csr :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-csr xs = backpermute ext shift xs
+csr xs = unsafeBackpermute ext shift xs
     where
-      shift (Z :. 0) = Z :. (sh-1)
-      shift (Z :. i) = Z :. (i-1)
+      shift (Z :. 0) = Z :. (sh - 1)
+      shift (Z :. i) = Z :. (i - 1)
       ext = extent xs
       sh  = size ext
 
@@ -126,11 +126,11 @@ cslN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double
-cslN n !xs = backpermute ext shift xs
+cslN n !xs = unsafeBackpermute ext shift xs
     where
       shift (Z :. i) = if i < (sh - n) 
                        then Z :. (i + n) 
-                       else Z :. ( i + n - sh )
+                       else Z :. (i + n - sh)
       ext = extent xs
       sh  = size ext
 
@@ -140,10 +140,10 @@ csrN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double
-csrN n xs = backpermute ext shift xs
+csrN n xs = unsafeBackpermute ext shift xs
     where
       shift (Z :. i) = if i >= n
                        then Z :. (i - n) 
-                       else Z :. ( i - n + sh )
+                       else Z :. (i - n + sh)
       ext = extent xs
       sh = size ext
