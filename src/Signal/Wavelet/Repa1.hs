@@ -61,7 +61,7 @@ toPairs :: (Source r Double)
 toPairs !xs = unsafeTraverse xs twiceShorter wrapPairs
     where
       twiceShorter :: (Z :. Int) -> (Z :. Int)
-      twiceShorter (Z :. s) = Z :. s `div` 2
+      twiceShorter (Z :. s) = Z :. s `quot` 2
       wrapPairs :: ((Z :. Int) -> Double) -> (Z :. Int) -> (Double, Double)
       wrapPairs f  (Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
 
@@ -76,8 +76,8 @@ fromPairs !xs = unsafeTraverse xs twiceLonger unwrapPairs
       twiceLonger (Z :. s) = Z :. 2 * s
       unwrapPairs :: ((Z :. Int) -> (Double, Double)) -> (Z :. Int) -> Double
       unwrapPairs f (Z :. i) 
-                      | even i    = fst . f $ ( Z :. i `div` 2)
-                      | otherwise = snd . f $ ( Z :. i `div` 2)
+                      | even i    = fst . f $ ( Z :. i `quot` 2)
+                      | otherwise = snd . f $ ( Z :. i `quot` 2)
 
 
 {-# INLINE a2w #-}
