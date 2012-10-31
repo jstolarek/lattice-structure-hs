@@ -3,7 +3,7 @@
 module Signal.Wavelet.Repa2 where
 
 import Control.Arrow ((&&&))
-import Control.Monad.ST (runST)
+--import Control.Monad.ST (runST)
 import Data.Array.Repa as R
 --import Data.Array.Repa.Unsafe
 import qualified Data.Vector.Generic as VG

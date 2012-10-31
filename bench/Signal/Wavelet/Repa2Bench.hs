@@ -1,9 +1,7 @@
 module Signal.Wavelet.Repa2Bench where
 
 import Data.Array.Repa
-import Data.Array.Repa.Algorithms.Randomish
 import Signal.Wavelet.Repa2
-import System.Random
 
 
 {-# INLINE benchDwt #-}
@@ -16,12 +14,10 @@ benchIdwt :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
 benchIdwt (ls, sig) = idwt ls sig
 
 
-dataDwt :: RandomGen g 
-        => g 
-        -> Int 
-        -> Int 
+dataDwt :: ([Double], [Double])
         -> (Array U DIM1 Double, Array U DIM1 Double)
-dataDwt gen lsSize sigSize = (randomishDoubleArray (Z :. lsSize ) 0 255 seed, 
-                              randomishDoubleArray (Z :. sigSize) 0 255 seed)
+dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls, 
+                     fromListUnboxed (Z :. sigSize) sig)
     where
-      seed = fst . next $ gen
+      lsSize  = length ls
+      sigSize = length sig

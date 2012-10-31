@@ -7,7 +7,7 @@ import Criterion.Main
 import System.Random
 
 import qualified Signal.Wavelet.CBench      as C
---import qualified Signal.Wavelet.ListBench  as L
+import qualified Signal.Wavelet.ListBench   as L
 import qualified Signal.Wavelet.Repa1Bench  as R1
 import qualified Signal.Wavelet.Repa2Bench  as R2
 import qualified Signal.Wavelet.VectorBench as V
@@ -22,11 +22,11 @@ benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
     let lsSize    = 8
         sigSize   = 8192
---      lDataDwt  = L.dataDwt gen lsSize sigSize
-        vDataDwt  =  V.dataDwt gen lsSize sigSize
-        r1DataDwt = R1.dataDwt gen lsSize sigSize
-        r2DataDwt = R2.dataDwt gen lsSize sigSize
-        cDataDwt  =  C.dataDwt gen lsSize sigSize
+        lDataDwt  =  L.dataDwt gen lsSize sigSize
+        vDataDwt  =  V.dataDwt lDataDwt
+        r1DataDwt = R1.dataDwt lDataDwt
+        r2DataDwt = R2.dataDwt lDataDwt
+        cDataDwt  =  C.dataDwt lDataDwt
     in [
       bgroup "DWT" . (:[])  $ bcompare  
       [ 

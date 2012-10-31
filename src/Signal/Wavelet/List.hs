@@ -2,14 +2,12 @@ module Signal.Wavelet.List where
 
 import Control.Arrow
 
-type LS = [Double]
 
-
-dwt :: LS -> [Double] -> [Double]
+dwt :: [Double] -> [Double] -> [Double]
 dwt angles signal =  dwtWorker csl angles signal
 
 
-idwt :: LS -> [Double] -> [Double]
+idwt :: [Double] -> [Double] -> [Double]
 idwt angles signal = dwtWorker csr angles signal
 
 
@@ -33,7 +31,7 @@ a2w :: [Double] -> [(Double,Double)]
 a2w = map (sin &&& cos)
 
 
-inv :: LS -> LS
+inv :: [Double] -> [Double]
 inv = reverse
 
 

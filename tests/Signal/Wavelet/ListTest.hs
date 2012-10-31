@@ -8,12 +8,12 @@ import Test.QuickCheck
 import Test.Utils
 
 
-testDwt :: (LS, [Double], [Double]) -> Assertion
+testDwt :: ([Double], [Double], [Double]) -> Assertion
 testDwt (ls, sig, expected) = 
     expected @=~? dwt ls sig
 
 
-dataDwt :: [(LS, [Double], [Double])] 
+dataDwt :: [([Double], [Double], [Double])] 
 dataDwt =
     [
       ( toRad [30,25,40], 
@@ -40,12 +40,12 @@ dataDwt =
     ]
 
 
-testIdwt :: (LS, [Double], [Double]) -> Assertion
+testIdwt :: ([Double], [Double], [Double]) -> Assertion
 testIdwt (ls, sig, expected) = 
     expected @=~? idwt ls sig
 
 
-dataIdwt :: [(LS, [Double], [Double])] 
+dataIdwt :: [([Double], [Double], [Double])] 
 dataIdwt =
     [
       ( toRad [40,25,30], 
@@ -100,7 +100,7 @@ dataLattice =
     ]
 
 
-propDoubleLatticeInverse :: LS -> Bool
+propDoubleLatticeInverse :: [Double] -> Bool
 propDoubleLatticeInverse xs = inv (inv xs) == xs
 
 
