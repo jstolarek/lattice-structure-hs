@@ -9,25 +9,22 @@ import Signal.Wavelet.Repa.Common
 
 
 {-# INLINE dwt #-}
-dwt :: (Source r Double) 
-    => Array r DIM1 Double 
+dwt :: Array U DIM1 Double
     -> Array U DIM1 Double 
     -> Array U DIM1 Double
 dwt !angles !signal = dwtWorker csl angles signal
 
 
 {-# INLINE idwt #-}
-idwt :: (Source r Double) 
-     => Array r DIM1 Double 
+idwt :: Array U DIM1 Double 
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
 idwt !angles !signal = dwtWorker csr angles signal
 
 
 {-# INLINE dwtWorker #-}
-dwtWorker :: (Source r Double) 
-          => (Array U DIM1 Double -> Array D DIM1 Double)
-          -> Array r DIM1 Double 
+dwtWorker :: (Array U DIM1 Double -> Array D DIM1 Double)
+          -> Array U DIM1 Double 
           -> Array U DIM1 Double 
           -> Array U DIM1 Double
 dwtWorker cs !angles !signal = go layers signal

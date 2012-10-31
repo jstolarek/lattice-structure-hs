@@ -81,7 +81,7 @@ dataIdwt =
 
 propDWTInvertible :: DwtInputRepa -> Bool
 propDWTInvertible (DwtInputRepa (ls, sig)) = 
-    idwt (inv ls) (dwt ls sig) =~ sig
+    idwt (computeS $ inv ls) (dwt ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), 
