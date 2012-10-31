@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Test.Utils (
     testWithProvider
   , (@=~?)
@@ -6,7 +8,9 @@ module Test.Utils (
  ) where
 
 import qualified Data.Array.Repa                as R
+import qualified Data.Vector.Generic            as VG
 import qualified Data.Vector.Storable           as VS
+import qualified Data.Vector.Unboxed            as VU
 import qualified Test.Framework                 as TF
 import qualified Test.Framework.Providers.HUnit as TFH
 import qualified Test.HUnit                     as HU
@@ -53,8 +57,12 @@ instance (AEq e, R.Shape sh, R.Source r e) => AEq (R.Array r sh e) where
                (R.foldAllS (&&) True $ R.zipWith (=~) xs ys)
 
 
-instance (AEq a, VS.Storable a) => AEq (VS.Vector a) where
-    xs =~ ys = (VS.toList xs) =~ (VS.toList ys)
+instance (AEq a, VG.Vector VU.Vector a) => AEq (VU.Vector a) where
+    xs =~ ys = (VG.toList xs) =~ (VG.toList ys)
+
+
+instance (AEq a, VG.Vector VS.Vector a) => AEq (VS.Vector a) where
+    xs =~ ys = (VG.toList xs) =~ (VG.toList ys)
 
 
 -- This function takes the name for the test, a testing function and a data

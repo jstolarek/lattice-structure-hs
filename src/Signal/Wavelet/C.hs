@@ -37,15 +37,3 @@ dwtWorker dwtFun ls sig = unsafePerformIO $ do
                        (castPtr ptrSig) (fromIntegral lenSig)
     fpDwt <- newForeignPtr finalizerFree pDwt
     return $ unsafeFromForeignPtr0 fpDwt lenSig
-
-
-inv :: Vector Double -> Vector Double
-inv = V.reverse
-
-
-toDeg :: Vector Double -> Vector Double
-toDeg = V.map (\x -> x * 180 / pi)
-
-
-toRad :: Vector Double -> Vector Double
-toRad = V.map (\x -> x * pi / 180)

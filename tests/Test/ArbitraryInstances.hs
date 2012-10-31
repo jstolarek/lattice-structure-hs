@@ -1,16 +1,20 @@
 module Test.ArbitraryInstances where
 
 import Data.Array.Repa
-import Data.Vector.Storable hiding (length)
+import qualified Data.Vector.Storable as VS
+import qualified Data.Vector.Unboxed  as VU
 import Test.QuickCheck as QC
 
 newtype DwtInputList = DwtInputList ([Double], [Double]) 
     deriving (Show)
 
+newtype DwtInputVector = DwtInputVector (VU.Vector Double, VU.Vector Double) 
+    deriving (Show)
+
 newtype DwtInputRepa = DwtInputRepa (Array U DIM1 Double, Array U DIM1 Double) 
     deriving (Show)
 
-newtype DwtInputC = DwtInputC (Vector Double, Vector Double) 
+newtype DwtInputC = DwtInputC (VS.Vector Double, VS.Vector Double) 
     deriving (Show)
 
 newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double) 
@@ -19,6 +23,12 @@ newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double)
 
 instance Arbitrary DwtInputList where
     arbitrary = genDwtInput >>= return . DwtInputList
+
+
+instance Arbitrary DwtInputVector where
+    arbitrary = do
+        (ls, sig) <- genDwtInput
+        return $ DwtInputVector (VU.fromList ls, VU.fromList sig)
 
 
 instance Arbitrary DwtInputRepa where
@@ -40,7 +50,7 @@ instance Arbitrary RepaDIM1Array where
 instance Arbitrary DwtInputC where
     arbitrary = do
         (ls, sig) <- genDwtInput
-        return $ DwtInputC (fromList ls, fromList sig)
+        return $ DwtInputC (VS.fromList ls, VS.fromList sig)
 
 
 genDwtInput ::QC.Gen ([Double],[Double])

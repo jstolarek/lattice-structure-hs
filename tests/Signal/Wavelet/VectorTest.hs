@@ -1,8 +1,8 @@
-module Signal.Wavelet.CTest where
+module Signal.Wavelet.VectorTest where
 
-import Data.Vector.Storable as V
-import Signal.Wavelet.C
-import qualified Signal.Wavelet.List  as L
+import Data.Vector.Unboxed as V
+import qualified Signal.Wavelet.C as C
+import Signal.Wavelet.Vector
 import Signal.Wavelet.Vector.Common
 import Test.ArbitraryInstances
 import Test.HUnit
@@ -73,23 +73,22 @@ dataIdwt =
     ]
 
 
-propDWTInvertible :: DwtInputC -> Bool
-propDWTInvertible (DwtInputC (ls, sig)) = 
+propDWTInvertible :: DwtInputVector -> Bool
+propDWTInvertible (DwtInputVector (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
 
 
-propDWTIdenticalToList :: DwtInputC -> Bool
-propDWTIdenticalToList (DwtInputC (ls, sig)) = 
-    listDwt =~ cDwt
+propDWTIdenticalToC :: DwtInputVector -> Bool
+propDWTIdenticalToC (DwtInputVector (ls, sig)) = 
+    cDwt =~ repaDwt
         where
-          listDwt = L.dwt (toList ls) (toList sig)
-          cDwt    = L.cslN (V.length ls - 1) $ toList (dwt ls sig)
+          cDwt    = C.dwt (convert ls) (convert sig)
+          repaDwt = convert $ dwt ls sig
 
 
-propIDWTIdenticalToList :: DwtInputC -> Bool
-propIDWTIdenticalToList (DwtInputC (ls, sig)) = 
-    listIdwt =~ cIdwt
+propIDWTIdenticalToC :: DwtInputVector -> Bool
+propIDWTIdenticalToC (DwtInputVector (ls, sig)) = 
+    cIdwt =~ repaIdwt
         where
-          listIdwt         = L.idwt (toList ls) (toList sig)
-          cIdwt            = toList . idwt ls . shiftedSig ls $ sig
-          shiftedSig xs ys = fromList (L.csrN (V.length xs - 1) (toList ys))
+          cIdwt    = C.idwt (convert ls) (convert sig)
+          repaIdwt = convert $ idwt ls sig

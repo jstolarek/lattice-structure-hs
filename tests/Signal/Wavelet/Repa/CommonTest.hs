@@ -14,3 +14,8 @@ propDegRadInvertible (RepaDIM1Array xs) =
 propRadDegInvertible :: RepaDIM1Array -> Bool
 propRadDegInvertible (RepaDIM1Array xs) =
     computeS (toRad (toDeg xs)) =~ xs
+
+
+propDoubleLatticeInverse :: RepaDIM1Array -> Bool
+propDoubleLatticeInverse (RepaDIM1Array ls) = 
+    computeS (inv . inv $ ls) == ls

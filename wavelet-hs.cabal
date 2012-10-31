@@ -24,8 +24,12 @@ library
   hs-source-dirs:   src
   exposed-modules:  Signal.Wavelet.C,
                     Signal.Wavelet.List,
-                    Signal.Wavelet.Repa1
-  other-modules:    Signal.Wavelet.Repa.Common
+                    Signal.Wavelet.Repa1,
+                    Signal.Wavelet.Repa2,
+                    Signal.Wavelet.Vector
+  other-modules:    Signal.Wavelet.List.Common,
+                    Signal.Wavelet.Repa.Common,
+                    Signal.Wavelet.Vector.Common
   build-depends:    base == 4.5.*,
                     mtl,
                     repa >= 3.0,

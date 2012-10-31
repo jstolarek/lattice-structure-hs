@@ -112,11 +112,6 @@ dataLattice =
     ]
 
 
-propDoubleLatticeInverse :: RepaDIM1Array -> Bool
-propDoubleLatticeInverse (RepaDIM1Array ls) = 
-    computeS (inv . inv $ ls) == ls
-
-
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsl (input, expected) = 
     expected @=? (computeS $ csl input)

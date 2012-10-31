@@ -84,17 +84,6 @@ a2w :: (Source r Double)
 a2w = R.map (sin &&& cos)
 
 
-{-# INLINE inv #-}
-inv :: (Source r Double)
-    => Array r DIM1 Double 
-    -> Array D DIM1 Double
-inv !xs = unsafeBackpermute ext reversedIndex xs
-    where
-      reversedIndex !(Z :. i) = Z :. (sh - i - 1)
-      ext = extent xs
-      sh  = size ext
-
-
 {-# INLINE csl #-}
 csl :: (Source r Double)
     => Array r DIM1 Double 
