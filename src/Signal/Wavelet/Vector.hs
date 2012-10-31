@@ -40,23 +40,21 @@ dwtWorker cl lSize lm angles signal
     | otherwise    = dwtWorker (cl + 1) lSize (1 - lm) angles newSignal
     where
       (sin_, cos_) = (sin &&& cos) $ angles ! cl
-      sSize        = U.length signal
-      newSignal    = lattice sSize lm signal sin_ cos_
+      newSignal    = lattice lm (sin_, cos_) signal
 
 
 {-# INLINE lattice #-}
 lattice :: Int
-        -> Int
+        -> (Double, Double)
         -> Vector Double
-        -> Double
-        -> Double
         -> Vector Double
-lattice sSize lm signal sin_ cos_ = runST $ do
+lattice lm (sin_, cos_) signal = runST $ do
     vec <- VM.unsafeNew sSize
     sv  <- VG.unsafeThaw signal
     fill sv vec lm (sSize - 2 * lm)
     VG.unsafeFreeze vec
         where
+          sSize = U.length signal
           fill sv v i sliceSpan
               | i < sliceSpan = do
                  x <- VM.unsafeRead sv i

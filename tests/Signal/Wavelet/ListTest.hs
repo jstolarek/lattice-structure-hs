@@ -1,5 +1,6 @@
 module Signal.Wavelet.ListTest where
 
+import Control.Arrow ((&&&))
 import Signal.Wavelet.List
 import Signal.Wavelet.List.Common
 import Test.ArbitraryInstances
@@ -100,8 +101,15 @@ dataLattice =
     ]
 
 
-propDoubleLatticeInverse :: [Double] -> Bool
-propDoubleLatticeInverse xs = inv (inv xs) == xs
+propDoubleLatticeIdentity :: DwtInputList -> Bool
+propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
+    lattice baseOp (lattice baseOp sig) =~ sig
+        where
+          baseOp = (sin &&& cos) $ head ls
+
+
+propLatticeInverseInverse :: [Double] -> Bool
+propLatticeInverseInverse xs = inv (inv xs) == xs
 
 
 testCsl :: ([Double], [Double]) -> Assertion

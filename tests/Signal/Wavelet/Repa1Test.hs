@@ -2,6 +2,7 @@
 
 module Signal.Wavelet.Repa1Test where
 
+import Control.Arrow ((&&&))
 import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
@@ -110,6 +111,13 @@ dataLattice =
         fromListUnboxed (Z :. 0) [],
         fromListUnboxed (Z :. 0) [] )
     ]
+
+
+propDoubleLatticeIdentity :: DwtInputRepa -> Bool
+propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
+    computeS (lattice baseOp (lattice baseOp sig)) =~ sig
+        where
+          baseOp = (sin &&& cos) $ ls ! (Z :. 0)
 
 
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion

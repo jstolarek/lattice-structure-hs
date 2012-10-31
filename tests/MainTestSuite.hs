@@ -33,7 +33,8 @@ tests = [
     , testProperty "DWT-IDWT identity"           L.propDWTInvertible
     , testWithProvider "Lattice layer"           L.testLattice 
                                                  L.dataLattice
-    , testProperty "Inverting lattice identity"  L.propDoubleLatticeInverse
+    , testProperty "Inverting lattice layer"     L.propDoubleLatticeIdentity
+    , testProperty "Inverting lattice structure" L.propLatticeInverseInverse
     , testWithProvider "Cyclic shift left"       L.testCsl
                                                  L.dataCsl
     , testWithProvider "Cyclic shift right"      L.testCsr
@@ -55,13 +56,16 @@ tests = [
     , testWithProvider "IDWT"                    V.testIdwt
                                                  V.dataIdwt
     , testProperty "DWT-IDWT identity"           V.propDWTInvertible
+    , testWithProvider "Lattice layer"           V.testLattice 
+                                                 V.dataLattice
+    , testProperty "Inverting lattice layer"     V.propDoubleLatticeIdentity
     , testProperty  "DWT identical to C impl."   V.propDWTIdenticalToC
     , testProperty "IDWT identical to C impl."   V.propIDWTIdenticalToC
   ],
   testGroup "Repa common" [
       testProperty "Deg-Rad identity"            RC.propDegRadInvertible
     , testProperty "Rad-Deg identity"            RC.propRadDegInvertible
-    , testProperty "Inverting lattice identity"  RC.propDoubleLatticeInverse
+    , testProperty "Inverting lattice structure" RC.propLatticeInverseInverse
   ],
   testGroup "Repa1" [
       testWithProvider "DWT"                     R1.testDwt
@@ -71,6 +75,7 @@ tests = [
     , testProperty "DWT-IDWT identity"           R1.propDWTInvertible
     , testWithProvider "Lattice layer"           R1.testLattice 
                                                  R1.dataLattice
+    , testProperty "Inverting lattice layer"     R1.propDoubleLatticeIdentity
     , testWithProvider "Cyclic shift left"       R1.testCsl
                                                  R1.dataCsl
     , testWithProvider "Cyclic shift right"      R1.testCsr

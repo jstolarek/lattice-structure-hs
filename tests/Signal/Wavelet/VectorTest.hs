@@ -1,5 +1,6 @@
 module Signal.Wavelet.VectorTest where
 
+import Control.Arrow ((&&&))
 import Data.Vector.Unboxed as V
 import qualified Signal.Wavelet.C as C
 import Signal.Wavelet.Vector
@@ -26,17 +27,17 @@ dataDwt =
                   -4.563606712907260, -4.76673895168943, -4.662257981490680, 
                   -5.417080918602780 ] 
       ),
-      ( fromList $ [], 
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
+      ( fromList [], 
+        fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
+        fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
       ),
-      ( fromList $ [],
-        fromList $ [],
-        fromList $ []
+      ( fromList [],
+        fromList [],
+        fromList []
       ),
-      ( fromList $ [1,2,3],
-        fromList $ [],
-        fromList $ []
+      ( fromList [1,2,3],
+        fromList [],
+        fromList []
       )
     ]
 
@@ -58,17 +59,17 @@ dataIdwt =
                   -5.417080918602780 ],
        fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
       ),
-      ( fromList $ [], 
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
+      ( fromList [], 
+        fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
+        fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
       ),
-      ( fromList $ [],
-        fromList $ [],
-        fromList $ []
+      ( fromList [],
+        fromList [],
+        fromList []
       ),
-      ( fromList $ [1,2,3],
-        fromList $ [],
-        fromList $ []
+      ( fromList [1,2,3],
+        fromList [],
+        fromList []
       )
     ]
 
@@ -76,6 +77,49 @@ dataIdwt =
 propDWTInvertible :: DwtInputVector -> Bool
 propDWTInvertible (DwtInputVector (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
+
+
+testLattice :: (Int, (Double, Double), Vector Double, Vector Double) -> Assertion
+testLattice (lm, baseOp, sig, expected) = 
+    expected @=~? lattice lm baseOp sig
+
+
+dataLattice :: [(Int, (Double, Double), Vector Double, Vector Double)]
+dataLattice =
+    [
+      ( 0,
+        (0.5, 0.8660254038), 
+        fromList [ 1, 2, 2, 4,-3, 5, 0, 1, 1,-1,-2, 2, 4, 5, 6, 3 ],
+        fromList [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
+                  -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
+                   0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
+                   5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
+      ), 
+      ( 1,
+        ( 0.4226182617, 0.9063077870 ),
+        fromList [  1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
+                   -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
+                    0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
+                    5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ],
+        fromList [ -1.5213330213,  0.4606155841, -3.9030738792, -2.2746832798, 
+                   -0.9524871073, -5.0725803858, -2.9170720400, -0.6301965473,
+                   -0.6977298245,  0.9286614209,  1.2407706290,  0.0444593360,
+                   -6.5599262998,  0.7181040352, -7.0535293143,  1.1528830720 ]
+      ),
+      ( 0,
+        (0.5, 0.8660254038), 
+        fromList [], 
+        fromList []
+      )
+    ]
+
+
+propDoubleLatticeIdentity :: Int -> DwtInputVector -> Bool
+propDoubleLatticeIdentity i (DwtInputVector (ls, sig)) =
+    lattice lm baseOp (lattice lm baseOp sig) =~ sig
+        where
+          baseOp = (sin &&& cos) $ ls ! 0
+          lm     = i `rem` 2
 
 
 propDWTIdenticalToC :: DwtInputVector -> Bool
