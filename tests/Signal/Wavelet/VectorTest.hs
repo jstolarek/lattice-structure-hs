@@ -7,6 +7,7 @@ import Signal.Wavelet.Vector
 import Signal.Wavelet.Vector.Common
 import Test.ArbitraryInstances
 import Test.HUnit
+import Test.QuickCheck
 import Test.Utils
 
 
@@ -114,12 +115,12 @@ dataLattice =
     ]
 
 
-propDoubleLatticeIdentity :: Int -> DwtInputVector -> Bool
-propDoubleLatticeIdentity i (DwtInputVector (ls, sig)) =
-    lattice lm baseOp (lattice lm baseOp sig) =~ sig
-        where
-          baseOp = (sin &&& cos) $ ls ! 0
-          lm     = i `rem` 2
+propDoubleLatticeIdentity :: DwtInputVector -> Property
+propDoubleLatticeIdentity (DwtInputVector (ls, sig)) =
+    forAll (elements [0,1]) $ \lm ->
+        lattice lm baseOp (lattice lm baseOp sig) =~ sig
+            where
+              baseOp = (sin &&& cos) $ ls ! 0
 
 
 propDWTIdenticalToC :: DwtInputVector -> Bool
