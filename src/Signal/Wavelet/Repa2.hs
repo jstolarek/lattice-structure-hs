@@ -15,7 +15,7 @@ import System.IO.Unsafe
 dwt :: Array U DIM1 Double
     -> Array U DIM1 Double 
     -> Array U DIM1 Double
-dwt !angles !signal = dwtWorker 0 lSize lm angles signal
+dwt angles signal = dwtWorker 0 lSize lm angles signal
     where
       lm    = 0
       lSize = size . extent $ angles
@@ -25,10 +25,10 @@ dwt !angles !signal = dwtWorker 0 lSize lm angles signal
 idwt :: Array U DIM1 Double 
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-idwt !angles !signal = dwtWorker 0 lSize lm angles signal
+idwt angles signal = dwtWorker 0 lSize lm angles signal
     where
-      lm | even lSize   = 1
-         | otherwise = 0
+      lm | even lSize = 1
+         | otherwise  = 0
       lSize = size . extent $ angles
 
 
@@ -39,11 +39,11 @@ dwtWorker :: Int
           -> Array U DIM1 Double 
           -> Array U DIM1 Double 
           -> Array U DIM1 Double
-dwtWorker cl lSize lm !angles !signal
-    | cl == lSize  = signal -- można jedną iterację mniej?
+dwtWorker !cl !lSize !lm angles signal
+    | cl == lSize  = signal
     | otherwise    = dwtWorker (cl + 1) lSize (1 - lm) angles newSignal
     where
-      (sin_, cos_) = (sin &&& cos) $ angles ! (Z :. cl)
+      (sin_, cos_) = (sin &&& cos) $ angles `unsafeIndex` (Z :. cl)
       sSize        = size . extent $ signal
       newSignal    = lattice sSize lm signal sin_ cos_
 
@@ -55,13 +55,13 @@ lattice :: Int
         -> Double
         -> Double
         -> Array U DIM1 Double
-lattice sSize lm signal sin_ cos_ = fromUnboxed (Z :. sSize) . unsafePerformIO $ do
+lattice !sSize !lm signal !sin_ !cos_ = fromUnboxed (Z :. sSize) . unsafePerformIO $ do
     vec <- VM.unsafeNew sSize
     sv  <- VG.unsafeThaw . toUnboxed $ signal
     fill sv vec lm (sSize - 2 * lm)
     VG.unsafeFreeze vec
         where
-          fill sv v i stopS
+          fill sv v !i !stopS
               | i < stopS = do
                  x <- VM.unsafeRead sv i
                  y <- VM.unsafeRead sv (i+1)
