@@ -8,7 +8,7 @@ import System.Random
 
 import qualified Signal.Wavelet.CBench      as C
 import qualified Signal.Wavelet.ListBench   as L
---import qualified Signal.Wavelet.Repa1Bench  as R1
+import qualified Signal.Wavelet.Repa1Bench  as R1
 import qualified Signal.Wavelet.Repa2Bench  as R2
 import qualified Signal.Wavelet.VectorBench as V
 
@@ -24,7 +24,7 @@ benchmarks gen =
         sigSize   = 8192
         lDataDwt  =  L.dataDwt gen lsSize sigSize
         vDataDwt  =  V.dataDwt lDataDwt
-        --r1DataDwt = R1.dataDwt lDataDwt
+        r1DataDwt = R1.dataDwt lDataDwt
         r2DataDwt = R2.dataDwt lDataDwt
         cDataDwt  =  C.dataDwt lDataDwt
     in [
@@ -32,7 +32,7 @@ benchmarks gen =
       [ 
 --      bench "Lists" $ nf   L.benchDwt lDataDwt
         bench "Vector" $ whnf  V.benchDwt  vDataDwt
---      , bench "Repa1"  $ whnf R1.benchDwt r1DataDwt
+      , bench "Repa1"  $ whnf R1.benchDwt r1DataDwt
       , bench "Repa2"  $ whnf R2.benchDwt r2DataDwt
       , bench "C"      $ whnf  C.benchDwt  cDataDwt
       ]

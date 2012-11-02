@@ -59,8 +59,8 @@ tests = [
     , testWithProvider "Lattice layer"           V.testLattice 
                                                  V.dataLattice
     , testProperty "Inverting lattice layer"     V.propDoubleLatticeIdentity
-    , testProperty  "DWT identical to C impl."   V.propDWTIdenticalToC
-    , testProperty "IDWT identical to C impl."   V.propIDWTIdenticalToC
+    , testProperty  "DWT like C implementation"  V.propDWTIdenticalToC
+    , testProperty "IDWT like C implementation"  V.propIDWTIdenticalToC
   ],
   testGroup "Repa common" [
       testProperty "Deg-Rad identity"            RC.propDegRadInvertible
@@ -96,19 +96,25 @@ tests = [
   testGroup "Repa2" [
       testWithProvider "DWT"                     R2.testDwt
                                                  R2.dataDwt
-    , testWithProvider "IDWT"                    R2.testIdwt
-                                                 R2.dataIdwt
-    , testProperty "DWT-IDWT identity"           R2.propDWTInvertible
-    , testProperty  "DWT identical to C impl."   R2.propDWTIdenticalToC
-    , testProperty "IDWT identical to C impl."   R2.propIDWTIdenticalToC
-    ], 
+    --, testWithProvider "IDWT"                    R2.testIdwt
+    --                                             R2.dataIdwt
+    --, testProperty "DWT-IDWT identity"           R2.propDWTInvertible
+    , testWithProvider "Lattice layer"           R2.testLattice 
+                                                 R2.dataLattice
+    , testProperty  "DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
+    --, testProperty "IDWT identical to C impl."   R2.propIDWTIdenticalToC
+    , testWithProvider "Extend signal"           R2.testExtendSignal
+                                                 R2.dataExtendSignal
+    , testWithProvider "Remove fst & lst elem"   R2.testTrim
+                                                 R2.dataTrim
+    ],
   testGroup "C" [
       testWithProvider "DWT"                     C.testDwt
                                                  C.dataDwt
     , testWithProvider "IDWT"                    C.testIdwt
                                                  C.dataIdwt
     , testProperty "DWT-IDWT identity"           C.propDWTInvertible
-    , testProperty  "DWT identical to List imp." C.propDWTIdenticalToList
-    , testProperty "IDWT identical to List imp." C.propIDWTIdenticalToList
+    , testProperty  "DWT like List implement."   C.propDWTIdenticalToList
+    , testProperty "IDWT like List implement."   C.propIDWTIdenticalToList
    ]
   ]
