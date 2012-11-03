@@ -135,7 +135,7 @@ propIDWTIdenticalToC (DwtInputRepa (ls, sig)) =
 testExtendSignal :: (Array U DIM1 Double, Int, Array U DIM1 Double)
                  -> Assertion
 testExtendSignal (sig, ln, expected) = 
-    expected @=~? (computeS $ extendSignal ln (delay sig))
+    expected @=~? (computeS . extendSignal ln $ sig)
 
 
 dataExtendSignal :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
@@ -163,7 +163,7 @@ dataExtendSignal =
 testTrim :: (Array U DIM1 Double, Array U DIM1 Double)
          -> Assertion
 testTrim (sig, expected) = 
-    expected @=~? (computeS $ trim sig)
+    expected @=~? (computeS . trim . delay $ sig)
 
 
 dataTrim :: [(Array U DIM1 Double, Array U DIM1 Double)]
