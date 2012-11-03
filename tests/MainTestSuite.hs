@@ -103,8 +103,10 @@ tests = [
                                                  R2.dataLattice
     , testProperty  "DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
     , testProperty "IDWT like Repa1 implement."  R2.propIDWTIdenticalToRepa1
-    , testWithProvider "Extend signal"           R2.testExtendSignal
-                                                 R2.dataExtendSignal
+    , testWithProvider "Extend front of signal"  R2.testExtendFront
+                                                 R2.dataExtendFront
+    , testWithProvider "Extend end of signal"    R2.testExtendEnd
+                                                 R2.dataExtendEnd
     , testWithProvider "Remove fst & lst elem"   R2.testTrim
                                                  R2.dataTrim
     ],

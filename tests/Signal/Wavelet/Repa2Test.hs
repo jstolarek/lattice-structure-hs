@@ -41,13 +41,13 @@ dataDwt =
      , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :. ( 0::Int)) $ []
+     , fromListUnboxed (Z :. ( 0::Int)) $ []
+     , fromListUnboxed (Z :. ( 0::Int)) $ []
      ),
-     ( fromListUnboxed (Z :. (3::Int)) $ [1,2,3]
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :. ( 3::Int)) $ [1,2,3]
+     , fromListUnboxed (Z :. ( 0::Int)) $ []
+     , fromListUnboxed (Z :. ( 0::Int)) $ []
      )
    ]
 
@@ -69,7 +69,7 @@ dataIdwt =
           0.7634941595614190, -4.563606712907260, -4.766738951689430, 
          -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
          -1.3307460249419300 ]
-     , fromListUnboxed (Z :. (16::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
      ( computeS . toRad $ fromListUnboxed (Z :. (1::Int)) [30]
      , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
@@ -80,17 +80,17 @@ dataIdwt =
              5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
 
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     ( fromListUnboxed (Z :. ( 0::Int)) []
+     , fromListUnboxed (Z :. (16::Int)) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. (16::Int)) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :. ( 0::Int)) []
+     , fromListUnboxed (Z :. ( 0::Int)) []
+     , fromListUnboxed (Z :. ( 0::Int)) []
      ),
-     ( fromListUnboxed (Z :. (3::Int)) $ [1,2,3]
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :. ( 3::Int)) [1,2,3]
+     , fromListUnboxed (Z :. ( 0::Int)) []
+     , fromListUnboxed (Z :. ( 0::Int)) []
      )
     ]
 
@@ -133,14 +133,42 @@ propIDWTIdenticalToRepa1 (DwtInputRepa (ls, sig)) =
     R1.idwt ls sig =~ idwt ls sig
 
 
-testExtendSignal :: (Array U DIM1 Double, Int, Array U DIM1 Double)
-                 -> Assertion
-testExtendSignal (sig, ln, expected) = 
-    expected @=~? (computeS . extendSignal ln $ sig)
+testExtendFront :: (Array U DIM1 Double, Int, Array U DIM1 Double)
+              -> Assertion
+testExtendFront (sig, ln, expected) = 
+    expected @=~? (computeS . extendFront ln $ sig)
 
 
-dataExtendSignal :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
-dataExtendSignal =
+dataExtendFront :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
+dataExtendFront =
+   [
+     ( fromListUnboxed (Z :. (12::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+       3,
+       fromListUnboxed (Z :. (16::Int)) $ [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
+     ),
+     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+       3,
+       fromListUnboxed (Z :. (6::Int)) $ [1,2,1,2,1,2]
+     ),
+     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+       1,
+       fromListUnboxed (Z :. (2::Int)) $ [1,2]
+     ),
+     ( fromListUnboxed (Z :. (0::Int)) $ [], 
+       7,
+       fromListUnboxed (Z :. (0::Int)) $ []
+     )
+   ]
+
+
+testExtendEnd :: (Array U DIM1 Double, Int, Array U DIM1 Double)
+              -> Assertion
+testExtendEnd (sig, ln, expected) = 
+    expected @=~? (computeS . extendEnd ln $ sig)
+
+
+dataExtendEnd :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
+dataExtendEnd =
    [
      ( fromListUnboxed (Z :. (12::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
        3,

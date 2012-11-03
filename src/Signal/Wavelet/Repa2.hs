@@ -11,23 +11,36 @@ import Signal.Wavelet.Repa.Common
 dwt :: Array U DIM1 Double
     -> Array U DIM1 Double 
     -> Array U DIM1 Double
-dwt angles signal = go layers . forceP . extendSignal layers $ signal
-    where
-      !layers = size . extent $ angles :: Int
-      go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go !n sig  
-          | n == 0     = sig
-          | n == 1     = forceP . lattice (sin_, cos_) $ sig
-          | otherwise  = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
-          where !sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
-                !cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
+dwt angles signal = dwtWorker angles extendedSignal
+    where 
+      extendedSignal = forceP $ extendEnd layers signal
+      layers         = size . extent $ angles
 
 
 {-# INLINE idwt #-}
 idwt :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-idwt _ _ = undefined
+idwt angles signal = dwtWorker angles extendedSignal
+    where
+      extendedSignal = forceP $ extendFront layers signal
+      layers         = size . extent $ angles
+
+
+{-# INLINE dwtWorker #-}
+dwtWorker :: Array U DIM1 Double
+          -> Array U DIM1 Double 
+          -> Array U DIM1 Double
+dwtWorker angles signal = go layers signal
+    where
+      !layers = size . extent $ angles :: Int
+      go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
+      go !n sig  
+          | n == 0    = sig
+          | n == 1    = forceP . lattice (sin_, cos_) $ sig
+          | otherwise = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
+          where !sin_ = sin $ angles `unsafeIndex` (Z :. (layers - n))
+                !cos_ = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
 
 {-# INLINE lattice #-}
@@ -36,20 +49,35 @@ lattice :: (Double, Double)
         -> Array D DIM1 Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
-      baseOp f !(Z :. i) = if even i
-                           then x * c + y * s
-                           else x * s - y * c
-          where !xi = 2 * (i `quot` 2)
-                !yi = xi + 1
-                !x  = f (Z :. xi)
-                !y  = f (Z :. yi)
+      baseOp f !(Z :. i) 
+             | even i    = let x = f (Z :. i    )
+                               y = f (Z :. i + 1)
+                           in x * c + y * s
+             | otherwise = let x = f (Z :. i - 1)
+                               y = f (Z :. i    )
+                           in x * s - y * c
 
 
-{-# INLINE extendSignal #-}
-extendSignal :: Int
-             -> Array U DIM1 Double
-             -> Array D DIM1 Double
-extendSignal !layers signal = go (delay signal) initExt initSigSize
+{-# INLINE extendFront #-}
+extendFront :: Int
+            -> Array U DIM1 Double
+            -> Array D DIM1 Double
+extendFront !layers signal = go (delay signal) initExt initSigSize
+    where !initExt     = (2 * layers - 2) :: Int
+          !initSigSize = (size . extent $ signal) :: Int
+          go sig !ln !sigSize
+              | extSize <= 0   = sig
+              | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
+              where !extSize   = min sigSize ln :: Int
+                    !extSignal = extract (Z :. initSigSize - extSize) 
+                                         (Z :. extSize) sig R.++ sig
+
+
+{-# INLINE extendEnd #-}
+extendEnd :: Int
+          -> Array U DIM1 Double
+          -> Array D DIM1 Double
+extendEnd !layers signal = go (delay signal) initExt initSigSize
     where !initExt     = (2 * layers - 2) :: Int
           !initSigSize = (size . extent $ signal) :: Int
           go sig !ln !sigSize
