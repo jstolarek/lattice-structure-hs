@@ -76,12 +76,15 @@ testWithProvider testGroupName testFunction =
 
 
 -- "Almost equal" assertions for HUnit
+infix 4 @=~?
+
 (@=~?) :: (Show a, AEq a) => a -> a -> HU.Assertion
 (@=~?) expected actual  = expected =~ actual HU.@? assertionMsg
     where
       assertionMsg = "Expected : " ++ show expected ++ 
                      "\nActual   : " ++ show actual
 
+infix 4 ?=~@
 
 (?=~@) :: (Show a, AEq a) => a -> a -> HU.Assertion
 (?=~@) actual expected = actual =~ expected HU.@? assertionMsg
