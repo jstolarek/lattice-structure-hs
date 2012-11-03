@@ -80,7 +80,8 @@ propDWTInvertible (DwtInputVector (ls, sig)) =
     idwt (inv ls) (dwt ls sig) =~ sig
 
 
-testLattice :: (Int, (Double, Double), Vector Double, Vector Double) -> Assertion
+testLattice :: (Int, (Double, Double), Vector Double, Vector Double) 
+            -> Assertion
 testLattice (lm, baseOp, sig, expected) = 
     expected @=~? lattice lm baseOp sig
 

@@ -96,13 +96,13 @@ tests = [
   testGroup "Repa2" [
       testWithProvider "DWT"                     R2.testDwt
                                                  R2.dataDwt
-    --, testWithProvider "IDWT"                    R2.testIdwt
-    --                                             R2.dataIdwt
-    --, testProperty "DWT-IDWT identity"           R2.propDWTInvertible
+    , testWithProvider "IDWT"                    R2.testIdwt
+                                                 R2.dataIdwt
+    , testProperty "DWT-IDWT identity"           R2.propDWTInvertible
     , testWithProvider "Lattice layer"           R2.testLattice 
                                                  R2.dataLattice
     , testProperty  "DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
-    --, testProperty "IDWT identical to C impl."   R2.propIDWTIdenticalToC
+    , testProperty "IDWT like Repa1 implement."  R2.propIDWTIdenticalToRepa1
     , testWithProvider "Extend signal"           R2.testExtendSignal
                                                  R2.dataExtendSignal
     , testWithProvider "Remove fst & lst elem"   R2.testTrim
