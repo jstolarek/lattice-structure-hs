@@ -89,7 +89,7 @@ a2w = R.map (sin &&& cos)
 csl :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-csl !xs = unsafeBackpermute ext shift xs
+csl xs = unsafeBackpermute ext shift xs
     where
       shift !(Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
       ext = extent xs
@@ -113,8 +113,9 @@ cslN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double
-cslN n !xs = unsafeBackpermute ext shift xs
+cslN m !xs = unsafeBackpermute ext shift xs
     where
+      n = m `mod` sh
       shift !(Z :. i) = if i < (sh - n) 
                         then Z :. (i + n) 
                         else Z :. (i + n - sh)
@@ -127,10 +128,11 @@ csrN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double
-csrN n xs = unsafeBackpermute ext shift xs
+csrN m xs = unsafeBackpermute ext shift xs
     where
+      n = m `mod` sh
       shift !(Z :. i) = if i >= n
                         then Z :. (i - n) 
                         else Z :. (i - n + sh)
       ext = extent xs
-      sh = size ext
+      sh  = size ext

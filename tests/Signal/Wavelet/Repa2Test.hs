@@ -19,9 +19,9 @@ testDwt (ls, sig, expected) =
 dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataDwt =
    [
-     ( computeS . toRad $ fromListUnboxed (Z :. (3::Int))  [30,25,40]
-     , fromListUnboxed (Z :. (16::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) 
+     ( computeS . toRad $ fromListUnboxed (Z :. 3) [30,25,40]
+     , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) 
        [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
           3.2735751058710300, -2.639689358691720, -1.392299200715840,
           0.0624400001370536, -1.159888007129840,  0.979063355853563,  
@@ -29,7 +29,7 @@ dataDwt =
          -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
          -1.3307460249419300 ]
      ),
-     ( computeS . toRad $ fromListUnboxed (Z :. (1::Int)) [30]
+     ( computeS . toRad $ fromListUnboxed (Z :. 1) [30]
      , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      , fromListUnboxed (Z :. 16) 
            [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
@@ -38,17 +38,17 @@ dataDwt =
              5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
 
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. ( 0::Int)) $ []
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      ),
-     ( fromListUnboxed (Z :. ( 3::Int)) $ [1,2,3]
-     , fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. ( 0::Int)) $ []
+     ( fromListUnboxed (Z :.  3) [1,2,3]
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      )
    ]
 
@@ -62,17 +62,17 @@ testIdwt (ls, sig, expected) =
 dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataIdwt =
     [
-     ( computeS . toRad $ fromListUnboxed (Z :. (3::Int))  [40,25,30]
-     , fromListUnboxed (Z :. (16::Int)) 
+     ( computeS . toRad $ fromListUnboxed (Z :. 3)  [40,25,30]
+     , fromListUnboxed (Z :. 16) 
        [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
           3.2735751058710300, -2.639689358691720, -1.392299200715840,
           0.0624400001370536, -1.159888007129840,  0.979063355853563,  
           0.7634941595614190, -4.563606712907260, -4.766738951689430, 
          -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
          -1.3307460249419300 ]
-     , fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( computeS . toRad $ fromListUnboxed (Z :. (1::Int)) [30]
+     ( computeS . toRad $ fromListUnboxed (Z :. 1) [30]
      , fromListUnboxed (Z :. 16) 
            [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
             -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
@@ -80,17 +80,17 @@ dataIdwt =
              5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
      , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) []
-     , fromListUnboxed (Z :. (16::Int)) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) []
-     , fromListUnboxed (Z :. ( 0::Int)) []
-     , fromListUnboxed (Z :. ( 0::Int)) []
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      ),
-     ( fromListUnboxed (Z :. ( 3::Int)) [1,2,3]
-     , fromListUnboxed (Z :. ( 0::Int)) []
-     , fromListUnboxed (Z :. ( 0::Int)) []
+     ( fromListUnboxed (Z :.  3) [1,2,3]
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      )
     ]
 
@@ -118,8 +118,8 @@ dataLattice =
               5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
       ), 
       ( (0.5, 0.8660254038), 
-        fromListUnboxed (Z :. 0) [],
-        fromListUnboxed (Z :. 0) [] )
+        fromListUnboxed (Z :.  0) [],
+        fromListUnboxed (Z :.  0) [] )
     ]
 
 
@@ -149,25 +149,25 @@ testExtendFront (sig, ln, expected) =
 dataExtendFront :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
 dataExtendFront =
    [
-     ( fromListUnboxed (Z :. (12::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+     ( fromListUnboxed (Z :. 12) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
        3,
-       fromListUnboxed (Z :. (16::Int)) [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
+       fromListUnboxed (Z :. 16) [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
      ),
-     ( fromListUnboxed (Z :. ( 4::Int)) [1,2,3,4], 
+     ( fromListUnboxed (Z :.  4) [1,2,3,4], 
        6,
-       fromListUnboxed (Z :. (14::Int)) [3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+       fromListUnboxed (Z :. 14) [3,4,1,2,3,4,1,2,3,4,1,2,3,4]
      ),
-     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
+     ( fromListUnboxed (Z :.  2) [1,2], 
        3,
-       fromListUnboxed (Z :. ( 6::Int)) [1,2,1,2,1,2]
+       fromListUnboxed (Z :.  6) [1,2,1,2,1,2]
      ),
-     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
+     ( fromListUnboxed (Z :.  2) [1,2], 
        1,
-       fromListUnboxed (Z :. ( 2::Int)) [1,2]
+       fromListUnboxed (Z :.  2) [1,2]
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) [], 
+     ( fromListUnboxed (Z :.  0) [], 
        7,
-       fromListUnboxed (Z :. ( 0::Int)) []
+       fromListUnboxed (Z :.  0) []
      )
    ]
 
@@ -181,21 +181,21 @@ testExtendEnd (sig, ln, expected) =
 dataExtendEnd :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
 dataExtendEnd =
    [
-     ( fromListUnboxed (Z :. (12::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+     ( fromListUnboxed (Z :. 12) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
        3,
-       fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
+       fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
      ),
-     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
+     ( fromListUnboxed (Z :.  2) [1,2], 
        3,
-       fromListUnboxed (Z :. ( 6::Int)) [1,2,1,2,1,2]
+       fromListUnboxed (Z :.  6) [1,2,1,2,1,2]
      ),
-     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
+     ( fromListUnboxed (Z :.  2) [1,2], 
        1,
-       fromListUnboxed (Z :. ( 2::Int)) [1,2]
+       fromListUnboxed (Z :.  2) [1,2]
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) [], 
+     ( fromListUnboxed (Z :.  0) [], 
        7,
-       fromListUnboxed (Z :. ( 0::Int)) []
+       fromListUnboxed (Z :.  0) []
      )
    ]
 
@@ -209,16 +209,16 @@ testTrim (sig, expected) =
 dataTrim :: [(Array U DIM1 Double, Array U DIM1 Double)]
 dataTrim =
    [
-     ( fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
-       fromListUnboxed (Z :. (14::Int)) [  2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6  ]
+     ( fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
+       fromListUnboxed (Z :. 14) [  2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6  ]
      ),
-     ( fromListUnboxed (Z :. (2 ::Int)) [1,2],
-       fromListUnboxed (Z :. (0 ::Int)) []
+     ( fromListUnboxed (Z :.  2) [1,2],
+       fromListUnboxed (Z :.  0) []
      ),
-     ( fromListUnboxed (Z :. (1 ::Int)) [1],
-       fromListUnboxed (Z :. (0 ::Int)) []
+     ( fromListUnboxed (Z :.  1) [1],
+       fromListUnboxed (Z :.  0) []
      ),
-     ( fromListUnboxed (Z :. (0 ::Int)) [],
-       fromListUnboxed (Z :. (0 ::Int)) []
+     ( fromListUnboxed (Z :.  0) [],
+       fromListUnboxed (Z :.  0) []
      )
    ]

@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Test.Utils (
-    testWithProvider
+    testProvider
   , (@=~?)
   , (?=~@)
   , (=~)
@@ -29,7 +29,7 @@ instance AEq Int where
 
 
 instance (AEq a) => AEq [a] where
-    xs =~ ys = (length xs == length ys) && 
+    xs =~ ys = (length xs == length ys) &&
                (all (\(x,y) -> x =~ y) $ zip xs ys)
 
 
@@ -67,8 +67,8 @@ instance (AEq a, VG.Vector VS.Vector a) => AEq (VS.Vector a) where
 
 -- This function takes the name for the test, a testing function and a data
 -- provider and creates a testGroup
-testWithProvider :: String -> (a -> HU.Assertion) -> [a] -> TF.Test
-testWithProvider testGroupName testFunction =
+testProvider :: String -> (a -> HU.Assertion) -> [a] -> TF.Test
+testProvider testGroupName testFunction =
     TF.testGroup testGroupName . map createTest . zipWith assignName [1::Int ..]
       where 
         createTest (name, dataSet)   = TFH.testCase name $ testFunction dataSet

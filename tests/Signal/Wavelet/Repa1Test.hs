@@ -6,6 +6,7 @@ import Control.Arrow ((&&&))
 import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
+import qualified Signal.Wavelet.Vector as V
 import Test.ArbitraryInstances
 import Test.HUnit
 import Test.QuickCheck
@@ -21,9 +22,9 @@ testDwt (ls, sig, expected) =
 dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataDwt =
    [
-     ( computeS . toRad $ fromListUnboxed (Z :. (3::Int))  [30,25,40]
-     , fromListUnboxed (Z :. (16::Int)) $ [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) 
+     ( computeS . toRad $ fromListUnboxed (Z :. 3) [30,25,40]
+     , fromListUnboxed (Z :. 16) [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) 
        [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
           3.2735751058710300, -2.639689358691720, -1.392299200715840,
           0.0624400001370536, -1.159888007129840,  0.979063355853563,  
@@ -31,17 +32,17 @@ dataDwt =
          -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
          -1.3307460249419300 ] 
      ),
-     ( fromListUnboxed (Z :. ( 0::Int)) $ []
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. (16::Int)) $ [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
-     ( fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      ),
-     ( fromListUnboxed (Z :. (3::Int)) $ [1,2,3]
-     , fromListUnboxed (Z :. (0::Int)) $ []
-     , fromListUnboxed (Z :. (0::Int)) $ []
+     ( fromListUnboxed (Z :.  3) [1,2,3]
+     , fromListUnboxed (Z :.  0) []
+     , fromListUnboxed (Z :.  0) []
      )
    ]
 
@@ -63,19 +64,19 @@ dataIdwt =
            0.7634941595614190, -4.563606712907260, -4.766738951689430, 
           -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
           -1.3307460249419300 ],
-       fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
+        fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
       ),
       ( fromListUnboxed (Z :.  0) [], 
         fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
         fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
       ),
-      ( fromListUnboxed (Z :. 0) [],
-        fromListUnboxed (Z :. 0) [],
-        fromListUnboxed (Z :. 0) []
+      ( fromListUnboxed (Z :.  0) [],
+        fromListUnboxed (Z :.  0) [],
+        fromListUnboxed (Z :.  0) []
       ),
-      ( fromListUnboxed (Z :. 3) [1,2,3],
-        fromListUnboxed (Z :. 0) [],
-        fromListUnboxed (Z :. 0) []
+      ( fromListUnboxed (Z :.  3) [1,2,3],
+        fromListUnboxed (Z :.  0) [],
+        fromListUnboxed (Z :.  0) []
       )
     ]
 
@@ -158,9 +159,21 @@ dataCslN =
        fromListUnboxed (Z :. 4) [1,2,3,4], 
        fromListUnboxed (Z :. 4) [2,3,4,1]
      ),
+     ( 5, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [2,3,4,1]
+     ),
+     ( -3, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [2,3,4,1]
+     ),
      ( 0, 
        fromListUnboxed (Z :. 4) [1,2,3,4], 
        fromListUnboxed (Z :. 4) [1,2,3,4] 
+     ),
+     ( 4, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [1,2,3,4]
      ),
      ( 4, 
        fromListUnboxed (Z :. 0) [], 
@@ -181,7 +194,19 @@ dataCsrN =
        fromListUnboxed (Z :. 4) [1,2,3,4], 
        fromListUnboxed (Z :. 4) [4,1,2,3] 
      ),
+     ( 5, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [4,1,2,3] 
+     ),
+     ( -3, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [4,1,2,3] 
+     ),
      ( 0, 
+       fromListUnboxed (Z :. 4) [1,2,3,4], 
+       fromListUnboxed (Z :. 4) [1,2,3,4]
+     ),
+     ( 4, 
        fromListUnboxed (Z :. 4) [1,2,3,4], 
        fromListUnboxed (Z :. 4) [1,2,3,4]
      ),
@@ -194,22 +219,22 @@ dataCsrN =
 
 propIdentityShift1 :: RepaDIM1Array -> Bool
 propIdentityShift1 (RepaDIM1Array xs) = 
-    computeS (csl . csr $ xs) == xs
+    computeS (csl . forceS . csr $ xs) == xs
 
 
 propIdentityShift2 :: RepaDIM1Array -> Bool
 propIdentityShift2 (RepaDIM1Array xs) = 
-    computeS (csr . csl $ xs) == xs
+    computeS (csr . forceS . csl $ xs) == xs
 
 
 propIdentityShift3 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift3 n (RepaDIM1Array xs) =
-    computeS (cslN n . csrN n $ xs) == xs
+    computeS (cslN n . forceS . csrN n $ xs) == xs
 
 
 propIdentityShift4 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift4 n (RepaDIM1Array xs) =
-    computeS (csrN n . cslN n $ xs) == xs
+    computeS (csrN n . forceS . cslN n $ xs) == xs
 
 
 propIdentityShift5 :: RepaDIM1Array -> Bool
@@ -236,3 +261,25 @@ propPairsIdentity2 (RepaDIM1Array xs) =
         where 
           ys :: (Source U (Double, Double)) => Array U DIM1 (Double,Double)
           ys = computeS $ R.zipWith (,) xs xs
+
+
+propDWTIdenticalToVector :: DwtInputRepa -> Bool
+propDWTIdenticalToVector (DwtInputRepa (ls, sig)) =
+    vecDwt =~ repaDwt
+        where
+          lsU     = toUnboxed ls
+          sigU    = toUnboxed sig
+          shiftN  = (size . extent $ ls) - 1
+          vecDwt  = V.dwt lsU sigU
+          repaDwt = toUnboxed . forceS . csrN shiftN . dwt ls $ sig
+
+
+propIDWTIdenticalToVector :: DwtInputRepa -> Bool
+propIDWTIdenticalToVector (DwtInputRepa (ls, sig)) = 
+    vecIdwt =~ repaIdwt
+        where
+          lsU      = toUnboxed ls
+          sigU     = toUnboxed . forceS . csrN shiftN $ sig
+          shiftN   = (size . extent $ ls) - 1
+          vecIdwt  = V.idwt lsU sigU
+          repaIdwt = toUnboxed . idwt ls $ sig

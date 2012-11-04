@@ -26,22 +26,22 @@ tests = [
     , testProperty "Rad-Deg identity"            LC.propRadDegInvertible
   ],
   testGroup "Lists" [ 
-      testWithProvider "DWT"                     L.testDwt
+      testProvider "DWT"                         L.testDwt
                                                  L.dataDwt
-    , testWithProvider "IDWT"                    L.testIdwt
+    , testProvider "IDWT"                        L.testIdwt
                                                  L.dataIdwt
     , testProperty "DWT-IDWT identity"           L.propDWTInvertible
-    , testWithProvider "Lattice layer"           L.testLattice 
+    , testProvider "Lattice layer"               L.testLattice 
                                                  L.dataLattice
     , testProperty "Inverting lattice layer"     L.propDoubleLatticeIdentity
     , testProperty "Inverting lattice structure" L.propLatticeInverseInverse
-    , testWithProvider "Cyclic shift left"       L.testCsl
+    , testProvider "Cyclic shift left"           L.testCsl
                                                  L.dataCsl
-    , testWithProvider "Cyclic shift right"      L.testCsr
+    , testProvider "Cyclic shift right"          L.testCsr
                                                  L.dataCsr
-    , testWithProvider "Cyclic shift left by N"  L.testCslN
+    , testProvider "Cyclic shift left by N"      L.testCslN
                                                  L.dataCslN
-    , testWithProvider "Cyclic shift right by N" L.testCsrN
+    , testProvider "Cyclic shift right by N"     L.testCsrN
                                                  L.dataCsrN
     , testProperty "L/R shift composition"       L.propIdentityShift1
     , testProperty "R/L shift composition"       L.propIdentityShift2
@@ -51,12 +51,12 @@ tests = [
     , testProperty "Periodic right shift"        L.propIdentityShift6
   ],
   testGroup "Vector" [
-      testWithProvider "DWT"                     V.testDwt
+      testProvider "DWT"                         V.testDwt
                                                  V.dataDwt
-    , testWithProvider "IDWT"                    V.testIdwt
+    , testProvider "IDWT"                        V.testIdwt
                                                  V.dataIdwt
     , testProperty "DWT-IDWT identity"           V.propDWTInvertible
-    , testWithProvider "Lattice layer"           V.testLattice 
+    , testProvider "Lattice layer"               V.testLattice 
                                                  V.dataLattice
     , testProperty "Inverting lattice layer"     V.propDoubleLatticeIdentity
     , testProperty  "DWT like C implementation"  V.propDWTIdenticalToC
@@ -68,21 +68,23 @@ tests = [
     , testProperty "Inverting lattice structure" RC.propLatticeInverseInverse
   ],
   testGroup "Repa1" [
-      testWithProvider "DWT"                     R1.testDwt
+      testProvider "DWT"                         R1.testDwt
                                                  R1.dataDwt
-    , testWithProvider "IDWT"                    R1.testIdwt
+    , testProvider "IDWT"                        R1.testIdwt
                                                  R1.dataIdwt
     , testProperty "DWT-IDWT identity"           R1.propDWTInvertible
-    , testWithProvider "Lattice layer"           R1.testLattice 
+    , testProvider "Lattice layer"               R1.testLattice 
                                                  R1.dataLattice
     , testProperty "Inverting lattice layer"     R1.propDoubleLatticeIdentity
-    , testWithProvider "Cyclic shift left"       R1.testCsl
+    , testProperty " DWT like Vector implement." R1.propDWTIdenticalToVector
+    , testProperty "IDWT like Vector implement." R1.propIDWTIdenticalToVector
+    , testProvider "Cyclic shift left"           R1.testCsl
                                                  R1.dataCsl
-    , testWithProvider "Cyclic shift right"      R1.testCsr
+    , testProvider "Cyclic shift right"          R1.testCsr
                                                  R1.dataCsr
-    , testWithProvider "Cyclic shift left by N"  R1.testCslN
+    , testProvider "Cyclic shift left by N"      R1.testCslN
                                                  R1.dataCslN
-    , testWithProvider "Cyclic shift right by N" R1.testCsrN
+    , testProvider "Cyclic shift right by N"     R1.testCsrN
                                                  R1.dataCsrN
     , testProperty "L/R shift composition"       R1.propIdentityShift1
     , testProperty "R/L shift composition"       R1.propIdentityShift2
@@ -92,32 +94,49 @@ tests = [
     , testProperty "Periodic right shift"        R1.propIdentityShift6
     , testProperty "List-Pairs-List identity"    R1.propPairsIdentity1
     , testProperty "Pairs-List-Pairs identity"   R1.propPairsIdentity2
-    ],
+  ],
   testGroup "Repa2" [
-      testWithProvider "DWT"                     R2.testDwt
+      testProvider "DWT"                         R2.testDwt
                                                  R2.dataDwt
-    , testWithProvider "IDWT"                    R2.testIdwt
+    , testProvider "IDWT"                        R2.testIdwt
                                                  R2.dataIdwt
     , testProperty "DWT-IDWT identity"           R2.propDWTInvertible
-    , testWithProvider "Lattice layer"           R2.testLattice 
+    , testProvider "Lattice layer"               R2.testLattice 
                                                  R2.dataLattice
     , testProperty "Inverting lattice layer"     R2.propDoubleLatticeIdentity
     , testProperty " DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
     , testProperty "IDWT like Repa1 implement."  R2.propIDWTIdenticalToRepa1
-    , testWithProvider "Extend front of signal"  R2.testExtendFront
+    , testProvider "Extend front of signal"      R2.testExtendFront
                                                  R2.dataExtendFront
-    , testWithProvider "Extend end of signal"    R2.testExtendEnd
+    , testProvider "Extend end of signal"        R2.testExtendEnd
                                                  R2.dataExtendEnd
-    , testWithProvider "Remove fst & lst elem"   R2.testTrim
+    , testProvider "Remove first & last element" R2.testTrim
                                                  R2.dataTrim
-    ],
+  ],
   testGroup "C" [
-      testWithProvider "DWT"                     C.testDwt
+      testProvider "DWT"                         C.testDwt
                                                  C.dataDwt
-    , testWithProvider "IDWT"                    C.testIdwt
+    , testProvider "IDWT"                        C.testIdwt
                                                  C.dataIdwt
     , testProperty "DWT-IDWT identity"           C.propDWTInvertible
-    , testProperty  "DWT like List implement."   C.propDWTIdenticalToList
+    , testProperty " DWT like List implement."   C.propDWTIdenticalToList
     , testProperty "IDWT like List implement."   C.propIDWTIdenticalToList
-   ]
   ]
+ ]
+
+
+{-
+
+Note [Verifying accordance with reference implementation]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+List implementation of DWT and IDWT is assumed to be a reference one. Each 
+implementation verifies that it is identical to another one. The following 
+dependencies are used:
+
+List -> C -> Vector -> Repa1 -> Repa2
+
+Read "List -> C" as "List implementation serves as a reference to C implemen-
+tation".
+
+-}
