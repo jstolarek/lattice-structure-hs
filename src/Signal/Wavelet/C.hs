@@ -10,9 +10,9 @@ import Foreign.C
 import System.IO.Unsafe
 
 
-foreign import ccall unsafe "C/dwt.h" 
+foreign import ccall unsafe "C/dwt.h"
   c_dwt  :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
-foreign import ccall unsafe "C/dwt.h" 
+foreign import ccall unsafe "C/dwt.h"
   c_idwt :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
 
 
@@ -25,13 +25,13 @@ idwt ls sig = dwtWorker c_idwt ls sig
 
 
 dwtWorker :: (Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble))
-          -> Vector Double 
-          -> Vector Double 
+          -> Vector Double
+          -> Vector Double
           -> Vector Double
 dwtWorker dwtFun ls sig = unsafePerformIO $ do
     let (fpLs , _, lenLs ) = unsafeToForeignPtr ls
         (fpSig, _, lenSig) = unsafeToForeignPtr sig
-    pDwt <- liftM castPtr $ withForeignPtr fpLs $ \ptrLs -> 
+    pDwt <- liftM castPtr $ withForeignPtr fpLs $ \ptrLs ->
             withForeignPtr fpSig $ \ptrSig ->
                 dwtFun (castPtr ptrLs ) (fromIntegral lenLs )
                        (castPtr ptrSig) (fromIntegral lenSig)

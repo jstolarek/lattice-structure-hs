@@ -101,7 +101,8 @@ tests = [
     , testProperty "DWT-IDWT identity"           R2.propDWTInvertible
     , testWithProvider "Lattice layer"           R2.testLattice 
                                                  R2.dataLattice
-    , testProperty  "DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
+    , testProperty "Inverting lattice layer"     R2.propDoubleLatticeIdentity
+    , testProperty " DWT like Repa1 implement."  R2.propDWTIdenticalToRepa1
     , testProperty "IDWT like Repa1 implement."  R2.propIDWTIdenticalToRepa1
     , testWithProvider "Extend front of signal"  R2.testExtendFront
                                                  R2.dataExtendFront

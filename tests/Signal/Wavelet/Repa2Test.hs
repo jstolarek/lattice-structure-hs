@@ -1,5 +1,6 @@
 module Signal.Wavelet.Repa2Test where
 
+import Control.Arrow ((&&&))
 import Data.Array.Repa as R
 import qualified Signal.Wavelet.Repa1 as R1
 import Signal.Wavelet.Repa.Common
@@ -61,7 +62,7 @@ testIdwt (ls, sig, expected) =
 dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
 dataIdwt =
     [
-     ( computeS . toRad $ fromListUnboxed (Z :. (3::Int))  [30,25,40]
+     ( computeS . toRad $ fromListUnboxed (Z :. (3::Int))  [40,25,30]
      , fromListUnboxed (Z :. (16::Int)) 
        [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
           3.2735751058710300, -2.639689358691720, -1.392299200715840,
@@ -72,13 +73,12 @@ dataIdwt =
      , fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
      ( computeS . toRad $ fromListUnboxed (Z :. (1::Int)) [30]
-     , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      , fromListUnboxed (Z :. 16) 
            [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
             -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
              0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
              5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
-
+     , fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
      ),
      ( fromListUnboxed (Z :. ( 0::Int)) []
      , fromListUnboxed (Z :. (16::Int)) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
@@ -123,6 +123,13 @@ dataLattice =
     ]
 
 
+propDoubleLatticeIdentity :: DwtInputRepa -> Bool
+propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
+    computeS (lattice baseOp (computeS $ lattice baseOp sig)) =~ sig
+        where
+          baseOp = (sin &&& cos) $ ls ! (Z :. 0)
+
+
 propDWTIdenticalToRepa1 :: DwtInputRepa -> Bool
 propDWTIdenticalToRepa1 (DwtInputRepa (ls, sig)) = 
     R1.dwt ls sig =~ dwt ls sig
@@ -142,21 +149,25 @@ testExtendFront (sig, ln, expected) =
 dataExtendFront :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
 dataExtendFront =
    [
-     ( fromListUnboxed (Z :. (12::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+     ( fromListUnboxed (Z :. (12::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
        3,
-       fromListUnboxed (Z :. (16::Int)) $ [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
+       fromListUnboxed (Z :. (16::Int)) [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
      ),
-     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+     ( fromListUnboxed (Z :. ( 4::Int)) [1,2,3,4], 
+       6,
+       fromListUnboxed (Z :. (14::Int)) [3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+     ),
+     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
        3,
-       fromListUnboxed (Z :. (6::Int)) $ [1,2,1,2,1,2]
+       fromListUnboxed (Z :. ( 6::Int)) [1,2,1,2,1,2]
      ),
-     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
        1,
-       fromListUnboxed (Z :. (2::Int)) $ [1,2]
+       fromListUnboxed (Z :. ( 2::Int)) [1,2]
      ),
-     ( fromListUnboxed (Z :. (0::Int)) $ [], 
+     ( fromListUnboxed (Z :. ( 0::Int)) [], 
        7,
-       fromListUnboxed (Z :. (0::Int)) $ []
+       fromListUnboxed (Z :. ( 0::Int)) []
      )
    ]
 
@@ -170,21 +181,21 @@ testExtendEnd (sig, ln, expected) =
 dataExtendEnd :: [(Array U DIM1 Double, Int, Array U DIM1 Double)]
 dataExtendEnd =
    [
-     ( fromListUnboxed (Z :. (12::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+     ( fromListUnboxed (Z :. (12::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
        3,
-       fromListUnboxed (Z :. (16::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
+       fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
      ),
-     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
        3,
-       fromListUnboxed (Z :. (6::Int)) $ [1,2,1,2,1,2]
+       fromListUnboxed (Z :. ( 6::Int)) [1,2,1,2,1,2]
      ),
-     ( fromListUnboxed (Z :. (2::Int)) $ [1,2], 
+     ( fromListUnboxed (Z :. ( 2::Int)) [1,2], 
        1,
-       fromListUnboxed (Z :. (2::Int)) $ [1,2]
+       fromListUnboxed (Z :. ( 2::Int)) [1,2]
      ),
-     ( fromListUnboxed (Z :. (0::Int)) $ [], 
+     ( fromListUnboxed (Z :. ( 0::Int)) [], 
        7,
-       fromListUnboxed (Z :. (0::Int)) $ []
+       fromListUnboxed (Z :. ( 0::Int)) []
      )
    ]
 
@@ -198,16 +209,16 @@ testTrim (sig, expected) =
 dataTrim :: [(Array U DIM1 Double, Array U DIM1 Double)]
 dataTrim =
    [
-     ( fromListUnboxed (Z :. (16::Int)) $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
-       fromListUnboxed (Z :. (14::Int)) $ [  2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6  ]
+     ( fromListUnboxed (Z :. (16::Int)) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
+       fromListUnboxed (Z :. (14::Int)) [  2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6  ]
      ),
-     ( fromListUnboxed (Z :. (2 ::Int)) $ [1,2],
-       fromListUnboxed (Z :. (0 ::Int)) $ []
+     ( fromListUnboxed (Z :. (2 ::Int)) [1,2],
+       fromListUnboxed (Z :. (0 ::Int)) []
      ),
-     ( fromListUnboxed (Z :. (1 ::Int)) $ [1],
-       fromListUnboxed (Z :. (0 ::Int)) $ []
+     ( fromListUnboxed (Z :. (1 ::Int)) [1],
+       fromListUnboxed (Z :. (0 ::Int)) []
      ),
-     ( fromListUnboxed (Z :. (0 ::Int)) $ [],
-       fromListUnboxed (Z :. (0 ::Int)) $ []
+     ( fromListUnboxed (Z :. (0 ::Int)) [],
+       fromListUnboxed (Z :. (0 ::Int)) []
      )
    ]

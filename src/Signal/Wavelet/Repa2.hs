@@ -69,7 +69,7 @@ extendFront !layers signal = go (delay signal) initExt initSigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
-                    !extSignal = extract (Z :. initSigSize - extSize) 
+                    !extSignal = extract (Z :. sigSize - extSize) 
                                          (Z :. extSize) sig R.++ sig
 
 
