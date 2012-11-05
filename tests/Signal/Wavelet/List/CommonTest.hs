@@ -4,6 +4,10 @@ import Signal.Wavelet.List.Common
 import Test.Utils
 
 
+propLatticeInverseInverse :: [Double] -> Bool
+propLatticeInverseInverse xs = inv (inv xs) == xs
+
+
 propDegRadInvertible :: [Double] -> Bool
 propDegRadInvertible xs = toDeg (toRad xs) =~ xs
 

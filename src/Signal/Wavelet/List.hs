@@ -1,7 +1,6 @@
 module Signal.Wavelet.List where
 
-import Control.Arrow
-
+import Signal.Wavelet.List.Common
 
 dwt :: [Double] -> [Double] -> [Double]
 dwt angles signal =  dwtWorker csl angles signal
@@ -25,14 +24,6 @@ lattice (s, c) (x1:x2:xs) = x1 * c + x2 * s :
                             x1 * s - x2 * c : 
                             lattice (s,c) xs
 lattice _ _ = error "Can't perform a wavelet transform of odd length signal"
-
-
-a2w :: [Double] -> [(Double,Double)]
-a2w = map (sin &&& cos)
-
-
-inv :: [Double] -> [Double]
-inv = reverse
 
 
 csl :: [Double] -> [Double]

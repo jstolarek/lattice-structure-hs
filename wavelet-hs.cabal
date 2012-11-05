@@ -23,6 +23,7 @@ tested-with:        GHC>=7.4
 library
   hs-source-dirs:   src
   exposed-modules:  Signal.Wavelet.C,
+                    Signal.Wavelet.Eval,
                     Signal.Wavelet.List,
                     Signal.Wavelet.Repa1,
                     Signal.Wavelet.Repa2,
@@ -31,7 +32,9 @@ library
                     Signal.Wavelet.Repa.Common,
                     Signal.Wavelet.Vector.Common
   build-depends:    base == 4.5.*,
+                    deepseq,
                     mtl,
+                    parallel,
                     repa >= 3.0,
                     vector
   ghc-options:      -Wall 
@@ -54,9 +57,11 @@ test-suite wavelet-hs-test
   main-is:          MainTestSuite.hs
   ghc-options:      -Wall
   build-depends:    base,
+                    deepseq,
                     Cabal,
                     HUnit,
                     mtl,
+                    parallel,
                     QuickCheck >= 2.4.2 && < 2.6,
                     repa,
                     test-framework,
