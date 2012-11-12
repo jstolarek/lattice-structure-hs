@@ -33,6 +33,7 @@ library
                     Signal.Wavelet.Vector.Common
   build-depends:    base == 4.5.*,
                     deepseq,
+                    dlist,
                     mtl,
                     parallel,
                     repa >= 3.0,
@@ -58,6 +59,7 @@ test-suite wavelet-hs-test
   ghc-options:      -Wall
   build-depends:    base,
                     deepseq,
+                    dlist,
                     Cabal,
                     HUnit,
                     mtl,

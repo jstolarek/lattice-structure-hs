@@ -26,6 +26,20 @@ tests = [
       testProperty "Inverting lattice structure" LC.propLatticeInverseInverse
     , testProperty "Deg-Rad identity"            LC.propDegRadInvertible
     , testProperty "Rad-Deg identity"            LC.propRadDegInvertible
+    , testProvider "Cyclic shift left"           LC.testCsl
+                                                 LC.dataCsl
+    , testProvider "Cyclic shift right"          LC.testCsr
+                                                 LC.dataCsr
+    , testProvider "Cyclic shift left by N"      LC.testCslN
+                                                 LC.dataCslN
+    , testProvider "Cyclic shift right by N"     LC.testCsrN
+                                                 LC.dataCsrN
+    , testProperty "L/R shift composition"       LC.propIdentityShift1
+    , testProperty "R/L shift composition"       LC.propIdentityShift2
+    , testProperty "L/R shift by N composition"  LC.propIdentityShift3
+    , testProperty "R/L shift by N composition"  LC.propIdentityShift4
+    , testProperty "Periodic left shift"         LC.propIdentityShift5
+    , testProperty "Periodic right shift"        LC.propIdentityShift6
   ],
   testGroup "Lists" [ 
       testProvider "DWT"                         L.testDwt
@@ -36,20 +50,6 @@ tests = [
     , testProvider "Lattice layer"               L.testLattice 
                                                  L.dataLattice
     , testProperty "Inverting lattice layer"     L.propDoubleLatticeIdentity
-    , testProvider "Cyclic shift left"           L.testCsl
-                                                 L.dataCsl
-    , testProvider "Cyclic shift right"          L.testCsr
-                                                 L.dataCsr
-    , testProvider "Cyclic shift left by N"      L.testCslN
-                                                 L.dataCslN
-    , testProvider "Cyclic shift right by N"     L.testCsrN
-                                                 L.dataCsrN
-    , testProperty "L/R shift composition"       L.propIdentityShift1
-    , testProperty "R/L shift composition"       L.propIdentityShift2
-    , testProperty "L/R shift by N composition"  L.propIdentityShift3
-    , testProperty "R/L shift by N composition"  L.propIdentityShift4
-    , testProperty "Periodic left shift"         L.propIdentityShift5
-    , testProperty "Periodic right shift"        L.propIdentityShift6
   ],
   testGroup "Eval" [ 
       testProvider "DWT"                         E.testDwt
@@ -60,20 +60,7 @@ tests = [
     , testProvider "Lattice layer"               E.testLattice 
                                                  E.dataLattice
     , testProperty "Inverting lattice layer"     E.propDoubleLatticeIdentity
-    -- , testProvider "Cyclic shift left"           E.testCsl
-    --                                              E.dataCsl
-    -- , testProvider "Cyclic shift right"          E.testCsr
-    --                                              E.dataCsr
-    -- , testProvider "Cyclic shift left by N"      E.testCslN
-    --                                              E.dataCslN
-    -- , testProvider "Cyclic shift right by N"     E.testCsrN
-    --                                              E.dataCsrN
-    -- , testProperty "L/R shift composition"       E.propIdentityShift1
-    -- , testProperty "R/L shift composition"       E.propIdentityShift2
-    -- , testProperty "L/R shift by N composition"  E.propIdentityShift3
-    -- , testProperty "R/L shift by N composition"  E.propIdentityShift4
-    -- , testProperty "Periodic left shift"         E.propIdentityShift5
-    -- , testProperty "Periodic right shift"        E.propIdentityShift6
+    , testProperty "Lattice like List implemnt." E.propLatticeIdenticalToList
   ],
   testGroup "Vector" [
       testProvider "DWT"                         V.testDwt

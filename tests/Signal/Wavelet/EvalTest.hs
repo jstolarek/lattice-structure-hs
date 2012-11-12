@@ -1,8 +1,8 @@
 module Signal.Wavelet.EvalTest where
 
 import Control.Arrow ((&&&))
-import Control.Parallel.Strategies (runEval)
 import Signal.Wavelet.Eval
+import qualified Signal.Wavelet.List as L
 import Signal.Wavelet.List.Common
 import Test.ArbitraryInstances
 import Test.HUnit
@@ -80,7 +80,7 @@ propDWTInvertible (DwtInputList (ls, sig)) =
 
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
 testLattice (baseOp, sig, expected) = 
-    expected @=~? (runEval $ lattice baseOp sig)
+    expected @=~? (lattice baseOp sig)
 
 
 dataLattice :: [((Double, Double), [Double], [Double])]
@@ -101,8 +101,15 @@ dataLattice =
     ]
 
 
+propLatticeIdenticalToList :: Double -> [Double] -> Bool
+propLatticeIdenticalToList d xs = 
+    L.lattice (s, c) ys =~ lattice2 (s, c) ys
+        where (s, c) = (sin d, cos d)
+              ys     = xs ++ xs
+
+
 propDoubleLatticeIdentity :: DwtInputList -> Bool
 propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
-    (runEval $ lattice baseOp (runEval $ lattice baseOp sig)) =~ sig
+    (lattice baseOp (lattice baseOp sig)) =~ sig
         where
           baseOp = (sin &&& cos) $ head ls
