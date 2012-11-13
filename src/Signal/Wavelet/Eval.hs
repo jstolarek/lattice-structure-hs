@@ -66,5 +66,5 @@ latticeSeq :: (Double, Double) -> [Double] -> [Double]
 latticeSeq _ [] = []
 latticeSeq !(!s, !c) (x1:x2:xs) = x1 * c + x2 * s : 
                                   x1 * s - x2 * c : 
-                                  lattice (s,c) xs
+                                  latticeSeq (s,c) xs
 latticeSeq _ _ = error "Can't perform a wavelet transform of odd length signal"
