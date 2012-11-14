@@ -36,9 +36,9 @@ benchmarks gen =
 --      , bench "Vector1" $ whnf V1.benchDwt vDataDwt
 --      , bench "Repa1"   $ whnf R1.benchDwt rDataDwt
 --      , bench "Repa2"   $ whnf R2.benchDwt rDataDwt
---       bench "List1"   $ nf   L1.benchDwt lDataDwt
-        bench "List2"   $ nf   L2.benchDwt lDataDwt
-      , bench "Eval1"   $ nf   E1.benchDwt lDataDwt
+--        bench "List1"   $ nf   L1.benchDwt lDataDwt
+       bench "List2"   $ nf   L2.benchDwt lDataDwt
+--      , bench "Eval1"   $ nf   E1.benchDwt lDataDwt
       , bench "Eval2"   $ nf   E2.benchDwt lDataDwt
       ]
     , bgroup "IDWT" . (:[])  $ bcompare  
@@ -48,8 +48,8 @@ benchmarks gen =
 --      , bench "Repa1"   $ whnf R1.benchIdwt rDataDwt
 --      , bench "Repa2"   $ whnf R2.benchIdwt rDataDwt
 --        bench "List1"   $ nf   L1.benchIdwt lDataDwt
-        bench "List2"   $ nf   L2.benchIdwt lDataDwt
-      , bench "Eval1"   $ nf   E1.benchIdwt lDataDwt
+       bench "List2"   $ nf   L2.benchIdwt lDataDwt
+--      , bench "Eval1"   $ nf   E1.benchIdwt lDataDwt
       , bench "Eval2"   $ nf   E2.benchIdwt lDataDwt
       ]
     ]

@@ -15,4 +15,4 @@ latticePar (s, c) xss = runEval $ go xss
           lst <- go bs
           return (lsh ++ lst)
           where
-            !(as, bs) = splitAt 512 xs
+            !(as, bs) = splitAt 2048 xs
