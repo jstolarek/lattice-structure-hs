@@ -1,6 +1,6 @@
-module Signal.Wavelet.EvalBench where
+module Signal.Wavelet.Eval1Bench where
 
-import Signal.Wavelet.Eval
+import Signal.Wavelet.Eval1
 
 
 {-# INLINE benchDwt #-}

@@ -1,7 +1,7 @@
-module Signal.Wavelet.VectorBench where
+module Signal.Wavelet.C1Bench where
 
-import Data.Vector.Unboxed
-import Signal.Wavelet.Vector
+import Data.Vector.Storable as VS hiding (take)
+import Signal.Wavelet.C1
 
 
 {-# INLINE benchDwt #-}

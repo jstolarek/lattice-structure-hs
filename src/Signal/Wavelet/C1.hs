@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# CFILES C/dwt.c #-}
 
-module Signal.Wavelet.C where
+module Signal.Wavelet.C1 where
 
 import Control.Monad (liftM)
 import Data.Vector.Storable as V

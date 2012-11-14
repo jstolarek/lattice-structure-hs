@@ -22,12 +22,12 @@ tested-with:        GHC>=7.4
 
 library
   hs-source-dirs:   src
-  exposed-modules:  Signal.Wavelet.C,
-                    Signal.Wavelet.Eval,
-                    Signal.Wavelet.List,
+  exposed-modules:  Signal.Wavelet.C1,
+                    Signal.Wavelet.Eval1,
+                    Signal.Wavelet.List1,
                     Signal.Wavelet.Repa1,
                     Signal.Wavelet.Repa2,
-                    Signal.Wavelet.Vector
+                    Signal.Wavelet.Vector1
   other-modules:    Signal.Wavelet.List.Common,
                     Signal.Wavelet.Repa.Common,
                     Signal.Wavelet.Vector.Common

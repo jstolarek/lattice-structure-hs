@@ -1,9 +1,9 @@
-module Signal.Wavelet.VectorTest where
+module Signal.Wavelet.Vector1Test where
 
 import Control.Arrow ((&&&))
 import Data.Vector.Unboxed as V
-import qualified Signal.Wavelet.C as C
-import Signal.Wavelet.Vector
+import qualified Signal.Wavelet.C1 as C1
+import Signal.Wavelet.Vector1
 import Signal.Wavelet.Vector.Common
 import Test.ArbitraryInstances
 import Test.HUnit
@@ -128,7 +128,7 @@ propDWTIdenticalToC :: DwtInputVector -> Bool
 propDWTIdenticalToC (DwtInputVector (ls, sig)) = 
     cDwt =~ repaDwt
         where
-          cDwt    = C.dwt (convert ls) (convert sig)
+          cDwt    = C1.dwt (convert ls) (convert sig)
           repaDwt = convert $ dwt ls sig
 
 
@@ -136,5 +136,5 @@ propIDWTIdenticalToC :: DwtInputVector -> Bool
 propIDWTIdenticalToC (DwtInputVector (ls, sig)) = 
     cIdwt =~ repaIdwt
         where
-          cIdwt    = C.idwt (convert ls) (convert sig)
+          cIdwt    = C1.idwt (convert ls) (convert sig)
           repaIdwt = convert $ idwt ls sig

@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 
-module Signal.Wavelet.Eval where
+module Signal.Wavelet.Eval1 where
 
 import Control.DeepSeq
 import Control.Parallel.Strategies

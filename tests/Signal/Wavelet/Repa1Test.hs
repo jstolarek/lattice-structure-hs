@@ -6,7 +6,7 @@ import Control.Arrow ((&&&))
 import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
-import qualified Signal.Wavelet.Vector as V
+import qualified Signal.Wavelet.Vector1 as V1
 import Test.ArbitraryInstances
 import Test.HUnit
 import Test.QuickCheck
@@ -270,7 +270,7 @@ propDWTIdenticalToVector (DwtInputRepa (ls, sig)) =
           lsU     = toUnboxed ls
           sigU    = toUnboxed sig
           shiftN  = (size . extent $ ls) - 1
-          vecDwt  = V.dwt lsU sigU
+          vecDwt  = V1.dwt lsU sigU
           repaDwt = toUnboxed . forceS . csrN shiftN . dwt ls $ sig
 
 
@@ -281,5 +281,5 @@ propIDWTIdenticalToVector (DwtInputRepa (ls, sig)) =
           lsU      = toUnboxed ls
           sigU     = toUnboxed . forceS . csrN shiftN $ sig
           shiftN   = (size . extent $ ls) - 1
-          vecIdwt  = V.idwt lsU sigU
+          vecIdwt  = V1.idwt lsU sigU
           repaIdwt = toUnboxed . idwt ls $ sig

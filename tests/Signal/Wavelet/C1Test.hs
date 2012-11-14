@@ -1,8 +1,8 @@
-module Signal.Wavelet.CTest where
+module Signal.Wavelet.C1Test where
 
 import Data.Vector.Storable as V
-import Signal.Wavelet.C
-import qualified Signal.Wavelet.List as L
+import Signal.Wavelet.C1
+import qualified Signal.Wavelet.List1 as L1
 import qualified Signal.Wavelet.List.Common as LC
 import Signal.Wavelet.Vector.Common
 import Test.ArbitraryInstances
@@ -83,7 +83,7 @@ propDWTIdenticalToList :: DwtInputC -> Bool
 propDWTIdenticalToList (DwtInputC (ls, sig)) = 
     listDwt =~ cDwt
         where
-          listDwt = L.dwt (toList ls) (toList sig)
+          listDwt = L1.dwt (toList ls) (toList sig)
           cDwt    = LC.cslN (V.length ls - 1) $ toList (dwt ls sig)
 
 
@@ -91,6 +91,6 @@ propIDWTIdenticalToList :: DwtInputC -> Bool
 propIDWTIdenticalToList (DwtInputC (ls, sig)) = 
     listIdwt =~ cIdwt
         where
-          listIdwt         = L.idwt (toList ls) (toList sig)
+          listIdwt         = L1.idwt (toList ls) (toList sig)
           cIdwt            = toList . idwt ls . shiftedSig ls $ sig
           shiftedSig xs ys = fromList (LC.csrN (V.length xs - 1) (toList ys))

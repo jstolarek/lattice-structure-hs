@@ -1,6 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 
-module Signal.Wavelet.Vector where
+module Signal.Wavelet.Vector1 where
 
 import Control.Arrow ((&&&))
 import Control.Monad.ST (runST)

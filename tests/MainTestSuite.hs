@@ -6,14 +6,14 @@ import Test.Framework
 import Test.Framework.Providers.QuickCheck2
 import Test.Utils
 
-import qualified Signal.Wavelet.CTest           as C
-import qualified Signal.Wavelet.EvalTest        as E
+import qualified Signal.Wavelet.C1Test          as C1
+import qualified Signal.Wavelet.Eval1Test       as E1
 import qualified Signal.Wavelet.List.CommonTest as LC
-import qualified Signal.Wavelet.ListTest        as L
+import qualified Signal.Wavelet.List1Test       as L1
 import qualified Signal.Wavelet.Repa.CommonTest as RC
 import qualified Signal.Wavelet.Repa1Test       as R1
 import qualified Signal.Wavelet.Repa2Test       as R2
-import qualified Signal.Wavelet.VectorTest      as V
+import qualified Signal.Wavelet.Vector1Test     as V1
 
 
 main :: IO ()
@@ -42,37 +42,37 @@ tests = [
     , testProperty "Periodic right shift"        LC.propIdentityShift6
   ],
   testGroup "Lists" [ 
-      testProvider "DWT"                         L.testDwt
-                                                 L.dataDwt
-    , testProvider "IDWT"                        L.testIdwt
-                                                 L.dataIdwt
-    , testProperty "DWT-IDWT identity"           L.propDWTInvertible
-    , testProvider "Lattice layer"               L.testLattice 
-                                                 L.dataLattice
-    , testProperty "Inverting lattice layer"     L.propDoubleLatticeIdentity
+      testProvider "DWT"                         L1.testDwt
+                                                 L1.dataDwt
+    , testProvider "IDWT"                        L1.testIdwt
+                                                 L1.dataIdwt
+    , testProperty "DWT-IDWT identity"           L1.propDWTInvertible
+    , testProvider "Lattice layer"               L1.testLattice 
+                                                 L1.dataLattice
+    , testProperty "Inverting lattice layer"     L1.propDoubleLatticeIdentity
   ],
   testGroup "Eval" [ 
-      testProvider "DWT"                         E.testDwt
-                                                 E.dataDwt
-    , testProvider "IDWT"                        E.testIdwt
-                                                 E.dataIdwt
-    , testProperty "DWT-IDWT identity"           E.propDWTInvertible
-    , testProvider "Lattice layer"               E.testLattice 
-                                                 E.dataLattice
-    , testProperty "Inverting lattice layer"     E.propDoubleLatticeIdentity
-    , testProperty "Lattice like List implemnt." E.propLatticeIdenticalToList
+      testProvider "DWT"                         E1.testDwt
+                                                 E1.dataDwt
+    , testProvider "IDWT"                        E1.testIdwt
+                                                 E1.dataIdwt
+    , testProperty "DWT-IDWT identity"           E1.propDWTInvertible
+    , testProvider "Lattice layer"               E1.testLattice 
+                                                 E1.dataLattice
+    , testProperty "Inverting lattice layer"     E1.propDoubleLatticeIdentity
+    , testProperty "Lattice like List implemnt." E1.propLatticeIdenticalToList
   ],
   testGroup "Vector" [
-      testProvider "DWT"                         V.testDwt
-                                                 V.dataDwt
-    , testProvider "IDWT"                        V.testIdwt
-                                                 V.dataIdwt
-    , testProperty "DWT-IDWT identity"           V.propDWTInvertible
-    , testProvider "Lattice layer"               V.testLattice 
-                                                 V.dataLattice
-    , testProperty "Inverting lattice layer"     V.propDoubleLatticeIdentity
-    , testProperty  "DWT like C implementation"  V.propDWTIdenticalToC
-    , testProperty "IDWT like C implementation"  V.propIDWTIdenticalToC
+      testProvider "DWT"                         V1.testDwt
+                                                 V1.dataDwt
+    , testProvider "IDWT"                        V1.testIdwt
+                                                 V1.dataIdwt
+    , testProperty "DWT-IDWT identity"           V1.propDWTInvertible
+    , testProvider "Lattice layer"               V1.testLattice 
+                                                 V1.dataLattice
+    , testProperty "Inverting lattice layer"     V1.propDoubleLatticeIdentity
+    , testProperty  "DWT like C implementation"  V1.propDWTIdenticalToC
+    , testProperty "IDWT like C implementation"  V1.propIDWTIdenticalToC
   ],
   testGroup "Repa common" [
       testProperty "Deg-Rad identity"            RC.propDegRadInvertible
@@ -126,13 +126,13 @@ tests = [
                                                  R2.dataTrim
   ],
   testGroup "C" [
-      testProvider "DWT"                         C.testDwt
-                                                 C.dataDwt
-    , testProvider "IDWT"                        C.testIdwt
-                                                 C.dataIdwt
-    , testProperty "DWT-IDWT identity"           C.propDWTInvertible
-    , testProperty " DWT like List implement."   C.propDWTIdenticalToList
-    , testProperty "IDWT like List implement."   C.propIDWTIdenticalToList
+      testProvider "DWT"                         C1.testDwt
+                                                 C1.dataDwt
+    , testProvider "IDWT"                        C1.testIdwt
+                                                 C1.dataIdwt
+    , testProperty "DWT-IDWT identity"           C1.propDWTInvertible
+    , testProperty " DWT like List implement."   C1.propDWTIdenticalToList
+    , testProperty "IDWT like List implement."   C1.propIDWTIdenticalToList
   ]
  ]
 
@@ -146,9 +146,9 @@ List implementation of DWT and IDWT is assumed to be a reference one. Each
 implementation verifies that it is identical to another one. The following 
 dependencies are used:
 
-List -> C -> Vector -> Repa1 -> Repa2
+List1 -> C1 -> Vector1 -> Repa1 -> Repa2
 
-Read "List -> C" as "List implementation serves as a reference to C implemen-
-tation".
+Read "List1 -> C1" as "List1 implementation serves as a reference to C1 
+implementation".
 
 -}

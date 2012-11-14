@@ -1,6 +1,6 @@
-module Signal.Wavelet.ListBench where
+module Signal.Wavelet.List1Bench where
 
-import Signal.Wavelet.List
+import Signal.Wavelet.List1
 import System.Random
 
 

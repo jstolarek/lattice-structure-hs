@@ -1,4 +1,4 @@
-module Signal.Wavelet.List where
+module Signal.Wavelet.List1 where
 
 import Signal.Wavelet.List.Common
 
