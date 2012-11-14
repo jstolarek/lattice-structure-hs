@@ -1,9 +1,41 @@
 module Signal.Wavelet.List.CommonTest where
 
+import Control.Arrow ((&&&))
 import Signal.Wavelet.List.Common
+import Test.ArbitraryInstances
 import Test.HUnit
 import Test.QuickCheck
 import Test.Utils
+
+
+testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
+testLattice (baseOp, sig, expected) = 
+    expected @=~? lattice baseOp sig
+
+
+dataLattice :: [((Double, Double), [Double], [Double])]
+dataLattice =
+    [
+      (
+       (0.5, 0.8660254038), 
+       [ 1, 2, 2, 4,-3, 5, 0, 1, 1,-1,-2, 2, 4, 5, 6, 3 ],
+       [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
+        -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
+         0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
+         5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
+      ), (
+       (0.5, 0.8660254038), 
+       [], 
+       []
+      )
+    ]
+
+
+propDoubleLatticeIdentity :: DwtInputList -> Bool
+propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
+    lattice baseOp (lattice baseOp sig) =~ sig
+        where
+          baseOp = (sin &&& cos) $ head ls
 
 
 testCsl :: ([Double], [Double]) -> Assertion

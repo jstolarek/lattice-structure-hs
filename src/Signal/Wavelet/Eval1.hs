@@ -2,10 +2,8 @@
 
 module Signal.Wavelet.Eval1 where
 
-import Control.DeepSeq
 import Control.Parallel.Strategies
---import Data.DList
-import Signal.Wavelet.List.Common
+import Signal.Wavelet.List.Common as LC
 
 dwt :: [Double] -> [Double] -> [Double]
 dwt angles signal =  dwtWorker csl angles signal
@@ -18,7 +16,7 @@ idwt angles signal = dwtWorker csr angles signal
 dwtWorker :: ([Double] -> [Double]) -> [Double] -> [Double] -> [Double]
 dwtWorker cs angles signal = go weights signal
     where
-      go [w] sig    = lattice w sig
+      go [w] sig    = Signal.Wavelet.Eval1.lattice w sig
       go (w:ws) sig = go ws (cs . lattice3 w $ sig)
       go _ sig      = sig
       weights       = a2w angles
@@ -42,7 +40,7 @@ lattice3 !(!s, !c) xs = runEval $ do
   return . concat $ xss
     where
       latticePar :: Strategy [Double]
-      latticePar ys = return . latticeSeq (s, c) $ ys
+      latticePar ys = return . LC.lattice (s, c) $ ys
 
 
 chunk :: Int -> [a] -> [[a]]
@@ -57,14 +55,7 @@ lattice2 !(!s, !c) ys = runEval . go $ ys
       go [] = return []
       go xs = do 
         let (x, xss) = splitAt 256 xs
-        x'   <- rpar $ latticeSeq (s, c) x
+        x'   <- rpar $ LC.lattice (s, c) x
         xss' <- go xss
         return (x' ++ xss')
 
-
-latticeSeq :: (Double, Double) -> [Double] -> [Double]
-latticeSeq _ [] = []
-latticeSeq !(!s, !c) (x1:x2:xs) = x1 * c + x2 * s : 
-                                  x1 * s - x2 * c : 
-                                  latticeSeq (s,c) xs
-latticeSeq _ _ = error "Can't perform a wavelet transform of odd length signal"

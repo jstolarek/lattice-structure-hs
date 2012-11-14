@@ -18,10 +18,3 @@ dwtWorker cs angles signal = go weights signal
       go _ sig      = sig
       weights       = a2w angles
 
-
-lattice :: (Double, Double) -> [Double] -> [Double]
-lattice _ [] = []
-lattice (s, c) (x1:x2:xs) = x1 * c + x2 * s : 
-                            x1 * s - x2 * c : 
-                            lattice (s,c) xs
-lattice _ _ = error "Can't perform a wavelet transform of odd length signal"

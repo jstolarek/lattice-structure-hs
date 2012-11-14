@@ -29,14 +29,6 @@ dwtWorker angles signal = go weights signal
       weights       = a2w angles
 
 
-lattice :: (Double, Double) -> [Double] -> [Double]
-lattice _ []  = []
-lattice _ [_] = []
-lattice (s, c) (x1:x2:xs) = x1 * c + x2 * s : 
-                            x1 * s - x2 * c : 
-                            lattice (s,c) xs
-
-
 extendFront :: Int -> [Double] -> [Double]
 extendFront = extendWorker (\sig sigSize extSize -> 
                                 drop (sigSize - extSize) sig ++ sig)

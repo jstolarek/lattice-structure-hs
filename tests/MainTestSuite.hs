@@ -24,7 +24,10 @@ main = defaultMain tests
 tests :: [Test]
 tests = [ 
    testGroup "Lists common" [
-      testProperty "Inverting lattice structure" LC.propLatticeInverseInverse
+      testProvider "Lattice layer"               LC.testLattice 
+                                                 LC.dataLattice
+    , testProperty "Inverting lattice layer"     LC.propDoubleLatticeIdentity
+    , testProperty "Inverting lattice structure" LC.propLatticeInverseInverse
     , testProperty "Deg-Rad identity"            LC.propDegRadInvertible
     , testProperty "Rad-Deg identity"            LC.propRadDegInvertible
     , testProvider "Cyclic shift left"           LC.testCsl
@@ -48,9 +51,6 @@ tests = [
     , testProvider "IDWT"                        L1.testIdwt
                                                  L1.dataIdwt
     , testProperty "DWT-IDWT identity"           L1.propDWTInvertible
-    , testProvider "Lattice layer"               L1.testLattice 
-                                                 L1.dataLattice
-    , testProperty "Inverting lattice layer"     L1.propDoubleLatticeIdentity
   ],
   testGroup "Lists" [ 
       testProvider "DWT"                         L2.testDwt
@@ -58,9 +58,6 @@ tests = [
     , testProvider "IDWT"                        L2.testIdwt
                                                  L2.dataIdwt
     , testProperty "DWT-IDWT identity"           L2.propDWTInvertible
-    , testProvider "Lattice layer"               L2.testLattice 
-                                                 L2.dataLattice
-    , testProperty "Inverting lattice layer"     L2.propDoubleLatticeIdentity
     , testProperty " DWT like List1 implement."  L2.propDWTIdenticalToList1
     , testProperty "IDWT like List1 implement."  L2.propIDWTIdenticalToList1
     , testProvider "Extend front of signal"      L2.testExtendFront
@@ -74,9 +71,6 @@ tests = [
     , testProvider "IDWT"                        E1.testIdwt
                                                  E1.dataIdwt
     , testProperty "DWT-IDWT identity"           E1.propDWTInvertible
-    , testProvider "Lattice layer"               E1.testLattice 
-                                                 E1.dataLattice
-    , testProperty "Inverting lattice layer"     E1.propDoubleLatticeIdentity
     , testProperty "Lattice like List implemnt." E1.propLatticeIdenticalToList
   ],
   testGroup "Vector" [
