@@ -12,6 +12,3 @@ benchDwt (ls, sig) = dwt ls sig
 benchIdwt :: ([Double], [Double]) -> [Double]
 benchIdwt (ls, sig) = idwt ls sig
 
-
-dataDwt :: ([Double], [Double]) -> ([Double], [Double])
-dataDwt = id

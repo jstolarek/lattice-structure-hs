@@ -63,8 +63,8 @@ extendFront :: Int
             -> Array U DIM1 Double
             -> Array D DIM1 Double
 extendFront !layers signal = go (delay signal) initExt initSigSize
-    where !initExt     = (2 * layers - 2) :: Int
-          !initSigSize = (size . extent $ signal) :: Int
+    where !initExt     = 2 * layers - 2 :: Int
+          !initSigSize = size . extent $ signal :: Int
           go sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
@@ -78,8 +78,8 @@ extendEnd :: Int
           -> Array U DIM1 Double
           -> Array D DIM1 Double
 extendEnd !layers signal = go (delay signal) initExt initSigSize
-    where !initExt     = (2 * layers - 2) :: Int
-          !initSigSize = (size . extent $ signal) :: Int
+    where !initExt     = 2 * layers - 2 :: Int
+          !initSigSize = size . extent $ signal :: Int
           go sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)

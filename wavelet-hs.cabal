@@ -5,7 +5,7 @@ license-file:       LICENSE
 author:             Jan Stolarek <jan.stolarek@p.lodz.pl>
 maintainer:         jan.stolarek@p.lodz.pl
 copyright:          (c) 2012 Jan Stolarek
--- bug-reports
+bug-reports:        jan.stolarek@p.lodz.pl
 -- homepage
 synopsis:           Wavelet transform library
 description:        Wavelet-hs provides function to calculate wavelet transform
@@ -25,6 +25,7 @@ library
   exposed-modules:  Signal.Wavelet.C1,
                     Signal.Wavelet.Eval1,
                     Signal.Wavelet.List1,
+                    Signal.Wavelet.List2,
                     Signal.Wavelet.Repa1,
                     Signal.Wavelet.Repa2,
                     Signal.Wavelet.Vector1

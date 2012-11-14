@@ -10,6 +10,7 @@ import qualified Signal.Wavelet.C1Test          as C1
 import qualified Signal.Wavelet.Eval1Test       as E1
 import qualified Signal.Wavelet.List.CommonTest as LC
 import qualified Signal.Wavelet.List1Test       as L1
+import qualified Signal.Wavelet.List2Test       as L2
 import qualified Signal.Wavelet.Repa.CommonTest as RC
 import qualified Signal.Wavelet.Repa1Test       as R1
 import qualified Signal.Wavelet.Repa2Test       as R2
@@ -50,6 +51,22 @@ tests = [
     , testProvider "Lattice layer"               L1.testLattice 
                                                  L1.dataLattice
     , testProperty "Inverting lattice layer"     L1.propDoubleLatticeIdentity
+  ],
+  testGroup "Lists" [ 
+      testProvider "DWT"                         L2.testDwt
+                                                 L2.dataDwt
+    , testProvider "IDWT"                        L2.testIdwt
+                                                 L2.dataIdwt
+    , testProperty "DWT-IDWT identity"           L2.propDWTInvertible
+    , testProvider "Lattice layer"               L2.testLattice 
+                                                 L2.dataLattice
+    , testProperty "Inverting lattice layer"     L2.propDoubleLatticeIdentity
+    , testProperty " DWT like List1 implement."  L2.propDWTIdenticalToList1
+    , testProperty "IDWT like List1 implement."  L2.propIDWTIdenticalToList1
+    , testProvider "Extend front of signal"      L2.testExtendFront
+                                                 L2.dataExtendFront
+    , testProvider "Extend end of signal"        L2.testExtendEnd
+                                                 L2.dataExtendEnd
   ],
   testGroup "Eval" [ 
       testProvider "DWT"                         E1.testDwt
