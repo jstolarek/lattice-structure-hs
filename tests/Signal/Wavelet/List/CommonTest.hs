@@ -10,7 +10,7 @@ import Test.Utils
 
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
 testLattice (baseOp, sig, expected) = 
-    expected @=~? lattice baseOp sig
+    expected @=~? latticeSeq baseOp sig
 
 
 dataLattice :: [((Double, Double), [Double], [Double])]
@@ -33,9 +33,67 @@ dataLattice =
 
 propDoubleLatticeIdentity :: DwtInputList -> Bool
 propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
-    lattice baseOp (lattice baseOp sig) =~ sig
+    latticeSeq baseOp (latticeSeq baseOp sig) =~ sig
         where
           baseOp = (sin &&& cos) $ head ls
+
+
+testExtendFront :: ([Double], Int, [Double]) -> Assertion
+testExtendFront (sig, ln, expected) = 
+    expected @=~? extendFront ln sig
+
+
+dataExtendFront :: [([Double], Int, [Double])]
+dataExtendFront =
+   [
+     ( [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+       3,
+       [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
+     ),
+     ( [1,2,3,4], 
+       6,
+       [3,4,1,2,3,4,1,2,3,4,1,2,3,4]
+     ),
+     ( [1,2], 
+       3,
+       [1,2,1,2,1,2]
+     ),
+     ( [1,2], 
+       1,
+       [1,2]
+     ),
+     ( [], 
+       7,
+       []
+     )
+   ]
+
+
+testExtendEnd :: ([Double], Int, [Double]) -> Assertion
+testExtendEnd (sig, ln, expected) = 
+    expected @=~? extendEnd ln sig
+
+
+dataExtendEnd :: [([Double], Int, [Double])]
+dataExtendEnd =
+   [
+     ( [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
+       3,
+       [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
+     ),
+     ( [1,2], 
+       3,
+       [1,2,1,2,1,2]
+     ),
+     ( [1,2], 
+       1,
+       [1,2]
+     ),
+     ( [], 
+       7,
+       []
+     )
+   ]
 
 
 testCsl :: ([Double], [Double]) -> Assertion

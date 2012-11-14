@@ -1,8 +1,7 @@
-module Signal.Wavelet.List2Test where
+module Signal.Wavelet.Eval2Test where
 
-import qualified Signal.Wavelet.List1 as L1
-import Signal.Wavelet.List2
-import Signal.Wavelet.List.Common
+import Signal.Wavelet.Eval2
+import Signal.Wavelet.List.Common (toRad, inv)
 import Test.ArbitraryInstances
 import Test.HUnit
 import Test.Utils
@@ -75,13 +74,3 @@ dataIdwt =
 propDWTInvertible :: DwtInputList -> Bool
 propDWTInvertible (DwtInputList (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
-
-
-propDWTIdenticalToList1 :: DwtInputList -> Bool
-propDWTIdenticalToList1 (DwtInputList (ls, sig)) = 
-    L1.dwt ls sig =~ dwt ls sig
-
-
-propIDWTIdenticalToList1 :: DwtInputList -> Bool
-propIDWTIdenticalToList1 (DwtInputList (ls, sig)) = 
-    L1.idwt ls sig =~ idwt ls sig

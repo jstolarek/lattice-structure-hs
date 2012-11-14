@@ -1,8 +1,7 @@
 module Signal.Wavelet.Eval1Test where
 
-import Control.Arrow ((&&&))
 import Signal.Wavelet.Eval1
-import Signal.Wavelet.List.Common as LC
+import Signal.Wavelet.List.Common (toRad, inv)
 import Test.ArbitraryInstances
 import Test.HUnit
 import Test.Utils
@@ -75,11 +74,3 @@ dataIdwt =
 propDWTInvertible :: DwtInputList -> Bool
 propDWTInvertible (DwtInputList (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
-
-
-propLatticeIdenticalToList :: Double -> [Double] -> Bool
-propLatticeIdenticalToList d xs = 
-    LC.lattice (s, c) ys =~ lattice2 (s, c) ys
-        where (s, c) = (sin d, cos d)
-              ys     = xs ++ xs
-

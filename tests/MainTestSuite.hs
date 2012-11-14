@@ -7,7 +7,9 @@ import Test.Framework.Providers.QuickCheck2
 import Test.Utils
 
 import qualified Signal.Wavelet.C1Test          as C1
+import qualified Signal.Wavelet.Eval.CommonTest as EC
 import qualified Signal.Wavelet.Eval1Test       as E1
+import qualified Signal.Wavelet.Eval2Test       as E2
 import qualified Signal.Wavelet.List.CommonTest as LC
 import qualified Signal.Wavelet.List1Test       as L1
 import qualified Signal.Wavelet.List2Test       as L2
@@ -23,10 +25,14 @@ main = defaultMain tests
 
 tests :: [Test]
 tests = [ 
-   testGroup "Lists common" [
+   testGroup "List common" [
       testProvider "Lattice layer"               LC.testLattice 
                                                  LC.dataLattice
     , testProperty "Inverting lattice layer"     LC.propDoubleLatticeIdentity
+    , testProvider "Extend front of signal"      LC.testExtendFront
+                                                 LC.dataExtendFront
+    , testProvider "Extend end of signal"        LC.testExtendEnd
+                                                 LC.dataExtendEnd
     , testProperty "Inverting lattice structure" LC.propLatticeInverseInverse
     , testProperty "Deg-Rad identity"            LC.propDegRadInvertible
     , testProperty "Rad-Deg identity"            LC.propRadDegInvertible
@@ -45,14 +51,14 @@ tests = [
     , testProperty "Periodic left shift"         LC.propIdentityShift5
     , testProperty "Periodic right shift"        LC.propIdentityShift6
   ],
-  testGroup "Lists" [ 
+  testGroup "List1" [ 
       testProvider "DWT"                         L1.testDwt
                                                  L1.dataDwt
     , testProvider "IDWT"                        L1.testIdwt
                                                  L1.dataIdwt
     , testProperty "DWT-IDWT identity"           L1.propDWTInvertible
   ],
-  testGroup "Lists" [ 
+  testGroup "List2" [ 
       testProvider "DWT"                         L2.testDwt
                                                  L2.dataDwt
     , testProvider "IDWT"                        L2.testIdwt
@@ -60,20 +66,25 @@ tests = [
     , testProperty "DWT-IDWT identity"           L2.propDWTInvertible
     , testProperty " DWT like List1 implement."  L2.propDWTIdenticalToList1
     , testProperty "IDWT like List1 implement."  L2.propIDWTIdenticalToList1
-    , testProvider "Extend front of signal"      L2.testExtendFront
-                                                 L2.dataExtendFront
-    , testProvider "Extend end of signal"        L2.testExtendEnd
-                                                 L2.dataExtendEnd
   ],
-  testGroup "Eval" [ 
+  testGroup "Eval common" [
+      testProperty "Lattice like List implemnt." EC.propLatticeIdenticalToList
+  ],
+  testGroup "Eval1" [ 
       testProvider "DWT"                         E1.testDwt
                                                  E1.dataDwt
     , testProvider "IDWT"                        E1.testIdwt
                                                  E1.dataIdwt
     , testProperty "DWT-IDWT identity"           E1.propDWTInvertible
-    , testProperty "Lattice like List implemnt." E1.propLatticeIdenticalToList
   ],
-  testGroup "Vector" [
+  testGroup "Eval2" [ 
+      testProvider "DWT"                         E2.testDwt
+                                                 E2.dataDwt
+    , testProvider "IDWT"                        E2.testIdwt
+                                                 E2.dataIdwt
+    , testProperty "DWT-IDWT identity"           E2.propDWTInvertible
+  ],
+  testGroup "Vector1" [
       testProvider "DWT"                         V1.testDwt
                                                  V1.dataDwt
     , testProvider "IDWT"                        V1.testIdwt
@@ -136,7 +147,7 @@ tests = [
     , testProvider "Remove first & last element" R2.testTrim
                                                  R2.dataTrim
   ],
-  testGroup "C" [
+  testGroup "C1" [
       testProvider "DWT"                         C1.testDwt
                                                  C1.dataDwt
     , testProvider "IDWT"                        C1.testIdwt

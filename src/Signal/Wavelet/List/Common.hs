@@ -1,16 +1,51 @@
 {-# LANGUAGE BangPatterns #-}
-
 module Signal.Wavelet.List.Common where 
 
 import Control.Arrow ((&&&))
 
-lattice :: (Double, Double) -> [Double] -> [Double]
-lattice _ []  = []
-lattice _ [_] = []
-lattice !(!s, !c) (x1:x2:xs) = x1 `seq` x2 `seq` 
-                               x1 * c + x2 * s : 
-                               x1 * s - x2 * c : 
-                               lattice (s, c) xs
+dwtWorker :: ((Double, Double) -> [Double] -> [Double])
+          -> ([Double] -> [Double]) 
+          -> [Double] 
+          -> [Double] 
+          -> [Double]
+dwtWorker lattice layerTransition angles signal = go weights signal
+    where
+      go [w] sig    = lattice w sig
+      go (w:ws) sig = go ws (layerTransition $ lattice w sig)
+      go _ sig      = sig
+      weights       = a2w angles
+
+
+latticeSeq :: (Double, Double) -> [Double] -> [Double]
+latticeSeq _ []  = []
+latticeSeq _ [_] = []
+latticeSeq !(!s, !c) (x1:x2:xs) = x1 `seq` x2 `seq` 
+                                  x1 * c + x2 * s : 
+                                  x1 * s - x2 * c : 
+                                  latticeSeq (s, c) xs
+
+
+extendFront :: Int -> [Double] -> [Double]
+extendFront = extendWorker (\sig sigSize extSize -> 
+                                drop (sigSize - extSize) sig ++ sig)
+
+
+extendEnd :: Int -> [Double] -> [Double]
+extendEnd = extendWorker (\sig _ extSize -> sig ++ take extSize sig)
+
+
+extendWorker :: ([Double] -> Int -> Int -> [Double]) 
+             -> Int 
+             -> [Double] 
+             -> [Double]
+extendWorker extBuilder !layers signal = go signal initExt initSigSize
+    where !initExt     = 2 * layers - 2 :: Int
+          !initSigSize = length signal  :: Int
+          go sig !ln !sigSize
+              | extSize <= 0   = sig
+              | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
+              where !extSize   = min sigSize ln :: Int
+                    !extSignal = extBuilder sig sigSize extSize
 
 
 csl :: [Double] -> [Double]
