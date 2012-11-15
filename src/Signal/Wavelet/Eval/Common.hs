@@ -1,18 +1,16 @@
 {-# LANGUAGE BangPatterns #-}
 module Signal.Wavelet.Eval.Common where
 
+import Control.Applicative
 import Control.Parallel.Strategies
 import Signal.Wavelet.List.Common as LC
 
 
 latticePar :: (Double, Double) -> [Double] -> [Double]
-latticePar (s, c) xss = runEval $ go xss
-    where
-      go :: Strategy [Double]
-      go [] = return []
-      go xs = do
-          lsh <- (rpar `dot` rdeepseq) $ LC.latticeSeq (s, c) as
-          lst <- go bs
-          return (lsh ++ lst)
-          where
-            !(as, bs) = splitAt 2048 xs
+latticePar (s, c) xss = runEval $ 
+    concat <$> parList (rdeepseq . LC.latticeSeq (s, c)) (chunk 2048 xss)
+                   
+
+chunk :: Int -> [a] -> [[a]]
+chunk _ [] = []
+chunk n xs = as : chunk n bs where (as,bs) = splitAt n xs
