@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-
 module Signal.Wavelet.Repa1Test where
 
 import Control.Arrow ((&&&))
@@ -7,10 +6,11 @@ import Data.Array.Repa as R
 import Signal.Wavelet.Repa.Common
 import Signal.Wavelet.Repa1
 import qualified Signal.Wavelet.Vector1 as V1
-import Test.ArbitraryInstances
-import Test.HUnit
-import Test.QuickCheck
-import Test.Utils
+import Test.ArbitraryInstances    (DwtInputRepa(..), RepaDIM1Array (..))
+import qualified Test.Data.Wavelet as DW
+import Test.HUnit                 (Assertion, (@=?))
+import Test.QuickCheck            (Property, (==>))
+import Test.Utils                 ((=~), (@=~?))
 
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
@@ -20,31 +20,7 @@ testDwt (ls, sig, expected) =
 
 
 dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
-dataDwt =
-   [
-     ( computeS . toRad $ fromListUnboxed (Z :. 3) [30,25,40]
-     , fromListUnboxed (Z :. 16) [ 1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. 16) 
-       [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
-          3.2735751058710300, -2.639689358691720, -1.392299200715840,
-          0.0624400001370536, -1.159888007129840,  0.979063355853563,  
-          0.7634941595614190, -4.563606712907260, -4.766738951689430, 
-         -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
-         -1.3307460249419300 ] 
-     ),
-     ( fromListUnboxed (Z :.  0) []
-     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     , fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-     ),
-     ( fromListUnboxed (Z :.  0) []
-     , fromListUnboxed (Z :.  0) []
-     , fromListUnboxed (Z :.  0) []
-     ),
-     ( fromListUnboxed (Z :.  3) [1,2,3]
-     , fromListUnboxed (Z :.  0) []
-     , fromListUnboxed (Z :.  0) []
-     )
-   ]
+dataDwt = Prelude.map (DW.all3 f) DW.dataDwt
 
 
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
@@ -54,31 +30,7 @@ testIdwt (ls, sig, expected) =
 
 
 dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
-dataIdwt =
-    [
-      ( computeS . toRad $ fromListUnboxed (Z :. 3) [40,25,30], 
-        fromListUnboxed (Z :. 16)
-        [ -4.4520662844565800, -0.766339042879150, -3.990239276792010,  
-           3.2735751058710300, -2.639689358691720, -1.392299200715840,
-           0.0624400001370536, -1.159888007129840,  0.979063355853563,  
-           0.7634941595614190, -4.563606712907260, -4.766738951689430, 
-          -4.6622579814906800, -5.417080918602780, -0.869330716850108, 
-          -1.3307460249419300 ],
-        fromListUnboxed (Z :. 16) [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3]
-      ),
-      ( fromListUnboxed (Z :.  0) [], 
-        fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
-        fromListUnboxed (Z :. 16) [1.0,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
-      ),
-      ( fromListUnboxed (Z :.  0) [],
-        fromListUnboxed (Z :.  0) [],
-        fromListUnboxed (Z :.  0) []
-      ),
-      ( fromListUnboxed (Z :.  3) [1,2,3],
-        fromListUnboxed (Z :.  0) [],
-        fromListUnboxed (Z :.  0) []
-      )
-    ]
+dataIdwt = Prelude.map (DW.all3 f) DW.dataIdwt
 
 
 propDWTInvertible :: DwtInputRepa -> Bool
@@ -86,32 +38,14 @@ propDWTInvertible (DwtInputRepa (ls, sig)) =
     idwt (computeS $ inv ls) (dwt ls sig) =~ sig
 
 
-testLattice :: ((Double, Double), 
-                Array U DIM1 Double,
-                Array U DIM1 Double)
-             -> Assertion
+testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
+            -> Assertion
 testLattice (baseOp, sig, expected) = 
     expected @=~? computeS (lattice baseOp sig)
 
 
-dataLattice :: [((Double, Double), 
-                 Array U DIM1 Double,
-                 Array U DIM1 Double)]
-dataLattice =
-    [
-      ( (0.5, 0.8660254038),
-        fromListUnboxed (Z :. 16) 
-            [ 1, 2, 2, 4,-3, 5, 0, 1, 
-              1,-1,-2, 2, 4, 5, 6, 3 ],
-        fromListUnboxed (Z :. 16) 
-            [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
-             -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
-              0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
-              5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
-      ), ( (0.5, 0.8660254038), 
-        fromListUnboxed (Z :. 0) [],
-        fromListUnboxed (Z :. 0) [] )
-    ]
+dataLattice :: [((Double, Double), Array U DIM1 Double, Array U DIM1 Double)]
+dataLattice = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataLattice
 
 
 propDoubleLatticeIdentity :: DwtInputRepa -> Bool
@@ -120,18 +54,13 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
         where
           baseOp = (sin &&& cos) $ ls ! (Z :. 0)
 
-
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsl (input, expected) = 
     expected @=? (computeS $ csl input)
 
 
 dataCsl :: [(Array U DIM1 Double, Array U DIM1 Double)]
-dataCsl = 
-    [
-     ( fromListUnboxed (Z :. 4) [1,2,3,4], fromListUnboxed (Z :. 4) [2,3,4,1] ),
-     ( fromListUnboxed (Z :. 0) []       , fromListUnboxed (Z :. 0) []        )
-    ]
+dataCsl = Prelude.map (DW.all2 f) DW.dataCsl
 
 
 testCsr :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
@@ -140,11 +69,7 @@ testCsr (input, expected) =
 
 
 dataCsr :: [(Array U DIM1 Double, Array U DIM1 Double)]
-dataCsr = 
-    [
-     ( fromListUnboxed (Z :. 4) [1,2,3,4], fromListUnboxed (Z :. 4) [4,1,2,3] ),
-     ( fromListUnboxed (Z :. 0) []       , fromListUnboxed (Z :. 0) []        )
-    ]
+dataCsr = Prelude.map (DW.all2 f) DW.dataCsr
 
 
 testCslN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
@@ -153,33 +78,7 @@ testCslN (n, input, expected) =
 
 
 dataCslN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
-dataCslN = 
-    [
-     ( 1, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [2,3,4,1]
-     ),
-     ( 5, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [2,3,4,1]
-     ),
-     ( -3, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [2,3,4,1]
-     ),
-     ( 0, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [1,2,3,4] 
-     ),
-     ( 4, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [1,2,3,4]
-     ),
-     ( 4, 
-       fromListUnboxed (Z :. 0) [], 
-       fromListUnboxed (Z :. 0) []
-     )
-    ]
+dataCslN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCslN
 
 
 testCsrN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
@@ -188,33 +87,7 @@ testCsrN (n, input, expected) =
 
 
 dataCsrN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
-dataCsrN = 
-    [
-     ( 1, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [4,1,2,3] 
-     ),
-     ( 5, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [4,1,2,3] 
-     ),
-     ( -3, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [4,1,2,3] 
-     ),
-     ( 0, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [1,2,3,4]
-     ),
-     ( 4, 
-       fromListUnboxed (Z :. 4) [1,2,3,4], 
-       fromListUnboxed (Z :. 4) [1,2,3,4]
-     ),
-     ( 4, 
-       fromListUnboxed (Z :. 0) [], 
-       fromListUnboxed (Z :. 0) []
-     )
-    ]
+dataCsrN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCsrN
 
 
 propIdentityShift1 :: RepaDIM1Array -> Bool
@@ -283,3 +156,7 @@ propIDWTIdenticalToVector (DwtInputRepa (ls, sig)) =
           shiftN   = (size . extent $ ls) - 1
           vecIdwt  = V1.idwt lsU sigU
           repaIdwt = toUnboxed . idwt ls $ sig
+
+
+f :: [Double] -> Array U DIM1 Double
+f xs = fromListUnboxed (Z :. (length xs)) xs

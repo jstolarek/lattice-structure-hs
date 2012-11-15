@@ -112,7 +112,7 @@ cslN :: (Source r Double)
      -> Array D DIM1 Double
 cslN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0
+      !n | sh == 0   = 0 -- See Note [Preventing division by 0]
          | otherwise = m `mod` sh :: Int
       shift (Z :. i) = if i < (sh - n) 
                        then Z :. (i + n) 
@@ -128,10 +128,21 @@ csrN :: (Source r Double)
      -> Array D DIM1 Double
 csrN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0
+      !n | sh == 0   = 0 -- See Note [Preventing division by 0]
          | otherwise = m `mod` sh :: Int
       shift (Z :. i) = if i >= n
                        then Z :. (i - n) 
                        else Z :. (i - n + sh)
       ext = extent xs
       !sh  = size ext :: Int
+
+{-
+
+Note [Preventing division by 0]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Guards are needed because n is strict. If it were lazy, backpermute would not
+perform computations for empty array and thus n wouldn't be calculated. However
+when n is forced with a bang pattern it is always evaluated and hence it will
+cause division by 0 error for `mod` operator.
+
+-}

@@ -6,6 +6,7 @@ import qualified Signal.Wavelet.List1 as L1
 import qualified Signal.Wavelet.List.Common as LC
 import Signal.Wavelet.Vector.Common
 import Test.ArbitraryInstances
+import qualified Test.Data.Wavelet as DW
 import Test.HUnit
 import Test.Utils
 
@@ -16,30 +17,10 @@ testDwt (ls, sig, expected) =
 
 
 dataDwt :: [(Vector Double, Vector Double, Vector Double)] 
-dataDwt =
-    [ (
-       toRad $ fromList [30,25,40], 
-       fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3], 
-       fromList [ -0.869330716850108, -1.33074602494193, -4.452066284456580, 
-                  -0.766339042879150, -3.99023927679201,  3.273575105871030, 
-                  -2.639689358691720, -1.39229920071584,  0.062440000137053, 
-                  -1.159888007129840,  0.97906335585356,  0.763494159561419, 
-                  -4.563606712907260, -4.76673895168943, -4.662257981490680, 
-                  -5.417080918602780 ] 
-      ),
-      ( fromList $ [], 
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
-      ),
-      ( fromList $ [],
-        fromList $ [],
-        fromList $ []
-      ),
-      ( fromList $ [1,2,3],
-        fromList $ [],
-        fromList $ []
-      )
-    ]
+dataDwt = Prelude.map f DW.dataDwt
+    where f (a, b, c) = (fromList a, fromList b, g c)
+              where g xs = fromList . LC.csrN n $ xs
+                    n    = max (Prelude.length a - 1) 0
 
 
 testIdwt :: (Vector Double, Vector Double, Vector Double) -> Assertion
@@ -48,30 +29,10 @@ testIdwt (ls, sig, expected) =
 
 
 dataIdwt :: [(Vector Double, Vector Double, Vector Double)] 
-dataIdwt =
-    [ (
-       toRad $ fromList [40,25,30], 
-       fromList [ -0.869330716850108, -1.33074602494193, -4.452066284456580, 
-                  -0.766339042879150, -3.99023927679201,  3.273575105871030, 
-                  -2.639689358691720, -1.39229920071584,  0.062440000137053, 
-                  -1.159888007129840,  0.97906335585356,  0.763494159561419, 
-                  -4.563606712907260, -4.76673895168943, -4.662257981490680, 
-                  -5.417080918602780 ],
-       fromList [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
-      ),
-      ( fromList $ [], 
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3],
-        fromList $ [1,2,2,4,-3,5,0,1,1,-1,-2,2,4,5,6,3] 
-      ),
-      ( fromList $ [],
-        fromList $ [],
-        fromList $ []
-      ),
-      ( fromList $ [1,2,3],
-        fromList $ [],
-        fromList $ []
-      )
-    ]
+dataIdwt = Prelude.map f DW.dataIdwt
+    where f (a, b, c) = (fromList a, fromList b, g c)
+              where g xs = fromList . LC.cslN n $ xs
+                    n    = max (Prelude.length a - 1) 0
 
 
 propDWTInvertible :: DwtInputC -> Bool

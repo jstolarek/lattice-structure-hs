@@ -2,10 +2,11 @@ module Signal.Wavelet.List.CommonTest where
 
 import Control.Arrow ((&&&))
 import Signal.Wavelet.List.Common
-import Test.ArbitraryInstances
-import Test.HUnit
+import Test.ArbitraryInstances    (DwtInputList(..))
+import qualified Test.Data.Wavelet as DW
+import Test.HUnit                 (Assertion, (@=?))
 import Test.QuickCheck
-import Test.Utils
+import Test.Utils                 ((=~), (@=~?))
 
 
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
@@ -14,21 +15,7 @@ testLattice (baseOp, sig, expected) =
 
 
 dataLattice :: [((Double, Double), [Double], [Double])]
-dataLattice =
-    [
-      (
-       (0.5, 0.8660254038), 
-       [ 1, 2, 2, 4,-3, 5, 0, 1, 1,-1,-2, 2, 4, 5, 6, 3 ],
-       [ 1.8660254038, -1.2320508076,  3.7320508076, -2.4641016151,
-        -0.0980762114, -5.8301270189,  0.5000000000, -0.8660254038,
-         0.3660254038,  1.3660254038, -0.7320508076, -2.7320508076,
-         5.9641016151, -2.3301270189,  6.6961524227,  0.4019237886 ]
-      ), (
-       (0.5, 0.8660254038), 
-       [], 
-       []
-      )
-    ]
+dataLattice = DW.dataLattice
 
 
 propDoubleLatticeIdentity :: DwtInputList -> Bool
@@ -38,62 +25,22 @@ propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
           baseOp = (sin &&& cos) $ head ls
 
 
-testExtendFront :: ([Double], Int, [Double]) -> Assertion
-testExtendFront (sig, ln, expected) = 
+testExtendFront :: (Int, [Double], [Double]) -> Assertion
+testExtendFront (ln, sig, expected) = 
     expected @=~? extendFront ln sig
 
 
-dataExtendFront :: [([Double], Int, [Double])]
-dataExtendFront =
-   [
-     ( [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
-       3,
-       [1,-1,-2,2,1,2,2,4,-3,5,0,1,1,-1,-2,2]
-     ),
-     ( [1,2,3,4], 
-       6,
-       [3,4,1,2,3,4,1,2,3,4,1,2,3,4]
-     ),
-     ( [1,2], 
-       3,
-       [1,2,1,2,1,2]
-     ),
-     ( [1,2], 
-       1,
-       [1,2]
-     ),
-     ( [], 
-       7,
-       []
-     )
-   ]
+dataExtendFront :: [(Int, [Double], [Double])]
+dataExtendFront = DW.dataExtendFront
 
 
-testExtendEnd :: ([Double], Int, [Double]) -> Assertion
-testExtendEnd (sig, ln, expected) = 
+testExtendEnd :: (Int, [Double], [Double]) -> Assertion
+testExtendEnd (ln, sig, expected) = 
     expected @=~? extendEnd ln sig
 
 
-dataExtendEnd :: [([Double], Int, [Double])]
-dataExtendEnd =
-   [
-     ( [1,2,2,4,-3,5,0,1,1,-1,-2,2], 
-       3,
-       [1,2,2,4,-3,5,0,1,1,-1,-2,2,1,2,2,4]
-     ),
-     ( [1,2], 
-       3,
-       [1,2,1,2,1,2]
-     ),
-     ( [1,2], 
-       1,
-       [1,2]
-     ),
-     ( [], 
-       7,
-       []
-     )
-   ]
+dataExtendEnd :: [(Int, [Double], [Double])]
+dataExtendEnd = DW.dataExtendEnd
 
 
 testCsl :: ([Double], [Double]) -> Assertion
@@ -102,11 +49,7 @@ testCsl (input, expected) =
 
 
 dataCsl :: [([Double], [Double])]
-dataCsl = 
-    [
-     ( [1,2,3,4], [2,3,4,1] ),
-     ( [], [] )
-    ]
+dataCsl = DW.dataCsl
 
 
 testCsr :: ([Double], [Double]) -> Assertion
@@ -115,11 +58,7 @@ testCsr (input, expected) =
 
 
 dataCsr :: [([Double], [Double])]
-dataCsr = 
-    [
-     ( [1,2,3,4], [4,1,2,3] ),
-     ( [], [] )
-    ]
+dataCsr = DW.dataCsr
 
 
 testCslN :: (Int, [Double], [Double]) -> Assertion
@@ -128,11 +67,7 @@ testCslN (n, input, expected) =
 
 
 dataCslN :: [(Int, [Double], [Double])]
-dataCslN = 
-    [
-     ( 0, [1,2,3,4], [1,2,3,4] ),
-     ( 4, [], [] )
-    ]
+dataCslN = DW.dataCslN
 
 
 testCsrN :: (Int, [Double], [Double]) -> Assertion
@@ -141,11 +76,7 @@ testCsrN (n, input, expected) =
 
 
 dataCsrN :: [(Int, [Double], [Double])]
-dataCsrN = 
-    [
-     ( 0, [1,2,3,4], [1,2,3,4] ),
-     ( 4, [], [] )
-    ]
+dataCsrN = DW.dataCsrN
 
 
 propIdentityShift1 :: [Double] -> Bool
