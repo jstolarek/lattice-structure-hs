@@ -3,6 +3,7 @@ module Signal.Wavelet.List.Common where
 
 import Control.Arrow ((&&&))
 
+
 dwtWorker :: ((Double, Double) -> [Double] -> [Double])
           -> ([Double] -> [Double]) 
           -> [Double] 
@@ -59,15 +60,15 @@ csr xs = last xs : init xs
 
 
 cslN :: Int -> [Double] -> [Double]
-cslN n sig
-    | n > 0     = cslN (n-1) (csl sig)
+cslN !n sig
+    | n > 0     = cslN (n - 1) (csl sig)
     | n == 0    = sig
     | otherwise = csrN (-n) sig
 
 
 csrN :: Int -> [Double] -> [Double]
-csrN n sig
-    | n > 0     = csrN (n-1) (csr sig)
+csrN !n sig
+    | n > 0     = csrN (n - 1) (csr sig)
     | n == 0    = sig
     | otherwise = cslN (-n) sig
 
@@ -86,3 +87,8 @@ toDeg = map (\x -> x * 180 / pi)
 
 toRad :: [Double] -> [Double]
 toRad = map (\x -> x * pi / 180)
+
+
+chunk :: Int -> [a] -> [[a]]
+chunk _ [] = []
+chunk n xs = as : chunk n bs where !(as, bs) = splitAt n xs

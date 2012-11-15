@@ -1,13 +1,12 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# CFILES C/dwt.c #-}
-
 module Signal.Wavelet.C1 where
 
 import Control.Monad (liftM)
 import Data.Vector.Storable as V
 import Foreign hiding (unsafePerformIO)
 import Foreign.C
-import System.IO.Unsafe
+import System.IO.Unsafe (unsafePerformIO)
 
 
 foreign import ccall unsafe "C/dwt.h"

@@ -1,5 +1,4 @@
 {-# LANGUAGE BangPatterns #-}
-
 module Signal.Wavelet.Vector1 where
 
 import Control.Arrow ((&&&))
@@ -9,7 +8,6 @@ import qualified Data.Vector.Generic.Mutable as VM
 import           Data.Vector.Unboxed         as U
 
 
-{-# INLINE dwt #-}
 dwt :: Vector Double
     -> Vector Double 
     -> Vector Double
@@ -19,7 +17,6 @@ dwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
       layersCount   = U.length angles
 
 
-{-# INLINE idwt #-}
 idwt :: Vector Double
      -> Vector Double 
      -> Vector Double
@@ -30,7 +27,6 @@ idwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
       layersCount = U.length angles
 
 
-{-# INLINE dwtWorker #-}
 dwtWorker :: Int 
           -> Int
           -> Int
@@ -47,7 +43,6 @@ dwtWorker !currentLayer !layersCount !layerModifier angles signal
       newSignal    = lattice layerModifier (sin_, cos_) signal
 
 
-{-# INLINE lattice #-}
 lattice :: Int
         -> (Double, Double)
         -> Vector Double

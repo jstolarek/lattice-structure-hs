@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts, BangPatterns #-}
-
 module Signal.Wavelet.Repa2 where
 
 import Data.Array.Repa as R
@@ -33,14 +32,14 @@ dwtWorker :: Array U DIM1 Double
           -> Array U DIM1 Double
 dwtWorker angles signal = go layers signal
     where
-      !layers = size . extent $ angles :: Int
+      !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig  
           | n == 0    = sig
           | n == 1    = forceP . lattice (sin_, cos_) $ sig
           | otherwise = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
-          where !sin_ = sin $ angles `unsafeIndex` (Z :. (layers - n))
-                !cos_ = cos $ angles `unsafeIndex` (Z :. (layers - n))
+          where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
+                cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
 
 {-# INLINE lattice #-}
@@ -49,7 +48,7 @@ lattice :: (Double, Double)
         -> Array D DIM1 Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
-      baseOp f !(Z :. i) 
+      baseOp f (Z :. i) 
              | even i    = let x = f (Z :. i    )
                                y = f (Z :. i + 1)
                            in x * c + y * s
@@ -93,6 +92,6 @@ trim :: Array D DIM1 Double
 trim signal = unsafeTraverse signal trimExtent mapElems
     where
       {-# INLINE trimExtent #-}
-      trimExtent !(Z :. i) =   (Z :. max (i - 2) 0)
+      trimExtent (Z :. i) =   (Z :. max (i - 2) 0)
       {-# INLINE mapElems #-}
-      mapElems f !(Z :. i) = f (Z :. (i + 1))
+      mapElems f (Z :. i) = f (Z :. (i + 1))
