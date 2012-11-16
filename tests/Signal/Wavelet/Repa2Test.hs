@@ -53,16 +53,6 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
           baseOp = (sin &&& cos) $ ls ! (Z :. 0)
 
 
-propDWTIdenticalToRepa1 :: DwtInputRepa -> Bool
-propDWTIdenticalToRepa1 (DwtInputRepa (ls, sig)) = 
-    R1.dwt ls sig =~ dwt ls sig
-
-
-propIDWTIdenticalToRepa1 :: DwtInputRepa -> Bool
-propIDWTIdenticalToRepa1 (DwtInputRepa (ls, sig)) = 
-    R1.idwt ls sig =~ idwt ls sig
-
-
 testExtendFront :: (Int, Array U DIM1 Double, Array U DIM1 Double)
               -> Assertion
 testExtendFront (ln, sig, expected) = 

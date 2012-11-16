@@ -136,27 +136,5 @@ propPairsIdentity2 (RepaDIM1Array xs) =
           ys = computeS $ R.zipWith (,) xs xs
 
 
-propDWTIdenticalToVector :: DwtInputRepa -> Bool
-propDWTIdenticalToVector (DwtInputRepa (ls, sig)) =
-    vecDwt =~ repaDwt
-        where
-          lsU     = toUnboxed ls
-          sigU    = toUnboxed sig
-          shiftN  = (size . extent $ ls) - 1
-          vecDwt  = V1.dwt lsU sigU
-          repaDwt = toUnboxed . forceS . csrN shiftN . dwt ls $ sig
-
-
-propIDWTIdenticalToVector :: DwtInputRepa -> Bool
-propIDWTIdenticalToVector (DwtInputRepa (ls, sig)) = 
-    vecIdwt =~ repaIdwt
-        where
-          lsU      = toUnboxed ls
-          sigU     = toUnboxed . forceS . csrN shiftN $ sig
-          shiftN   = (size . extent $ ls) - 1
-          vecIdwt  = V1.idwt lsU sigU
-          repaIdwt = toUnboxed . idwt ls $ sig
-
-
 f :: [Double] -> Array U DIM1 Double
 f xs = fromListUnboxed (Z :. (length xs)) xs

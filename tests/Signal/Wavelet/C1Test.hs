@@ -38,20 +38,3 @@ dataIdwt = Prelude.map f DW.dataIdwt
 propDWTInvertible :: DwtInputC -> Bool
 propDWTInvertible (DwtInputC (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
-
-
-propDWTIdenticalToList :: DwtInputC -> Bool
-propDWTIdenticalToList (DwtInputC (ls, sig)) = 
-    listDwt =~ cDwt
-        where
-          listDwt = L1.dwt (toList ls) (toList sig)
-          cDwt    = LC.cslN (V.length ls - 1) $ toList (dwt ls sig)
-
-
-propIDWTIdenticalToList :: DwtInputC -> Bool
-propIDWTIdenticalToList (DwtInputC (ls, sig)) = 
-    listIdwt =~ cIdwt
-        where
-          listIdwt         = L1.idwt (toList ls) (toList sig)
-          cIdwt            = toList . idwt ls . shiftedSig ls $ sig
-          shiftedSig xs ys = fromList (LC.csrN (V.length xs - 1) (toList ys))

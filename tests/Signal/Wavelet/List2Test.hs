@@ -30,13 +30,3 @@ dataIdwt = DW.dataIdwt
 propDWTInvertible :: DwtInputList -> Bool
 propDWTInvertible (DwtInputList (ls, sig)) = 
     idwt (inv ls) (dwt ls sig) =~ sig
-
-
-propDWTIdenticalToList1 :: DwtInputList -> Bool
-propDWTIdenticalToList1 (DwtInputList (ls, sig)) = 
-    L1.dwt ls sig =~ dwt ls sig
-
-
-propIDWTIdenticalToList1 :: DwtInputList -> Bool
-propIDWTIdenticalToList1 (DwtInputList (ls, sig)) = 
-    L1.idwt ls sig =~ idwt ls sig

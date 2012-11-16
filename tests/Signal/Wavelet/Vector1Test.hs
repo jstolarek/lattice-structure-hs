@@ -59,19 +59,3 @@ propDoubleLatticeIdentity (DwtInputVector (ls, sig)) =
         lattice lm baseOp (lattice lm baseOp sig) =~ sig
             where
               baseOp = (sin &&& cos) $ ls ! 0
-
-
-propDWTIdenticalToC :: DwtInputVector -> Bool
-propDWTIdenticalToC (DwtInputVector (ls, sig)) = 
-    cDwt =~ repaDwt
-        where
-          cDwt    = C1.dwt (convert ls) (convert sig)
-          repaDwt = convert $ dwt ls sig
-
-
-propIDWTIdenticalToC :: DwtInputVector -> Bool
-propIDWTIdenticalToC (DwtInputVector (ls, sig)) = 
-    cIdwt =~ repaIdwt
-        where
-          cIdwt    = C1.idwt (convert ls) (convert sig)
-          repaIdwt = convert $ idwt ls sig
