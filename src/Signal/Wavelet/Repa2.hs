@@ -10,9 +10,9 @@ import Signal.Wavelet.Repa.Common
 dwt :: Array U DIM1 Double
     -> Array U DIM1 Double 
     -> Array U DIM1 Double
-dwt angles signal = dwtWorker angles extendedSignal
+dwt angles signal = dwtWorker angles extendedSignal forceS
     where 
-      extendedSignal = forceP $ extendEnd layers signal
+      extendedSignal = forceS $ extendEnd layers signal
       layers         = size . extent $ angles
 
 
@@ -20,24 +20,25 @@ dwt angles signal = dwtWorker angles extendedSignal
 idwt :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-idwt angles signal = dwtWorker angles extendedSignal
+idwt angles signal = dwtWorker angles extendedSignal forceS
     where
-      extendedSignal = forceP $ extendFront layers signal
+      extendedSignal = forceS $ extendFront layers signal
       layers         = size . extent $ angles
 
 
 {-# INLINE dwtWorker #-}
 dwtWorker :: Array U DIM1 Double
           -> Array U DIM1 Double 
+          -> (Array D DIM1 Double -> Array U DIM1 Double)
           -> Array U DIM1 Double
-dwtWorker angles signal = go layers signal
+dwtWorker angles signal compute = go layers signal
     where
       !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go !n sig  
+      go !n sig
           | n == 0    = sig
-          | n == 1    = forceP . lattice (sin_, cos_) $ sig
-          | otherwise = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
+          | n == 1    = compute . lattice (sin_, cos_) $ sig
+          | otherwise = go (n - 1) (compute . trim . lattice (sin_, cos_) $ sig)
           where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
                 cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
 

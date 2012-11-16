@@ -33,7 +33,7 @@ dwtWorker cs angles signal = go layers signal
       go  1 !sig      = doLayer 1 sig
       go !n !sig      = go (n-1) (forceS . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n !sig = forceP . lattice 
+      doLayer !n !sig = forceS . lattice 
                         (weights `unsafeIndex` (Z :. (layers - n))) $ sig
       weights         = a2w angles
       layers          = size . extent $ angles
