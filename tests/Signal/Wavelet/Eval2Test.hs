@@ -3,7 +3,7 @@ module Signal.Wavelet.Eval2Test where
 import Signal.Wavelet.Eval2
 import Signal.Wavelet.List.Common (inv)
 import Test.ArbitraryInstances    (DwtInputList(..))
-import qualified Test.Data.Wavelet as DW
+import Test.Data.Wavelet          as DW
 import Test.HUnit                 (Assertion)
 import Test.Utils                 ((=~), (@=~?))
 

@@ -1,16 +1,16 @@
 module Signal.Wavelet.Vector1Test where
 
-import Control.Arrow ((&&&))
-import Data.Vector.Unboxed as V
-import qualified Signal.Wavelet.C1 as C1
-import qualified Signal.Wavelet.List.Common as LC
+import Control.Arrow       ((&&&))
+import Data.Vector.Unboxed (Vector, fromList, (!))
+import Test.HUnit          (Assertion)
+import Test.QuickCheck     (Property, forAll, elements)
+
+import Signal.Wavelet.List.Common as LC (cslN, csrN)
 import Signal.Wavelet.Vector1
-import Signal.Wavelet.Vector.Common
-import Test.ArbitraryInstances
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit
-import Test.QuickCheck
-import Test.Utils
+import Signal.Wavelet.Vector.Common     (inv)
+import Test.ArbitraryInstances          (DwtInputVector(..))
+import Test.Data.Wavelet          as DW
+import Test.Utils                       ((=~), (@=~?))
 
 
 testDwt :: (Vector Double, Vector Double, Vector Double) -> Assertion

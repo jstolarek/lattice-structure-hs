@@ -1,13 +1,13 @@
 module Signal.Wavelet.Repa2Test where
 
-import Control.Arrow ((&&&))
-import Data.Array.Repa as R
-import Signal.Wavelet.Repa.Common
-import qualified Signal.Wavelet.Repa1 as R1
+import Control.Arrow   ((&&&))
+import Data.Array.Repa
+import Test.HUnit      (Assertion)
+
 import Signal.Wavelet.Repa2
+import Signal.Wavelet.Repa.Common (inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..))
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit                 (Assertion)
+import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
 
 

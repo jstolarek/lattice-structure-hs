@@ -1,9 +1,10 @@
 module Signal.Wavelet.Repa.CommonTest where
 
-import Data.Array.Repa
-import Signal.Wavelet.Repa.Common
-import Test.ArbitraryInstances
-import Test.Utils
+import Data.Array.Repa            (computeS)
+
+import Signal.Wavelet.Repa.Common (toRad, toDeg, inv)
+import Test.ArbitraryInstances    (RepaDIM1Array(..))
+import Test.Utils                 ((=~))
 
 
 propDegRadInvertible :: RepaDIM1Array -> Bool

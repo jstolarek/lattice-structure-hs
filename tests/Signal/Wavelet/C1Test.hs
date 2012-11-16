@@ -1,14 +1,14 @@
 module Signal.Wavelet.C1Test where
 
-import Data.Vector.Storable as V
+import Data.Vector.Storable (Vector, fromList)
+import Test.HUnit           (Assertion)
+
 import Signal.Wavelet.C1
-import qualified Signal.Wavelet.List1 as L1
-import qualified Signal.Wavelet.List.Common as LC
-import Signal.Wavelet.Vector.Common
-import Test.ArbitraryInstances
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit
-import Test.Utils
+import Signal.Wavelet.List.Common as LC (cslN, csrN)
+import Signal.Wavelet.Vector.Common     (inv)
+import Test.ArbitraryInstances          (DwtInputC(..))
+import Test.Data.Wavelet          as DW
+import Test.Utils                       ((=~),(@=~?))
 
 
 testDwt :: (Vector Double, Vector Double, Vector Double) -> Assertion

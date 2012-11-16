@@ -1,11 +1,12 @@
 module Signal.Wavelet.List.CommonTest where
 
-import Control.Arrow ((&&&))
+import Control.Arrow   ((&&&))
+import Test.HUnit      (Assertion, (@=?))
+import Test.QuickCheck (Property, forAll, sized, choose)
+
 import Signal.Wavelet.List.Common
 import Test.ArbitraryInstances    (DwtInputList(..))
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit                 (Assertion, (@=?))
-import Test.QuickCheck
+import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
 
 

@@ -33,6 +33,19 @@ List1 -> C1 -> Vector1
 Read "List1 -> C1" as "List1 implementation serves as a reference to C1 
 implementation".
 
+
+Note: [Shifting input/output signal]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Implementations operating in situ (C1 and Vector1):
+
+a) return shifted signal in case of DWT
+b) require that input signal is shofted in case of IDWT
+
+This means that signals need to be shifted accordingly in order to compare them
+with different implementation. Test dependencies are designed in such a way that
+only one test requires shifting of signals (List1 -> C1). 
+
 -}
 
 
@@ -85,7 +98,7 @@ propIDWTRepa2LikeRepa1 :: DwtInputRepa -> Bool
 propIDWTRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
     R1.idwt ls sig =~ R2.idwt ls sig
 
-
+-- See Note: [Shifting input/output signal]
 propDWTC1LikeList1 :: DwtInputC -> Bool
 propDWTC1LikeList1 (DwtInputC (ls, sig)) = 
     listDwt =~ cDwt

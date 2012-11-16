@@ -1,15 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Repa1Test where
 
-import Control.Arrow ((&&&))
+import Control.Arrow   ((&&&))
 import Data.Array.Repa as R
-import Signal.Wavelet.Repa.Common
+import Test.HUnit      (Assertion, (@=?))
+import Test.QuickCheck (Property, (==>))
+
 import Signal.Wavelet.Repa1
-import qualified Signal.Wavelet.Vector1 as V1
+import Signal.Wavelet.Repa.Common (forceS, inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..), RepaDIM1Array (..))
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit                 (Assertion, (@=?))
-import Test.QuickCheck            (Property, (==>))
+import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
 
 

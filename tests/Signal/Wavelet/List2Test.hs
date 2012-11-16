@@ -1,11 +1,11 @@
 module Signal.Wavelet.List2Test where
 
-import qualified Signal.Wavelet.List1 as L1
-import Signal.Wavelet.List.Common (inv)
+import Test.HUnit (Assertion)
+
 import Signal.Wavelet.List2
+import Signal.Wavelet.List.Common (inv)
 import Test.ArbitraryInstances    (DwtInputList(..))
-import qualified Test.Data.Wavelet as DW
-import Test.HUnit                 (Assertion)
+import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
 
 
