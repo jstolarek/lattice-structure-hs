@@ -45,19 +45,10 @@ lattice :: Int
         -> (Double, Double)
         -> Vector Double
         -> Vector Double
-lattice lm baseOp sig = latticeWorker c_lattice lm baseOp sig
-
-
-latticeWorker :: (CInt -> CDouble -> CDouble -> Ptr CDouble -> CInt -> 
-               IO (Ptr CDouble))
-              -> Int
-        -> (Double, Double)
-        -> Vector Double
-        -> Vector Double
-latticeWorker latticeFun !layerModifier !(!sin_, !cos_) sig = unsafePerformIO $ do
+lattice !layerModifier !(!sin_, !cos_) sig = unsafePerformIO $ do
     let (fpSig, _, lenSig) = unsafeToForeignPtr sig
     pLattice <- liftM castPtr $ withForeignPtr fpSig $ \ptrSig ->
-                latticeFun (fromIntegral layerModifier)
+                c_lattice (fromIntegral layerModifier)
                           (realToFrac sin_) (realToFrac cos_)
                           (castPtr ptrSig ) (fromIntegral lenSig)
     fpLattice <- newForeignPtr finalizerFree pLattice
