@@ -117,6 +117,8 @@ tests = [
       testProvider "DWT"                         C1.testDwt  C1.dataDwt
     , testProvider "IDWT"                        C1.testIdwt C1.dataIdwt
     , testProperty "DWT-IDWT identity"           C1.propDWTInvertible
+    , testProvider "Lattice layer"               C1.testLattice C1.dataLattice
+    , testProperty "Inverting lattice layer"     C1.propDoubleLatticeIdentity
   ],
   testGroup "Verify equivalence of all DWT/IDWT implementations" [
       testProperty " DWT Eval1 like List1"       RF.propDWTEval1LikeList1

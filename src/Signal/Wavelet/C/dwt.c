@@ -51,18 +51,34 @@ double* c_dwt_worker( int lm, double* ls, int ln, double* xs, int xn ) {
   sin_ = sin( ls[ 0 ] );
   cos_ = cos( ls[ 0 ] );
   // first layer reads from input xs array and writes to output ds array
-  lm = lattice( lm, xs, ds, xn, sin_, cos_ );
+  lm = c_lattice_worker( lm, xs, ds, xn, sin_, cos_ );
 
   for( int lnc = 1; lnc < ln; lnc++) {
     sin_ = sin( ls[ lnc ] );
     cos_ = cos( ls[ lnc ] );
     // subsequent layers operate in situ on output ds array
-    lm = lattice( lm, ds, ds, xn, sin_, cos_ );
+    lm = c_lattice_worker( lm, ds, ds, xn, sin_, cos_ );
   }
 
   return ds;
 }
 
+/* Wrapper for lattice function. Used when calling C implementation of lattice
+ * from Haskell. C implementation of dwt/idwt call c_lattice_worker directly.
+ * See c_lattice_worker below for parameter description.
+ *
+ */
+double* c_lattice( int lm, double sin_, double cos_, double* inArr, 
+                   int arrLen ) { 
+  double* outArr = malloc( arrLen * sizeof( double ) );
+
+  // do computations only if non-empty array was passed
+  if ( arrLen != 0) {
+    c_lattice_worker( lm, inArr, outArr, arrLen, sin_, cos_ );
+  }
+
+  return outArr;
+}
 
 /* One layer of a lattice structure. Processes elements in pairs.
  *
@@ -76,7 +92,7 @@ double* c_dwt_worker( int lm, double* ls, int ln, double* xs, int xn ) {
  *              these are values of trigonometric functions calculated by
  *              ecternal function.
  */
-inline int lattice( int lm, double* inArr, double* outArr, int arrLen,
+int c_lattice_worker( int lm, double* inArr, double* outArr, int arrLen,
              double sin_,  double cos_ ) {
   int xi, yi;
   double x, y;
@@ -93,7 +109,7 @@ inline int lattice( int lm, double* inArr, double* outArr, int arrLen,
     outArr[ yi ] = x * sin_ - y * cos_;
   }
 
-  // this handles the border case (if there was such)
+  // this handles the border case (if there is such)
   if (lm == 1) {
     xi = arrLen - 1;
     yi = 0;

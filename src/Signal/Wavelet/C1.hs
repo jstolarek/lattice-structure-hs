@@ -1,4 +1,4 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, BangPatterns #-}
 {-# CFILES C/dwt.c #-}
 module Signal.Wavelet.C1 where
 
@@ -13,6 +13,9 @@ foreign import ccall unsafe "C/dwt.h"
   c_dwt  :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
 foreign import ccall unsafe "C/dwt.h"
   c_idwt :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
+foreign import ccall unsafe "C/dwt.h"
+  c_lattice :: CInt -> CDouble -> CDouble -> Ptr CDouble -> CInt -> 
+               IO (Ptr CDouble)
 
 
 dwt :: Vector Double -> Vector Double -> Vector Double
@@ -36,3 +39,26 @@ dwtWorker dwtFun ls sig = unsafePerformIO $ do
                        (castPtr ptrSig) (fromIntegral lenSig)
     fpDwt <- newForeignPtr finalizerFree pDwt
     return $ unsafeFromForeignPtr0 fpDwt lenSig
+
+
+lattice :: Int
+        -> (Double, Double)
+        -> Vector Double
+        -> Vector Double
+lattice lm baseOp sig = latticeWorker c_lattice lm baseOp sig
+
+
+latticeWorker :: (CInt -> CDouble -> CDouble -> Ptr CDouble -> CInt -> 
+               IO (Ptr CDouble))
+              -> Int
+        -> (Double, Double)
+        -> Vector Double
+        -> Vector Double
+latticeWorker latticeFun !layerModifier !(!sin_, !cos_) sig = unsafePerformIO $ do
+    let (fpSig, _, lenSig) = unsafeToForeignPtr sig
+    pLattice <- liftM castPtr $ withForeignPtr fpSig $ \ptrSig ->
+                latticeFun (fromIntegral layerModifier)
+                          (realToFrac sin_) (realToFrac cos_)
+                          (castPtr ptrSig ) (fromIntegral lenSig)
+    fpLattice <- newForeignPtr finalizerFree pLattice
+    return $ unsafeFromForeignPtr0 fpLattice lenSig
