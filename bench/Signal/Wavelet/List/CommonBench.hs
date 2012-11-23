@@ -14,14 +14,14 @@ benchExtendEnd :: (Int, [Double]) -> [Double]
 benchExtendEnd (ls, sig) = extendEnd ls sig
 
 
-{-# INLINE benchLattice #-}
-benchLattice :: ((Double, Double), [Double]) -> [Double]
-benchLattice (baseOp, sig) = latticeSeq baseOp sig
-
-
 dataExtend :: ([Double], [Double])
            -> (Int, [Double])
 dataExtend (ls, sig) = (length ls, sig)
+
+
+{-# INLINE benchLattice #-}
+benchLattice :: ((Double, Double), [Double]) -> [Double]
+benchLattice (baseOp, sig) = latticeSeq baseOp sig
 
 
 dataLattice :: ([Double], [Double])

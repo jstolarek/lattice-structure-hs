@@ -1,7 +1,7 @@
 {-# LANGUAGE BangPatterns #-}
 module Signal.Wavelet.Vector1 where
 
-import Control.Arrow ((&&&))
+import Control.Arrow    ((&&&))
 import Control.Monad.ST (runST)
 import qualified Data.Vector.Generic         as VG
 import qualified Data.Vector.Generic.Mutable as VM

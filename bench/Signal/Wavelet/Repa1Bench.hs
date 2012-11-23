@@ -1,8 +1,9 @@
 module Signal.Wavelet.Repa1Bench where
 
-import Control.Arrow ((&&&))
+import Control.Arrow   ((&&&))
 import Data.Array.Repa
-import Signal.Wavelet.Repa.Common
+
+import Signal.Wavelet.Repa.Common (forceS)
 import Signal.Wavelet.Repa1
 
 
@@ -16,11 +17,6 @@ benchIdwt :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
 benchIdwt (ls, sig) = idwt ls sig
 
 
-{-# INLINE benchLattice #-}
-benchLattice :: ((Double, Double), Array U DIM1 Double) -> Array U DIM1 Double
-benchLattice (baseOp, sig) = forceS . lattice baseOp $ sig
-
-
 dataDwt :: ([Double], [Double])
         -> (Array U DIM1 Double, Array U DIM1 Double)
 dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls, 
@@ -28,6 +24,11 @@ dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls,
     where
       lsSize  = length ls
       sigSize = length sig
+
+
+{-# INLINE benchLattice #-}
+benchLattice :: ((Double, Double), Array U DIM1 Double) -> Array U DIM1 Double
+benchLattice (baseOp, sig) = forceS . lattice baseOp $ sig
 
 
 dataLattice :: ([Double], [Double])

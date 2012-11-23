@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Vector.Common where
 
-import Data.Vector.Generic as V
+import Data.Vector.Generic as V (Vector, reverse, map)
+
 
 {-# INLINE inv #-}
 inv :: Vector v Double => v Double -> v Double

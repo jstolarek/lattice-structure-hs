@@ -1,7 +1,7 @@
 module Signal.Wavelet.Eval2 where
 
-import Signal.Wavelet.Eval.Common
-import Signal.Wavelet.List.Common
+import Signal.Wavelet.Eval.Common (latticePar)
+import Signal.Wavelet.List.Common (dwtWorker, extendFront, extendEnd)
 
 
 dwt :: [Double] -> [Double] -> [Double]

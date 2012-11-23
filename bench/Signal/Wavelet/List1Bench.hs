@@ -1,7 +1,8 @@
 module Signal.Wavelet.List1Bench where
 
+import System.Random (RandomGen, randoms)
+
 import Signal.Wavelet.List1
-import System.Random
 
 
 {-# INLINE benchDwt #-}

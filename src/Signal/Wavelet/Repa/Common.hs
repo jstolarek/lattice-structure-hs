@@ -2,7 +2,7 @@
 module Signal.Wavelet.Repa.Common where
 
 import Control.Monad.Identity (runIdentity)
-import Data.Array.Repa as R
+import Data.Array.Repa        as R
 import Data.Array.Repa.Unsafe (unsafeBackpermute)
 
 

@@ -1,9 +1,10 @@
 {-# LANGUAGE FlexibleContexts, TypeOperators, BangPatterns #-}
 module Signal.Wavelet.Repa1 where
 
-import Control.Arrow ((&&&))
-import Data.Array.Repa as R
-import Data.Array.Repa.Unsafe
+import Control.Arrow         ((&&&))
+import Data.Array.Repa        as R
+import Data.Array.Repa.Unsafe (unsafeBackpermute, unsafeTraverse)
+
 import Signal.Wavelet.Repa.Common
 
 

@@ -1,8 +1,9 @@
 {-# LANGUAGE FlexibleContexts, BangPatterns #-}
 module Signal.Wavelet.Repa2 where
 
-import Data.Array.Repa as R
-import Data.Array.Repa.Unsafe
+import Data.Array.Repa        as R
+import Data.Array.Repa.Unsafe (unsafeTraverse)
+
 import Signal.Wavelet.Repa.Common
 
 
