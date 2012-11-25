@@ -1,6 +1,5 @@
 module Signal.Wavelet.Repa2Bench where
 
-import Control.Arrow   ((&&&))
 import Data.Array.Repa
 
 import Signal.Wavelet.Repa.Common (forceS)

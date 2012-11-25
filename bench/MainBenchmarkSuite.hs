@@ -7,6 +7,7 @@ import Criterion.Main
 import System.Random
 
 import qualified Signal.Wavelet.C1Bench          as C1
+import qualified Signal.Wavelet.Eval.CommonBench as EC
 import qualified Signal.Wavelet.Eval1Bench       as E1
 import qualified Signal.Wavelet.Eval2Bench       as E2
 import qualified Signal.Wavelet.List.CommonBench as LC
@@ -37,7 +38,16 @@ benchmarks gen =
         lDataExtend  = LC.dataExtend lDataDwt
         rDataExtend  = R2.dataExtend lDataDwt
     in [
-     bgroup "DWT" . (:[])  $ bcompare  
+     bgroup "Lattice" 
+      [
+        bench "C1"          $ whnf C1.benchLattice cDataLattice
+      , bench "Vector1"     $ whnf V1.benchLattice vDataLattice
+      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
+      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
+--      , bench "List.Common" $   nf LC.benchLattice lDataLattice
+--      , bench "Eval.Common" $   nf EC.benchLattice lDataLattice
+      ]
+   , bgroup "DWT" . (:[])  $ bcompare  
       [ 
         bench "C1"      $ whnf C1.benchDwt cDataDwt
       , bench "Vector1" $ whnf V1.benchDwt vDataDwt
@@ -48,7 +58,7 @@ benchmarks gen =
 --      , bench "Eval1"   $ nf   E1.benchDwt lDataDwt
 --      , bench "Eval2"   $ nf   E2.benchDwt lDataDwt
       ]
-   , bgroup "IDWT" . (:[])  $ bcompare  
+{-   , bgroup "IDWT" . (:[])  $ bcompare  
       [ -- See Note [C criterion bug]
         bench "C1"      $ whnf C1.benchIdwt cDataDwt 
       , bench "Vector1" $ whnf V1.benchIdwt vDataDwt
@@ -59,23 +69,15 @@ benchmarks gen =
 --      , bench "Eval1"   $ nf   E1.benchIdwt lDataDwt
 --      , bench "Eval2"   $ nf   E2.benchIdwt lDataDwt
       ]
-   , bgroup "Lattice" 
-      [
-        bench "C1"          $ whnf C1.benchLattice cDataLattice
-      , bench "Vector1"     $ whnf V1.benchLattice vDataLattice
-      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
-      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
-      , bench "List.Common" $   nf LC.benchLattice lDataLattice
-      ]
    , bgroup "ExtendFront"
       [
         bench "Repa2"       $ whnf R2.benchExtendFront rDataExtend
       , bench "List.Common" $   nf LC.benchExtendFront lDataExtend
-      ]
+      ]-}
    , bgroup "ExtendEnd" 
       [
         bench "Repa2"       $ whnf R2.benchExtendEnd   rDataExtend
-      , bench "List.Common" $   nf LC.benchExtendEnd   lDataExtend
+--      , bench "List.Common" $   nf LC.benchExtendEnd   lDataExtend
       ]
     ]
 

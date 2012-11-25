@@ -23,6 +23,7 @@ tested-with:        GHC>=7.4
 library
   hs-source-dirs:   src
   exposed-modules:  Signal.Wavelet.C1,
+                    Signal.Wavelet.Eval.Common,
                     Signal.Wavelet.Eval1,
                     Signal.Wavelet.Eval2,
                     Signal.Wavelet.List.Common,
@@ -32,8 +33,7 @@ library
                     Signal.Wavelet.Repa1,
                     Signal.Wavelet.Repa2,
                     Signal.Wavelet.Vector1
-  other-modules:    Signal.Wavelet.Eval.Common,
-                    Signal.Wavelet.Vector.Common
+  other-modules:    Signal.Wavelet.Vector.Common
   build-depends:    base == 4.5.*,
                     deepseq,
                     dlist,
@@ -44,8 +44,6 @@ library
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
-                    -rtsopts
-                    -eventlog
                     -threaded 
                     -fno-liberate-case 
                     -funfolding-use-threshold1000 
