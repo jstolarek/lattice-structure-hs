@@ -16,6 +16,7 @@ import qualified Signal.Wavelet.List2Test       as L2
 import qualified Signal.Wavelet.Repa.CommonTest as RC
 import qualified Signal.Wavelet.Repa1Test       as R1
 import qualified Signal.Wavelet.Repa2Test       as R2
+import qualified Signal.Wavelet.Repa3Test       as R3
 import qualified Signal.Wavelet.Vector1Test     as V1
 
 import qualified Signal.Wavelet.ReferenceITest  as RF
@@ -112,6 +113,13 @@ tests = [
     , testProvider "Extend end of signal"        R2.testExtendEnd
                                                  R2.dataExtendEnd
     , testProvider "Remove first & last element" R2.testTrim R2.dataTrim
+  ],
+  testGroup "Repa3" [
+--    testProvider "DWT"                         R3.testDwt  R3.dataDwt
+--  , testProvider "IDWT"                        R3.testIdwt R3.dataIdwt
+--  , testProperty "DWT-IDWT identity"           R3.propDWTInvertible
+      testProvider "Lattice layer"               R3.testLattice R3.dataLattice
+    , testProperty "Inverting lattice layer"     R3.propDoubleLatticeIdentity
   ],
   testGroup "C1" [
       testProvider "DWT"                         C1.testDwt  C1.dataDwt
