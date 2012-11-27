@@ -120,6 +120,8 @@ tests = [
 --  , testProperty "DWT-IDWT identity"           R3.propDWTInvertible
       testProvider "Lattice layer"               R3.testLattice R3.dataLattice
     , testProperty "Inverting lattice layer"     R3.propDoubleLatticeIdentity
+    , testProvider "Distribute work"             R3.testDistributeWork 
+                                                 R3.dataDistributeWork
   ],
   testGroup "C1" [
       testProvider "DWT"                         C1.testDwt  C1.dataDwt

@@ -32,25 +32,25 @@ benchmarks gen =
         cDataDwt     = C1.dataDwt lDataDwt
         rDataDwt     = R1.dataDwt lDataDwt
         vDataDwt     = V1.dataDwt lDataDwt
---        lDataLattice = LC.dataLattice lDataDwt
+--      lDataLattice = LC.dataLattice lDataDwt
         cDataLattice = C1.dataLattice lDataDwt
         rDataLattice = R1.dataLattice lDataDwt
         vDataLattice = V1.dataLattice lDataDwt
---        lDataExtend  = LC.dataExtend lDataDwt
+--      lDataExtend  = LC.dataExtend lDataDwt
         rDataExtend  = R2.dataExtend lDataDwt
+        rDataDistrib = R3.dataDistributeWork lDataDwt
     in [
      bgroup "Lattice" 
       [
         bench "C1"          $ whnf C1.benchLattice cDataLattice
-      ,  bench "C1"          $ whnf C1.benchLattice cDataLattice
       , bench "Vector1"     $ whnf V1.benchLattice vDataLattice
---      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
---      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
---      , bench "Repa3"       $ whnf R3.benchLattice rDataLattice
+      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
+      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
+      , bench "Repa3"       $ whnf R3.benchLattice rDataLattice
 --      , bench "List.Common" $   nf LC.benchLattice lDataLattice
 --      , bench "Eval.Common" $   nf EC.benchLattice lDataLattice
       ]
-   , bgroup "DWT" . (:[])  $ bcompare  
+{-   , bgroup "DWT" . (:[])  $ bcompare  
       [ 
         bench "C1"      $ whnf C1.benchDwt cDataDwt
       , bench "Vector1" $ whnf V1.benchDwt vDataDwt
@@ -60,7 +60,7 @@ benchmarks gen =
 --      , bench "List2"   $ nf   L2.benchDwt lDataDwt
 --      , bench "Eval1"   $ nf   E1.benchDwt lDataDwt
 --      , bench "Eval2"   $ nf   E2.benchDwt lDataDwt
-      ]
+      ]-}
 {-   , bgroup "IDWT" . (:[])  $ bcompare  
       [ -- See Note [C criterion bug]
         bench "C1"      $ whnf C1.benchIdwt cDataDwt 
@@ -82,6 +82,10 @@ benchmarks gen =
         bench "Repa2"       $ whnf R2.benchExtendEnd   rDataExtend
 --      , bench "List.Common" $   nf LC.benchExtendEnd   lDataExtend
       ]
+   , bgroup "Other" 
+      [
+        bench "Repa3/distributeWork" $ whnf R3.benchDistributeWork rDataDistrib
+      ]
     ]
 
 
@@ -96,6 +100,7 @@ Note [C criterion bug]
 ~~~~~~~~~~~~~~~~~~~~~~
 When benchmarking C bindings with criterion the first benchmark returns 
 correct result. All other benchmarks that use FFI estimate run time 
-to be longer by 15 microseconds.
+to be longer. This does not happen always and seems to depend on CPU. These
+are possibly cache effects.
 
 -}

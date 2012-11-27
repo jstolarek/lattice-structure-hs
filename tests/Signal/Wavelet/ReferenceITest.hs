@@ -98,6 +98,7 @@ propIDWTRepa2LikeRepa1 :: DwtInputRepa -> Bool
 propIDWTRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
     R1.idwt ls sig =~ R2.idwt ls sig
 
+
 -- See Note: [Shifting input/output signal]
 propDWTC1LikeList1 :: DwtInputC -> Bool
 propDWTC1LikeList1 (DwtInputC (ls, sig)) = 

@@ -201,3 +201,13 @@ dataTrim =
      , []
      )
    ]
+
+
+dataDistributeWork :: [(Int, Int, [Int])]
+dataDistributeWork = 
+    [
+      ( 1, 32, [0,32]          )
+    , ( 2, 32, [0,16,32]       )
+    , ( 2, 30, [0,16,30]       )
+    , ( 4, 60, [0,16,32,46,60] )
+    ]
