@@ -57,6 +57,8 @@ test-suite wavelet-hs-test
   hs-source-dirs:   src, tests
   main-is:          MainTestSuite.hs
   ghc-options:      -Wall
+                    -threaded
+                    -rtsopts
   build-depends:    base,
                     Cabal,
                     HUnit,
