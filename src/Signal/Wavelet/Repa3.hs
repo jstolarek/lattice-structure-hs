@@ -8,10 +8,11 @@
   #-}
 module Signal.Wavelet.Repa3 where
 
-import Data.Array.Repa
+import Data.Array.Repa hiding (map)
 import Data.Array.Repa.Eval.Gang
 import Data.Array.Repa.Eval.Load
 import Data.Array.Repa.Eval.Target
+import Data.Vector.Unboxed as U (Vector, fromList, (!))
 import Debug.Trace
 
 import Signal.Wavelet.Repa.Common
@@ -22,12 +23,12 @@ instance Source L Double where
 
     data Array L sh Double
         = ALattice 
-          { layerLength :: sh -- only DIM1
-          , baseOp      :: !(Double, Double)
-          , getSig      :: Int -> Double
+          { lLength :: sh -- only DIM1
+          , lBaseOp :: !(Double, Double)
+          , lGetSig :: Int -> Double
           }
 
-    extent = layerLength
+    extent = lLength
 
     deepSeqArray (ALattice sh (s, c) getSig) y = 
         sh `deepSeq` s `seq` c `seq` getSig `seq` y
@@ -61,7 +62,7 @@ instance Load L DIM1 Double where
 
 
 lattice :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-lattice (s, c) sig = computeS lat
+lattice (s, c) sig = forceP lat
     where lat = ALattice (extent sig) (s, c) (linearIndex sig)
 
 
@@ -71,10 +72,18 @@ fillLatticeP :: (Int -> Double -> IO ())
              -> Double
              -> Int
              -> IO ()
-fillLatticeP write getSig s c count = gangIO theGang fillLattice
-    where 
+fillLatticeP write getElem s c count = gangIO theGang fillLattice
+    where
+      !threads    = gangSize theGang
+      !chunkLen   = (count `quot` 2) `quot` threads
+      !chunkSlack = (count `quot` 2) `rem`  threads
+      !workShare  = distributeWork threads chunkLen chunkSlack
+
       fillLattice :: Int -> IO ()
-      fillLattice threadId = undefined
+      fillLattice threadId = 
+          fillLatticeS write getElem s c 
+                      (workShare U.! (threadId + 1))
+                      (workShare U.! threadId)
 
 
 fillLatticeS :: (Int -> Double -> IO ())
@@ -84,12 +93,21 @@ fillLatticeS :: (Int -> Double -> IO ())
              -> Int
              -> Int
              -> IO ()
-fillLatticeS write getSig !s !c count = fillLattice
+fillLatticeS write getElem !s !c count off = fillLattice off
     where fillLattice offset
               | offset == count = return ()
               | otherwise       = do
-                  let !x = getSig offset
-                      !y = getSig (offset + 1)
+                  let !x = getElem offset
+                      !y = getElem (offset + 1)
                   write  offset      (x * c + y * s)
                   write (offset + 1) (x * s - y * c)
                   fillLattice (offset + 2)
+
+
+distributeWork :: Int -> Int -> Int -> Vector Int
+distributeWork numCaps chunkLen chunkSlack = U.fromList . scanl (+) 0 . 
+                       map (*2) . distribute numCaps chunkLen $ chunkSlack
+    where 
+      distribute !0    _    _   = []
+      distribute !caps !len !0  = len     : distribute (caps - 1) len 0
+      distribute !caps !len !sl = len + 1 : distribute (caps - 1) len (sl - 1)  

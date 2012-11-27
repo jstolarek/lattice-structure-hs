@@ -3,17 +3,20 @@ module Signal.Wavelet.Repa.Common where
 
 import Control.Monad.Identity (runIdentity)
 import Data.Array.Repa        as R
+import Data.Array.Repa.Eval
 import Data.Array.Repa.Unsafe (unsafeBackpermute)
 
 
 {-# INLINE forceP #-}
-forceP :: Array D DIM1 Double 
+forceP :: (Load r DIM1 Double)
+       => Array r DIM1 Double 
        -> Array U DIM1 Double
 forceP = runIdentity . computeP
 
 
 {-# INLINE forceS #-}
-forceS :: Array D DIM1 Double 
+forceS :: (Load r DIM1 Double)
+       => Array r DIM1 Double 
        -> Array U DIM1 Double
 forceS = computeS
 

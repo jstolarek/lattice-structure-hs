@@ -32,11 +32,10 @@ library
                     Signal.Wavelet.Repa.Common,
                     Signal.Wavelet.Repa1,
                     Signal.Wavelet.Repa2,
+                    Signal.Wavelet.Repa3,
                     Signal.Wavelet.Vector1
   other-modules:    Signal.Wavelet.Vector.Common
   build-depends:    base == 4.5.*,
-                    deepseq,
-                    dlist,
                     mtl,
                     parallel,
                     repa >= 3.0,
@@ -59,8 +58,6 @@ test-suite wavelet-hs-test
   main-is:          MainTestSuite.hs
   ghc-options:      -Wall
   build-depends:    base,
-                    deepseq,
-                    dlist,
                     Cabal,
                     HUnit,
                     mtl,
@@ -83,7 +80,6 @@ benchmark wavelet-hs-bench
                     mtl,
                     random,
                     repa >= 3.0,
-                    repa-algorithms,
                     vector,
                     wavelet-hs
   ghc-options:      -Wall 

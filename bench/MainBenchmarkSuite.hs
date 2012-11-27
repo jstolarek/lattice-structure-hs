@@ -15,6 +15,7 @@ import qualified Signal.Wavelet.List1Bench       as L1
 import qualified Signal.Wavelet.List2Bench       as L2
 import qualified Signal.Wavelet.Repa1Bench       as R1
 import qualified Signal.Wavelet.Repa2Bench       as R2
+import qualified Signal.Wavelet.Repa3Bench       as R3
 import qualified Signal.Wavelet.Vector1Bench     as V1
 
 
@@ -31,19 +32,21 @@ benchmarks gen =
         cDataDwt     = C1.dataDwt lDataDwt
         rDataDwt     = R1.dataDwt lDataDwt
         vDataDwt     = V1.dataDwt lDataDwt
-        lDataLattice = LC.dataLattice lDataDwt
+--        lDataLattice = LC.dataLattice lDataDwt
         cDataLattice = C1.dataLattice lDataDwt
         rDataLattice = R1.dataLattice lDataDwt
         vDataLattice = V1.dataLattice lDataDwt
-        lDataExtend  = LC.dataExtend lDataDwt
+--        lDataExtend  = LC.dataExtend lDataDwt
         rDataExtend  = R2.dataExtend lDataDwt
     in [
      bgroup "Lattice" 
       [
         bench "C1"          $ whnf C1.benchLattice cDataLattice
+      ,  bench "C1"          $ whnf C1.benchLattice cDataLattice
       , bench "Vector1"     $ whnf V1.benchLattice vDataLattice
-      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
-      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
+--      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
+--      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
+--      , bench "Repa3"       $ whnf R3.benchLattice rDataLattice
 --      , bench "List.Common" $   nf LC.benchLattice lDataLattice
 --      , bench "Eval.Common" $   nf EC.benchLattice lDataLattice
       ]

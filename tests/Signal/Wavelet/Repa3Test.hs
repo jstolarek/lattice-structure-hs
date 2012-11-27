@@ -5,7 +5,7 @@ import Data.Array.Repa
 import Test.HUnit      (Assertion)
 
 import Signal.Wavelet.Repa3
-import Signal.Wavelet.Repa.Common (inv)
+--import Signal.Wavelet.Repa.Common (inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..))
 import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
