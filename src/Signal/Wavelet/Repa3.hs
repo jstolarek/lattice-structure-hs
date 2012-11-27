@@ -101,7 +101,7 @@ fillLatticeS write getElem !s !c !count !off = fillLattice off
                   write (offset + 1) (x * s - y * c)
                   fillLattice (offset + 2)
 
-
+-- FIXME: use the same approach as Chunked.hs in Repa library
 distributeWork :: Int -> Int -> Vector Int
 distributeWork threads sigLength = U.fromList . scanl (+) 0 . 
                        map (*2) . distribute threads chunkLen $ chunkSlack

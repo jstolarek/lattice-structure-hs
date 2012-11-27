@@ -68,4 +68,4 @@ f xs = fromListUnboxed (Z :. (length xs)) xs
 
 
 g :: (Unbox a) => [a] -> Vector a
-g xs =fromList xs
+g xs = fromList xs
