@@ -1,43 +1,73 @@
-{-# LANGUAGE FlexibleContexts, TypeOperators, BangPatterns #-}
+{-# LANGUAGE FlexibleContexts, BangPatterns #-}
 module Signal.Wavelet.Repa1 where
 
-import Control.Arrow         ((&&&))
+import Control.Arrow          ((&&&))
 import Data.Array.Repa        as R
 import Data.Array.Repa.Unsafe (unsafeBackpermute, unsafeTraverse)
 
-import Signal.Wavelet.Repa.Common
+import Signal.Wavelet.Repa.Common (forceS, forceP)
 
-
-{-# INLINE dwt #-}
-dwt :: Array U DIM1 Double
-    -> Array U DIM1 Double 
-    -> Array U DIM1 Double
-dwt angles signal = dwtWorker csl angles signal
-
-
-{-# INLINE idwt #-}
-idwt :: Array U DIM1 Double 
+{-# INLINE dwtS #-}
+dwtS :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-idwt angles signal = dwtWorker csr angles signal
+dwtS angles signal = dwtWorker forceS csl angles signal
+
+
+{-# INLINE dwtP #-}
+dwtP :: Array U DIM1 Double
+     -> Array U DIM1 Double 
+     -> Array U DIM1 Double
+dwtP angles signal = dwtWorker forceP csl angles signal
+
+
+{-# INLINE idwtS #-}
+idwtS :: Array U DIM1 Double 
+      -> Array U DIM1 Double 
+      -> Array U DIM1 Double
+idwtS angles signal = dwtWorker forceS csr angles signal
+
+
+{-# INLINE idwtP #-}
+idwtP :: Array U DIM1 Double 
+      -> Array U DIM1 Double 
+      -> Array U DIM1 Double
+idwtP angles signal = dwtWorker forceP csr angles signal
 
 
 {-# INLINE dwtWorker #-}
-dwtWorker :: (Array U DIM1 Double -> Array D DIM1 Double)
+dwtWorker :: (Array D DIM1 Double -> Array U DIM1 Double)
+          -> (Array U DIM1 Double -> Array D DIM1 Double)
           -> Array U DIM1 Double 
           -> Array U DIM1 Double 
           -> Array U DIM1 Double
-dwtWorker cs angles signal = go layers signal
+dwtWorker forceR cs angles signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go  0 !sig      = sig
       go  1 !sig      = doLayer 1 sig
       go !n !sig      = go (n-1) (forceS . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n !sig = forceS . lattice 
+      doLayer !n !sig = forceR . lattice 
                         (weights `unsafeIndex` (Z :. (layers - n))) $ sig
       weights         = a2w angles
       layers          = size . extent $ angles
+
+
+{-# INLINE latticeS #-}
+latticeS :: (Source r Double) 
+        => (Double, Double) 
+        -> Array r DIM1 Double
+        -> Array U DIM1 Double
+latticeS ls xs = forceS . lattice ls $ xs
+
+
+{-# INLINE latticeP #-}
+latticeP :: (Source r Double) 
+        => (Double, Double) 
+        -> Array r DIM1 Double
+        -> Array U DIM1 Double
+latticeP ls xs = forceP . lattice ls $ xs
 
 
 {-# INLINE lattice #-}

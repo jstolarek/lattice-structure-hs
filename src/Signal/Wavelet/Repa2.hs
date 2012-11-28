@@ -7,46 +7,83 @@ import Data.Array.Repa.Unsafe (unsafeTraverse)
 import Signal.Wavelet.Repa.Common
 
 
-{-# INLINE dwt #-}
-dwt :: Array U DIM1 Double
-    -> Array U DIM1 Double 
-    -> Array U DIM1 Double
-dwt angles signal = dwtWorker angles extendedSignal forceS
+{-# INLINE dwtS #-}
+dwtS :: Array U DIM1 Double
+     -> Array U DIM1 Double 
+     -> Array U DIM1 Double
+dwtS angles signal = dwtWorker forceS angles extendedSignal
     where 
       extendedSignal = forceS $ extendEnd layers signal
       layers         = size . extent $ angles
 
 
-{-# INLINE idwt #-}
-idwt :: Array U DIM1 Double
+{-# INLINE dwtP #-}
+dwtP :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-idwt angles signal = dwtWorker angles extendedSignal forceS
+dwtP angles signal = dwtWorker forceP angles extendedSignal
+    where 
+      extendedSignal = forceP $ extendEnd layers signal
+      layers         = size . extent $ angles
+
+
+{-# INLINE idwtS #-}
+idwtS :: Array U DIM1 Double
+      -> Array U DIM1 Double 
+      -> Array U DIM1 Double
+idwtS angles signal = dwtWorker forceS angles extendedSignal
     where
       extendedSignal = forceS $ extendFront layers signal
       layers         = size . extent $ angles
 
 
+{-# INLINE idwtP #-}
+idwtP :: Array U DIM1 Double
+      -> Array U DIM1 Double 
+      -> Array U DIM1 Double
+idwtP angles signal = dwtWorker forceP angles extendedSignal
+    where
+      extendedSignal = forceP $ extendFront layers signal
+      layers         = size . extent $ angles
+
+
 {-# INLINE dwtWorker #-}
-dwtWorker :: Array U DIM1 Double
-          -> Array U DIM1 Double 
-          -> (Array D DIM1 Double -> Array U DIM1 Double)
+dwtWorker :: (Array D DIM1 Double -> Array U DIM1 Double)
           -> Array U DIM1 Double
-dwtWorker angles signal compute = go layers signal
+          -> Array U DIM1 Double 
+          -> Array U DIM1 Double
+dwtWorker force angles signal = go layers signal
     where
       !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig
           | n == 0    = sig
-          | n == 1    = compute . lattice (sin_, cos_) $ sig
-          | otherwise = go (n - 1) (compute . trim . lattice (sin_, cos_) $ sig)
+          | n == 1    = force . lattice (sin_, cos_) $ sig
+          | otherwise = go (n - 1) (force . trim . lattice (sin_, cos_) $ sig)
           where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
                 cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
 
-{-# INLINE lattice #-}
-lattice :: (Double, Double) 
+{-# INLINE latticeS #-}
+latticeS :: (Source r Double) 
+        => (Double, Double) 
+        -> Array r DIM1 Double
         -> Array U DIM1 Double
+latticeS ls xs = forceS . lattice ls $ xs
+
+
+{-# INLINE latticeP #-}
+latticeP :: (Source r Double) 
+        => (Double, Double) 
+        -> Array r DIM1 Double
+        -> Array U DIM1 Double
+latticeP ls xs = forceP . lattice ls $ xs
+
+
+{-# INLINE lattice #-}
+lattice :: (Source r Double)
+        => (Double, Double) 
+        -> Array r DIM1 Double
         -> Array D DIM1 Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
@@ -59,9 +96,26 @@ lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
                            in x * s - y * c
 
 
+{-# INLINE extendFrontS #-}
+extendFrontS :: (Source r Double) 
+             => Int
+             -> Array r DIM1 Double
+             -> Array U DIM1 Double
+extendFrontS !layers signal = forceS . extendFront layers $ signal
+
+
+{-# INLINE extendFrontP #-}
+extendFrontP :: (Source r Double) 
+             => Int
+             -> Array r DIM1 Double
+             -> Array U DIM1 Double
+extendFrontP !layers signal = forceP . extendFront layers $ signal
+
+
 {-# INLINE extendFront #-}
-extendFront :: Int
-            -> Array U DIM1 Double
+extendFront :: (Source r Double) 
+            => Int
+            -> Array r DIM1 Double
             -> Array D DIM1 Double
 extendFront !layers signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
@@ -74,9 +128,26 @@ extendFront !layers signal = go (delay signal) initExt initSigSize
                                          (Z :. extSize) sig R.++ sig
 
 
+{-# INLINE extendEndS #-}
+extendEndS :: (Source r Double) 
+             => Int
+             -> Array r DIM1 Double
+             -> Array U DIM1 Double
+extendEndS !layers signal = forceS . extendEnd layers $ signal
+
+
+{-# INLINE extendEndP #-}
+extendEndP :: (Source r Double) 
+             => Int
+             -> Array r DIM1 Double
+             -> Array U DIM1 Double
+extendEndP !layers signal = forceP . extendEnd layers $ signal
+
+
 {-# INLINE extendEnd #-}
-extendEnd :: Int
-          -> Array U DIM1 Double
+extendEnd :: (Source r Double) 
+          => Int
+          -> Array r DIM1 Double
           -> Array D DIM1 Double
 extendEnd !layers signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
@@ -89,7 +160,8 @@ extendEnd !layers signal = go (delay signal) initExt initSigSize
 
 
 {-# INLINE trim #-}
-trim :: Array D DIM1 Double
+trim :: (Source r Double) 
+     => Array r DIM1 Double
      -> Array D DIM1 Double
 trim signal = unsafeTraverse signal trimExtent mapElems
     where

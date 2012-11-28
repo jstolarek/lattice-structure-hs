@@ -1,7 +1,7 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, PackageImports #-}
 module Signal.Wavelet.Repa.Common where
 
-import Control.Monad.Identity (runIdentity)
+import "mtl" Control.Monad.Identity (runIdentity)
 import Data.Array.Repa        as R
 import Data.Array.Repa.Eval   (Load)
 import Data.Array.Repa.Unsafe (unsafeBackpermute)
