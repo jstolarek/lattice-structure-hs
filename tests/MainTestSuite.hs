@@ -118,10 +118,10 @@ tests = [
 --    testProvider "DWT"                         R3.testDwt  R3.dataDwt
 --  , testProvider "IDWT"                        R3.testIdwt R3.dataIdwt
 --  , testProperty "DWT-IDWT identity"           R3.propDWTInvertible
-      testProvider "Lattice layer"               R3.testLattice R3.dataLattice
-    , testProperty "Inverting lattice layer"     R3.propDoubleLatticeIdentity
-    , testProvider "Distribute work"             R3.testDistributeWork 
-                                                 R3.dataDistributeWork
+      testProvider "Lattice layer sequential"    R3.testLatticeS R3.dataLattice
+    , testProvider "Lattice layer parallel"      R3.testLatticeP R3.dataLattice
+    , testProperty "Inverting lattice layer seq" R3.propDoubleLatticeSIdentity
+    , testProperty "Inverting lattice layer par" R3.propDoubleLatticePIdentity
   ],
   testGroup "C1" [
       testProvider "DWT"                         C1.testDwt  C1.dataDwt

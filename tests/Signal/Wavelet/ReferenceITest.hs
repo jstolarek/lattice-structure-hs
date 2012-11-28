@@ -31,7 +31,9 @@ List1 -> Repa1 -> Repa2
 List1 -> C1 -> Vector1
 
 Read "List1 -> C1" as "List1 implementation serves as a reference to C1 
-implementation".
+implementation". In case of Repa-based algorithms only sequential 
+implementations are tested. This assumes that instances of Repa's Load 
+type class are implemented correctly.
 
 
 Note: [Shifting input/output signal]
@@ -81,22 +83,22 @@ propIDWTEval2LikeList2 (DwtInputList (ls, sig)) =
 
 propDWTRepa1LikeList1 :: DwtInputRepa -> Bool
 propDWTRepa1LikeList1 (DwtInputRepa (ls, sig)) = 
-    L1.dwt (R.toList ls) (R.toList sig) =~ (R.toList $ R1.dwt ls sig)
+    L1.dwt (R.toList ls) (R.toList sig) =~ (R.toList $ R1.dwtS ls sig)
 
 
 propIDWTRepa1LikeList1 :: DwtInputRepa -> Bool
 propIDWTRepa1LikeList1 (DwtInputRepa (ls, sig)) = 
-    L1.idwt (R.toList ls) (R.toList sig) =~ (R.toList $ R1.idwt ls sig)
+    L1.idwt (R.toList ls) (R.toList sig) =~ (R.toList $ R1.idwtS ls sig)
 
 
 propDWTRepa2LikeRepa1 :: DwtInputRepa -> Bool
 propDWTRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
-    R1.dwt ls sig =~ R2.dwt ls sig
+    R1.dwtS ls sig =~ R2.dwtS ls sig
 
 
 propIDWTRepa2LikeRepa1 :: DwtInputRepa -> Bool
 propIDWTRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
-    R1.idwt ls sig =~ R2.idwt ls sig
+    R1.idwtS ls sig =~ R2.idwtS ls sig
 
 
 -- See Note: [Shifting input/output signal]
