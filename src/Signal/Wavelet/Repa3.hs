@@ -42,39 +42,39 @@ instance Source L Double where
 
 
 instance Load L DIM1 Double where
-    {-# INLINE loadP #-}
-    loadP (ALattice (Z :. l) (s, c) getSig) marr = do
+  {-# INLINE [4] loadP #-}
+  loadP (ALattice (Z :. l) (s, c) getSig) mvec
+    = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadP[Lattice]: start"
-      fillLatticeP (unsafeWriteMVec marr) getSig
+      fillLatticeP (unsafeWriteMVec mvec) getSig
                    s c l
-      touchMVec marr
+      touchMVec mvec
       traceEventIO "Repa.loadP[Lattice]: end"
  
 
-    {-# INLINE loadS #-}
-    loadS (ALattice (Z :. l) (s, c) getSig) marr = do
+  {-# INLINE [4] loadS #-}
+  loadS (ALattice (Z :. l) (s, c) getSig) mvec
+    = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadS[Lattice]: start"
-      fillLatticeS (unsafeWriteMVec marr) getSig
+      fillLatticeS (unsafeWriteMVec mvec) getSig
                    s c 0 l
-      touchMVec marr
+      touchMVec mvec
       traceEventIO "Repa.loadS[Lattice]: end"
 
 
 {-# INLINE latticeS #-}
 latticeS :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-latticeS (s, c) sig = forceS . ALattice (extent sig) (s, c) $ 
-                      (unsafeLinearIndex sig)
+latticeS (s, c) sig = forceS $ lattice (s, c) sig
 
 
 {-# INLINE latticeP #-}
 latticeP :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-latticeP (s, c) sig = forceP . ALattice (extent sig) (s, c) $ 
-                      (unsafeLinearIndex sig)
+latticeP (s, c) sig = forceP $ lattice (s, c) sig
 
 
 {-# INLINE lattice #-}
 lattice :: (Double, Double) -> Array U DIM1 Double -> Array L DIM1 Double
-lattice (s, c) sig = ALattice (extent sig) (s, c) (unsafeLinearIndex sig)
+lattice (s, c) sig = ALattice (extent sig) (s, c) (linearIndex sig)
 
 
 fillLatticeP :: (Int -> Double -> IO ())
@@ -86,19 +86,20 @@ fillLatticeP :: (Int -> Double -> IO ())
 fillLatticeP write getElem s c sigLength = 
     -- this algorithm adapted from Data.Array.Repa.Eval.Chunked.hs
     -- from Repa library
-    gangIO theGang $ \(threadId) -> 
+    gangIO theGang $ \(threadId) ->
               let !start   = splitIx  threadId
                   !end     = splitIx (threadId + 1)
               in  fillLatticeS write getElem s c start end
     where
       !threads       = gangSize theGang
-      !chunkLen      = sigLength `quot` threads
-      !chunkLeftover = sigLength `rem`  threads
+      !baseOps       = sigLength `quot` 2
+      !chunkLen      = 2 * (baseOps `quot` threads)
+      !chunkLeftover =      baseOps `rem`  threads
 
       {-# INLINE splitIx #-}
       splitIx thread
-          | thread < chunkLeftover = thread * (chunkLen + 1)
-          | otherwise              = thread * chunkLen  + chunkLeftover
+          | thread < chunkLeftover = thread * (chunkLen + 2)
+          | otherwise              = thread * chunkLen  + 2 * chunkLeftover
 
 
 fillLatticeS :: (Int -> Double -> IO ())

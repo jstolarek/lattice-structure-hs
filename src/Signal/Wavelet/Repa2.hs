@@ -11,7 +11,7 @@ import Signal.Wavelet.Repa.Common
 dwtS :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-dwtS angles signal = dwtWorker forceS angles extendedSignal
+dwtS angles signal = dwtWorkerS angles extendedSignal
     where 
       extendedSignal = forceS $ extendEnd layers signal
       layers         = size . extent $ angles
@@ -21,7 +21,7 @@ dwtS angles signal = dwtWorker forceS angles extendedSignal
 dwtP :: Array U DIM1 Double
      -> Array U DIM1 Double 
      -> Array U DIM1 Double
-dwtP angles signal = dwtWorker forceP angles extendedSignal
+dwtP angles signal = dwtWorkerP angles extendedSignal
     where 
       extendedSignal = forceP $ extendEnd layers signal
       layers         = size . extent $ angles
@@ -31,7 +31,7 @@ dwtP angles signal = dwtWorker forceP angles extendedSignal
 idwtS :: Array U DIM1 Double
       -> Array U DIM1 Double 
       -> Array U DIM1 Double
-idwtS angles signal = dwtWorker forceS angles extendedSignal
+idwtS angles signal = dwtWorkerS angles extendedSignal
     where
       extendedSignal = forceS $ extendFront layers signal
       layers         = size . extent $ angles
@@ -41,25 +41,40 @@ idwtS angles signal = dwtWorker forceS angles extendedSignal
 idwtP :: Array U DIM1 Double
       -> Array U DIM1 Double 
       -> Array U DIM1 Double
-idwtP angles signal = dwtWorker forceP angles extendedSignal
+idwtP angles signal = dwtWorkerP angles extendedSignal
     where
       extendedSignal = forceP $ extendFront layers signal
       layers         = size . extent $ angles
 
 
-{-# INLINE dwtWorker #-}
-dwtWorker :: (Array D DIM1 Double -> Array U DIM1 Double)
-          -> Array U DIM1 Double
-          -> Array U DIM1 Double 
-          -> Array U DIM1 Double
-dwtWorker force angles signal = go layers signal
+{-# INLINE dwtWorkerS #-}
+dwtWorkerS :: Array U DIM1 Double
+           -> Array U DIM1 Double 
+           -> Array U DIM1 Double
+dwtWorkerS angles signal = go layers signal
     where
       !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig
           | n == 0    = sig
-          | n == 1    = force . lattice (sin_, cos_) $ sig
-          | otherwise = go (n - 1) (force . trim . lattice (sin_, cos_) $ sig)
+          | n == 1    = forceS . lattice (sin_, cos_) $ sig
+          | otherwise = go (n - 1) (forceS . trim . lattice (sin_, cos_) $ sig)
+          where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
+                cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
+
+
+{-# INLINE dwtWorkerP #-}
+dwtWorkerP :: Array U DIM1 Double
+          -> Array U DIM1 Double 
+          -> Array U DIM1 Double
+dwtWorkerP angles signal = go layers signal
+    where
+      !layers = size . extent $ angles
+      go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
+      go !n sig
+          | n == 0    = sig
+          | n == 1    = forceP . lattice (sin_, cos_) $ sig
+          | otherwise = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
           where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
                 cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
