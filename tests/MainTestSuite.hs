@@ -7,7 +7,6 @@ import Test.Framework.Providers.QuickCheck2
 import Test.Utils
 
 import qualified Signal.Wavelet.C1Test          as C1
-import qualified Signal.Wavelet.Eval.CommonTest as EC
 import qualified Signal.Wavelet.Eval1Test       as E1
 import qualified Signal.Wavelet.Eval2Test       as E2
 import qualified Signal.Wavelet.List.CommonTest as LC
@@ -67,9 +66,6 @@ tests = [
       testProvider "DWT"                         E2.testDwt  E2.dataDwt
     , testProvider "IDWT"                        E2.testIdwt E2.dataIdwt
     , testProperty "DWT-IDWT identity"           E2.propDWTInvertible
-  ],
-  testGroup "Eval common" [
-      testProperty "Lattice Eval like List"      EC.propLatticeIdenticalToList
   ],
   testGroup "Vector1" [
       testProvider "DWT"                         V1.testDwt     V1.dataDwt
@@ -131,7 +127,13 @@ tests = [
     , testProperty "Inverting lattice layer"     C1.propDoubleLatticeIdentity
   ],
   testGroup "Verify equivalence of all DWT/IDWT implementations" [
-      testProperty " DWT Eval1 like List1"       RF.propDWTEval1LikeList1
+      testProperty "Lattice Eval  like List "    RF.propLatticeEvalLikeList
+    , testProperty "Lattice Repa1 like List "    RF.propLatticeRepa1LikeList
+    , testProperty "Lattice Repa2 like Repa1"    RF.propLatticeRepa2LikeRepa1
+    , testProperty "Lattice Repa3 like Repa2"    RF.propLatticeRepa3LikeRepa2
+    , testProperty "Lattice    C1 like List "    RF.propLatticeC1LikeList
+    , testProperty "Lattice Vector1 like C1 "    RF.propLatticeVector1LikeC1
+    , testProperty " DWT Eval1 like List1"       RF.propDWTEval1LikeList1
     , testProperty "IDWT Eval1 like List1"       RF.propIDWTEval1LikeList1
     , testProperty " DWT List2 like Eval1"       RF.propDWTList2LikeEval1
     , testProperty "IDWT List2 like Eval1"       RF.propIDWTList2LikeEval1

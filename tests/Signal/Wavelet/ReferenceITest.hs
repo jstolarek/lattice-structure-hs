@@ -10,11 +10,90 @@ import qualified Signal.Wavelet.List1   as L1
 import qualified Signal.Wavelet.List2   as L2
 import qualified Signal.Wavelet.Repa1   as R1
 import qualified Signal.Wavelet.Repa2   as R2
+import qualified Signal.Wavelet.Repa3   as R3
 import qualified Signal.Wavelet.Vector1 as V1
 
+import Signal.Wavelet.Eval.Common       as EC
 import Signal.Wavelet.List.Common       as LC
 import Test.ArbitraryInstances
 import Test.Utils ((=~))
+
+
+{-
+
+Note [Verifying equivalence of all lattice implementations]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+List.Common implementation of one lattice layer  is assumed to be a reference 
+one. Each implementation verifies that it is identical to another one. In case 
+of Repa-based algorithms only sequential implementations are tested. This 
+assumes that instances of Repa's Load type class are implemented correctly. The 
+following dependencies are used:
+
+
+List.Common -> Eval.Common
+List.Common -> Repa1 -> Repa2 -> Repa3
+List.Common -> C1 -> Vector1
+
+Read "List.Common -> C1" as "List.Commonb implementation serves as a reference 
+to C1 implementation".
+
+Note [Lattice modifier]
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Implementations operating in situ (C1 and Vector1) need one additional parameter
+compared to other implementations. This parameter takes value of 0 or 1 and 
+denotes the shift of base operations: 
+0 - no shift
+1 - one base operation wraps arounf first and last element of a signal
+
+C1 implementation can only be compared to List implementation when there is no
+shift. Vector1 and C1 can be compared if they are passed identical shift value.
+
+
+-}
+
+propLatticeEvalLikeList :: Double -> [Double] -> Bool
+propLatticeEvalLikeList d xs = 
+    LC.latticeSeq (s, c) ys =~ EC.latticePar (s, c) ys
+        where (s, c) = (sin d, cos d)
+              ys     = xs Prelude.++ xs
+
+
+propLatticeRepa1LikeList :: DwtInputRepa -> Bool
+propLatticeRepa1LikeList (DwtInputRepa (ls, sig)) = 
+    LC.latticeSeq (s, c) (R.toList sig) =~ (R.toList $ R1.latticeS (s, c) sig)
+        where (s, c) = (sin d, cos d)
+              d      = ls R.! (Z :. 0)
+
+
+propLatticeRepa2LikeRepa1 :: DwtInputRepa -> Bool
+propLatticeRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
+    R1.latticeS (s, c) sig =~ R2.latticeS (s, c) sig
+        where (s, c) = (sin d, cos d)
+              d      = ls R.! (Z :. 0)
+
+
+propLatticeRepa3LikeRepa2 :: DwtInputRepa -> Bool
+propLatticeRepa3LikeRepa2 (DwtInputRepa (ls, sig)) = 
+    R2.latticeS (s, c) sig =~ R3.latticeS (s, c) sig
+        where (s, c) = (sin d, cos d)
+              d      = ls R.! (Z :. 0)
+
+
+propLatticeC1LikeList :: DwtInputC -> Bool
+propLatticeC1LikeList (DwtInputC (ls, sig)) = 
+    LC.latticeSeq (s, c) (V.toList sig) =~ (V.toList $ C1.lattice 0 (s, c) sig)
+        where (s, c) = (sin d, cos d)
+              d      = ls V.! 0
+
+
+-- See: Note [Lattice modifier]
+propLatticeVector1LikeC1 :: Int -> DwtInputC -> Bool
+propLatticeVector1LikeC1 a (DwtInputC (ls, sig)) = 
+    (V.convert $ C1.lattice l (s, c) sig) =~ V1.lattice l (s, c) (V.convert sig)
+        where (s, c) = (sin d, cos d)
+              d      = ls V.! 0
+              l      = abs a `rem` 2
 
 
 {-
@@ -23,17 +102,17 @@ Note [Verifying equivalence of all DWT/IDWT implementations]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 List1 implementation of DWT and IDWT is assumed to be a reference one. Each 
-implementation verifies that it is identical to another one. The following 
-dependencies are used:
+implementation verifies that it is identical to another one. In case of 
+Repa-based algorithms only sequential implementations are tested. This assumes 
+that instances of Repa's Load type class are implemented correctly. The 
+following dependencies are used:
 
 List1 -> Eval1 -> List2 -> Eval2
 List1 -> Repa1 -> Repa2
 List1 -> C1 -> Vector1
 
 Read "List1 -> C1" as "List1 implementation serves as a reference to C1 
-implementation". In case of Repa-based algorithms only sequential 
-implementations are tested. This assumes that instances of Repa's Load 
-type class are implemented correctly.
+implementation".
 
 
 Note: [Shifting input/output signal]
