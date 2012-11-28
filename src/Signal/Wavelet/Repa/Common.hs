@@ -1,23 +1,23 @@
-{-# LANGUAGE FlexibleContexts, PackageImports #-}
+{-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Repa.Common where
 
-import "mtl" Control.Monad.Identity (runIdentity)
+import Control.Monad.Identity (runIdentity)
 import Data.Array.Repa        as R
-import Data.Array.Repa.Eval   (Load)
-import Data.Array.Repa.Unsafe (unsafeBackpermute)
+import Data.Array.Repa.Eval   (Load, Target)
+import Data.Array.Repa.Unsafe as R (unsafeBackpermute)
 
 
 {-# INLINE forceP #-}
-forceP :: (Load r DIM1 Double)
-       => Array r DIM1 Double 
-       -> Array U DIM1 Double
+forceP :: (Load r1 DIM1 e, Target r2 e, Source r2 e)
+       => Array r1 DIM1 e 
+       -> Array r2 DIM1 e
 forceP = runIdentity . computeP
 
 
 {-# INLINE forceS #-}
-forceS :: (Load r DIM1 Double)
-       => Array r DIM1 Double 
-       -> Array U DIM1 Double
+forceS :: (Load r1 DIM1 e, Target r2 e)
+       => Array r1 DIM1 e 
+       -> Array r2 DIM1 e
 forceS = computeS
 
 
@@ -39,7 +39,7 @@ toRad = R.map (\x -> x * pi / 180)
 inv :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-inv xs = unsafeBackpermute ext reversedIndex xs
+inv xs = R.unsafeBackpermute ext reversedIndex xs
     where
       reversedIndex (Z :. i) = Z :. (sh - i - 1)
       ext = extent xs

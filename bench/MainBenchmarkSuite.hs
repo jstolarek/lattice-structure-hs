@@ -26,68 +26,90 @@ main = return (mkStdGen 1232134332) >>=
 
 benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
-    let lsSize       = 8
-        sigSize      = 8192
-        lDataDwt     = L1.dataDwt gen lsSize sigSize
-        cDataDwt     = C1.dataDwt lDataDwt
-        rDataDwt     = R1.dataDwt lDataDwt
-        vDataDwt     = V1.dataDwt lDataDwt
---      lDataLattice = LC.dataLattice lDataDwt
-        cDataLattice = C1.dataLattice lDataDwt
-        rDataLattice = R1.dataLattice lDataDwt
-        vDataLattice = V1.dataLattice lDataDwt
---      lDataExtend  = LC.dataExtend lDataDwt
-        rDataExtend  = R2.dataExtend lDataDwt
+    let lsSize         = 8
+        sigSize        = 8192
+        lDataDwt       = L1.dataDwt gen lsSize sigSize
+        cDataDwt       = C1.dataDwt lDataDwt
+        rDataDwt       = R1.dataDwt lDataDwt
+        vDataDwt       = V1.dataDwt lDataDwt
+        cDataLattice   = C1.dataLattice lDataDwt
+        vDataLattice   = V1.dataLattice lDataDwt
+        rDataLattice   = R1.dataLattice lDataDwt
+        rDataToPairs   = R1.dataToPairs lDataDwt
+        rDataFromPairs = R1.dataFromPairs lDataDwt
+        rDataExtend    = R2.dataExtend  lDataDwt
+--      lDataLattice   = LC.dataLattice lDataDwt
+--      lDataExtend    = LC.dataExtend  lDataDwt
     in [ -- See Note [C/FFI criterion bug]
-     bgroup "Lattice" 
-      [
-        bench "C1 Seq"          $ whnf C1.benchLattice  cDataLattice      
-      , bench "Vector1 Seq"     $ whnf V1.benchLattice  vDataLattice      
-      , bench "Repa1 Seq"       $ whnf R1.benchLatticeS rDataLattice
-      , bench "Repa1 Par"       $ whnf R1.benchLatticeP rDataLattice
-      , bench "Repa2 Seq"       $ whnf R2.benchLatticeS rDataLattice
-      , bench "Repa2 Par"       $ whnf R2.benchLatticeP rDataLattice
-      , bench "Repa3 Seq"       $ whnf R3.benchLatticeS rDataLattice
-      , bench "Repa3 Par"       $ whnf R3.benchLatticeP rDataLattice
---    , bench "List.Common Seq" $   nf LC.benchLattice lDataLattice
---    , bench "Eval.Common Par" $   nf EC.benchLattice lDataLattice
-      ]
-   , bgroup "DWT" . (:[])  $ bcompare  
+     bgroup "DWT" . (:[]) $ bcompare
       [ 
-        bench "C1 Seq"      $ whnf C1.benchDwt  cDataDwt
-      , bench "Vector1 Seq" $ whnf V1.benchDwt  vDataDwt
-      , bench "Repa1 Seq"   $ whnf R1.benchDwtS rDataDwt
-      , bench "Repa1 Par"   $ whnf R1.benchDwtP rDataDwt
-      , bench "Repa2 Seq"   $ whnf R2.benchDwtS rDataDwt
-      , bench "Repa2 Par"   $ whnf R2.benchDwtP rDataDwt
---      , bench "List1"   $ nf   L1.benchDwt lDataDwt
---      , bench "List2"   $ nf   L2.benchDwt lDataDwt
---      , bench "Eval1"   $ nf   E1.benchDwt lDataDwt
---      , bench "Eval2"   $ nf   E2.benchDwt lDataDwt
+        bench "C1 Seq"          $ whnf C1.benchDwt  cDataDwt
+      , bench "Vector1 Seq"     $ whnf V1.benchDwt  vDataDwt
+      , bench "Repa1 Seq"       $ whnf R1.benchDwtS rDataDwt
+      , bench "Repa1 Par"       $ whnf R1.benchDwtP rDataDwt
+      , bench "Repa2 Seq"       $ whnf R2.benchDwtS rDataDwt
+      , bench "Repa2 Par"       $ whnf R2.benchDwtP rDataDwt
+--    , bench "List1 Seq"       $ nf   L1.benchDwt  lDataDwt
+--    , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
+--    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
+--    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
       ]
-{-   , bgroup "IDWT" . (:[])  $ bcompare  
+   , bgroup "IDWT" . (:[]) $ bcompare  
       [ 
-        bench "C1"      $ whnf C1.benchIdwt cDataDwt 
-      , bench "Vector1" $ whnf V1.benchIdwt vDataDwt
-      , bench "Repa1"   $ whnf R1.benchIdwt rDataDwt
-      , bench "Repa2"   $ whnf R2.benchIdwt rDataDwt
---      , bench "List1"   $ nf   L1.benchIdwt lDataDwt
---      , bench "List2"   $ nf   L2.benchIdwt lDataDwt
---      , bench "Eval1"   $ nf   E1.benchIdwt lDataDwt
---      , bench "Eval2"   $ nf   E2.benchIdwt lDataDwt
+        bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt 
+      , bench "Vector1 Seq"     $ whnf V1.benchIdwt  vDataDwt
+      , bench "Repa1 Seq"       $ whnf R1.benchIdwtS rDataDwt
+      , bench "Repa1 Par"       $ whnf R1.benchIdwtP rDataDwt
+      , bench "Repa2 Seq"       $ whnf R2.benchIdwtS rDataDwt
+      , bench "Repa2 Par"       $ whnf R2.benchIdwtP rDataDwt
+--    , bench "List1 Seq"       $ nf   L1.benchIdwt  lDataDwt
+--    , bench "List2 Seq"       $ nf   L2.benchIdwt  lDataDwt
+--    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
+--    , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
       ]
-   , bgroup "ExtendFront"
+   , bgroup "C1"
       [
-        bench "Repa2 Seq"   $ whnf R2.benchExtendFrontS rDataExtend
-        bench "Repa2 Par"   $ whnf R2.benchExtendFrontP rDataExtend
-      , bench "List.Common" $   nf LC.benchExtendFront  lDataExtend
-      ]-}
-   , bgroup "ExtendEnd" 
-      [
-        bench "Repa2 Seq"   $ whnf R2.benchExtendEndS rDataExtend
-      , bench "Repa2 Par"   $ whnf R2.benchExtendEndP rDataExtend
---    , bench "List.Common" $   nf LC.benchExtendEnd  lDataExtend
+        bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice      
       ]
+   , bgroup "Vector1"
+      [
+        bench "Lattice Seq"     $ whnf V1.benchLattice vDataLattice      
+      ]
+   , bgroup "Repa1"
+      [
+        bench "Lattice Seq"     $ whnf R1.benchLatticeS rDataLattice
+      , bench "Lattice Par"     $ whnf R1.benchLatticeP rDataLattice
+      , bench "ToPairs Seq"     $ whnf R1.benchToPairsS rDataToPairs
+      , bench "ToPairs Par"     $ whnf R1.benchToPairsS rDataToPairs
+      , bench "FromPairs Seq"   $ whnf R1.benchFromPairsS rDataFromPairs
+      , bench "FromPairs Par"   $ whnf R1.benchFromPairsS rDataFromPairs
+      ]
+   , bgroup "Repa2"
+      [
+        bench "Lattice Seq"     $ whnf R2.benchLatticeS     rDataLattice
+      , bench "Lattice Par"     $ whnf R2.benchLatticeP     rDataLattice
+      , bench "ExtendFront Seq" $ whnf R2.benchExtendFrontS rDataExtend
+      , bench "ExtendFront Par" $ whnf R2.benchExtendFrontP rDataExtend
+      , bench "ExtendEnd Seq"   $ whnf R2.benchExtendEndS   rDataExtend
+      , bench "ExtendEnd Par"   $ whnf R2.benchExtendEndP   rDataExtend
+      ]
+   , bgroup "Repa3"
+      [
+        bench "Lattice Seq"     $ whnf R3.benchLatticeS rDataLattice
+      , bench "Lattice Par"     $ whnf R3.benchLatticeP rDataLattice
+      ]
+{- 
+   , bgroup "List.Common" 
+      [
+        bench "Lattice Seq"     $   nf LC.benchLattice     lDataLattice
+      , bench "ExtendFront Seq" $   nf LC.benchExtendFront lDataExtend
+      , bench "ExtendEnd Seq"   $   nf LC.benchExtendEnd   lDataExtend
+      ]
+    , bgroup "Eval.Common" 
+      [
+        bench "Lattice Par"     $   nf EC.benchLattice lDataLattice
+      ]
+-}
     ]
 
 
@@ -103,7 +125,11 @@ Note [C/FFI criterion bug]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 When benchmarking C bindings with criterion the first benchmark returns 
 correct result. All other benchmarks that use FFI estimate run time 
-to be longer. This does not happen always and seems to depend on CPU. These
-are possibly cache effects.
+to be longer. This does not happen always and seems to depend on CPU and size
+of processed data. These are possibly cache effects. This bug does not occur
+on some machines. If you observe any of below it means your results are affected
+by the bug:
+a) time needed to run IDWT/C1 benchmark is repeatedly longer than DWT/C1
+b) C1/Lattice takes longer than Vector1/Lattice
 
 -}

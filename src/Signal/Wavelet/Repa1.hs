@@ -7,39 +7,26 @@ import Data.Array.Repa.Unsafe (unsafeBackpermute, unsafeTraverse)
 
 import Signal.Wavelet.Repa.Common (forceS, forceP)
 
+
 {-# INLINE dwtS #-}
-dwtS :: Array U DIM1 Double
-     -> Array U DIM1 Double 
-     -> Array U DIM1 Double
-dwtS angles signal = dwtWorkerS csl angles signal
-
-
 {-# INLINE dwtP #-}
-dwtP :: Array U DIM1 Double
-     -> Array U DIM1 Double 
-     -> Array U DIM1 Double
-dwtP angles signal = dwtWorkerP csl angles signal
-
-
 {-# INLINE idwtS #-}
-idwtS :: Array U DIM1 Double 
-      -> Array U DIM1 Double 
-      -> Array U DIM1 Double
-idwtS angles signal = dwtWorkerS csr angles signal
-
-
 {-# INLINE idwtP #-}
-idwtP :: Array U DIM1 Double 
-      -> Array U DIM1 Double 
-      -> Array U DIM1 Double
+dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
+                         -> Array U DIM1 Double 
+                         -> Array U DIM1 Double
+dwtS  angles signal = dwtWorkerS csl angles signal
+dwtP  angles signal = dwtWorkerP csl angles signal
+idwtS angles signal = dwtWorkerS csr angles signal
 idwtP angles signal = dwtWorkerP csr angles signal
 
 
+-- See: Note [Higher order functions interfere with fusion]
 {-# INLINE dwtWorkerS #-}
-dwtWorkerS :: (Array U DIM1 Double -> Array D DIM1 Double)
-           -> Array U DIM1 Double 
-           -> Array U DIM1 Double 
-           -> Array U DIM1 Double
+dwtWorkerS, dwtWorkerP :: (Array U DIM1 Double -> Array D DIM1 Double)
+                       -> Array U DIM1 Double 
+                       -> Array U DIM1 Double 
+                       -> Array U DIM1 Double
 dwtWorkerS cs angles signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
@@ -54,10 +41,6 @@ dwtWorkerS cs angles signal = go layers signal
 
 
 {-# INLINE dwtWorkerP #-}
-dwtWorkerP :: (Array U DIM1 Double -> Array D DIM1 Double)
-           -> Array U DIM1 Double 
-           -> Array U DIM1 Double 
-           -> Array U DIM1 Double
 dwtWorkerP cs angles signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
@@ -72,18 +55,12 @@ dwtWorkerP cs angles signal = go layers signal
 
 
 {-# INLINE latticeS #-}
-latticeS :: (Source r Double) 
-        => (Double, Double) 
-        -> Array r DIM1 Double
-        -> Array U DIM1 Double
-latticeS ls xs = forceS . lattice ls $ xs
-
-
 {-# INLINE latticeP #-}
-latticeP :: (Source r Double) 
-        => (Double, Double) 
-        -> Array r DIM1 Double
-        -> Array U DIM1 Double
+latticeS, latticeP :: (Source r Double) 
+                   => (Double, Double) 
+                   -> Array r DIM1 Double
+                   -> Array U DIM1 Double
+latticeS ls xs = forceS . lattice ls $ xs
 latticeP ls xs = forceP . lattice ls $ xs
 
 
@@ -97,6 +74,15 @@ lattice !(!s, !c) xs = fromPairs . R.map baseOp . toPairs $ xs
       baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
 
 
+{-# INLINE toPairsS #-}
+{-# INLINE toPairsP #-}
+toPairsS, toPairsP :: (Source r Double) 
+                   => Array r DIM1 Double 
+                   -> Array U DIM1 (Double, Double)
+toPairsS = forceS . toPairs
+toPairsP = forceP . toPairs
+
+
 {-# INLINE toPairs #-}
 toPairs :: (Source r Double) 
         => Array r DIM1 Double 
@@ -107,6 +93,15 @@ toPairs xs = unsafeTraverse xs twiceShorter wrapPairs
       twiceShorter (Z :. s) = Z :. s `quot` 2
       {-# INLINE wrapPairs #-}
       wrapPairs f  (Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
+
+
+{-# INLINE fromPairsS #-}
+{-# INLINE fromPairsP #-}
+fromPairsS, fromPairsP :: (Source r (Double,Double))
+                       => Array r DIM1 (Double, Double)
+                       -> Array U DIM1 Double
+fromPairsS = forceS . fromPairs
+fromPairsP = forceP . fromPairs
 
 
 {-# INLINE fromPairs #-}
@@ -185,6 +180,20 @@ csrN !m xs = unsafeBackpermute ext shift xs
       !sh  = size ext :: Int
 
 {-
+
+Note [Higher order functions interfere with fusion]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Creating two specialized workers that differ only with forceS/forceP function
+is a lot of boilerplate. It would be better to implement dwtWorker as a higher
+order function and pass either forceS or forceP as a parameter. Such approach 
+however interferes with fusion for unknown reason. I noticed however that when 
+I passed forceS/forceP to dwt, but ignored it and passed concrete force to
+dwtWorker:
+
+dwt force angles signal = dwtWorker forceS csl angles signal
+
+then fusion worked.
+
 
 Note [Preventing division by 0]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

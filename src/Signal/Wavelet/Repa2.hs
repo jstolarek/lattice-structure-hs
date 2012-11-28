@@ -8,51 +8,28 @@ import Signal.Wavelet.Repa.Common
 
 
 {-# INLINE dwtS #-}
-dwtS :: Array U DIM1 Double
-     -> Array U DIM1 Double 
-     -> Array U DIM1 Double
-dwtS angles signal = dwtWorkerS angles extendedSignal
-    where 
-      extendedSignal = forceS $ extendEnd layers signal
-      layers         = size . extent $ angles
-
-
 {-# INLINE dwtP #-}
-dwtP :: Array U DIM1 Double
-     -> Array U DIM1 Double 
-     -> Array U DIM1 Double
-dwtP angles signal = dwtWorkerP angles extendedSignal
-    where 
-      extendedSignal = forceP $ extendEnd layers signal
-      layers         = size . extent $ angles
-
-
 {-# INLINE idwtS #-}
-idwtS :: Array U DIM1 Double
-      -> Array U DIM1 Double 
-      -> Array U DIM1 Double
-idwtS angles signal = dwtWorkerS angles extendedSignal
-    where
-      extendedSignal = forceS $ extendFront layers signal
-      layers         = size . extent $ angles
-
-
 {-# INLINE idwtP #-}
-idwtP :: Array U DIM1 Double
-      -> Array U DIM1 Double 
-      -> Array U DIM1 Double
-idwtP angles signal = dwtWorkerP angles extendedSignal
-    where
-      extendedSignal = forceP $ extendFront layers signal
-      layers         = size . extent $ angles
+dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
+                         -> Array U DIM1 Double 
+                         -> Array U DIM1 Double
+dwtS  angles signal = dwtWorkerS extendEnd   angles signal
+dwtP  angles signal = dwtWorkerP extendEnd   angles signal
+idwtS angles signal = dwtWorkerS extendFront angles signal
+idwtP angles signal = dwtWorkerP extendFront angles signal
 
 
+-- See: Note [Higher order functions interfere with fusion] in Repa1.hs
 {-# INLINE dwtWorkerS #-}
-dwtWorkerS :: Array U DIM1 Double
-           -> Array U DIM1 Double 
-           -> Array U DIM1 Double
-dwtWorkerS angles signal = go layers signal
+dwtWorkerS, dwtWorkerP :: (Source r Double) 
+                       => (Int -> Array r DIM1 Double -> Array D DIM1 Double)
+                       -> Array U DIM1 Double
+                       -> Array r DIM1 Double 
+                       -> Array U DIM1 Double
+dwtWorkerS extendF angles signal = go layers extendedSignal
     where
+      !extendedSignal = forceS $ extendF layers signal
       !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig
@@ -64,11 +41,9 @@ dwtWorkerS angles signal = go layers signal
 
 
 {-# INLINE dwtWorkerP #-}
-dwtWorkerP :: Array U DIM1 Double
-          -> Array U DIM1 Double 
-          -> Array U DIM1 Double
-dwtWorkerP angles signal = go layers signal
+dwtWorkerP extendF angles signal = go layers extendedSignal
     where
+      !extendedSignal = forceP $ extendF layers signal
       !layers = size . extent $ angles
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig
@@ -80,18 +55,12 @@ dwtWorkerP angles signal = go layers signal
 
 
 {-# INLINE latticeS #-}
-latticeS :: (Source r Double) 
-        => (Double, Double) 
-        -> Array r DIM1 Double
-        -> Array U DIM1 Double
-latticeS ls xs = forceS . lattice ls $ xs
-
-
 {-# INLINE latticeP #-}
-latticeP :: (Source r Double) 
-        => (Double, Double) 
-        -> Array r DIM1 Double
-        -> Array U DIM1 Double
+latticeS, latticeP :: (Source r Double) 
+                   => (Double, Double) 
+                   -> Array r DIM1 Double
+                   -> Array U DIM1 Double
+latticeS ls xs = forceS . lattice ls $ xs
 latticeP ls xs = forceP . lattice ls $ xs
 
 
