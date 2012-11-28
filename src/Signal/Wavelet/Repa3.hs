@@ -12,10 +12,7 @@ import Data.Array.Repa hiding (map)
 import Data.Array.Repa.Eval.Gang
 import Data.Array.Repa.Eval.Load
 import Data.Array.Repa.Eval.Target
-import Data.Vector.Unboxed as U (Vector, fromList, unsafeIndex)
 import Debug.Trace
-
-import Signal.Wavelet.Repa.Common
 
 data L
 
@@ -56,7 +53,7 @@ instance Load L DIM1 Double where
     loadS (ALattice (Z :. l) (s, c) getSig) marr = do
       traceEventIO "Repa.loadS[Lattice]: start"
       fillLatticeS (unsafeWriteMVec marr) getSig
-                   s c l 0
+                   s c 0 l
       touchMVec marr
       traceEventIO "Repa.loadS[Lattice]: end"
 
@@ -71,16 +68,22 @@ fillLatticeP :: (Int -> Double -> IO ())
              -> Double
              -> Int
              -> IO ()
-fillLatticeP write getElem s c sigLength = gangIO theGang fillLattice
+fillLatticeP write getElem s c sigLength = 
+    -- this algorithm adapted from Data.Array.Repa.Eval.Chunked.hs
+    -- from Repa library
+    gangIO theGang $ \(threadId) -> 
+              let !start   = splitIx  threadId
+                  !end     = splitIx (threadId + 1)
+              in  fillLatticeS write getElem s c start end
     where
-      !threads    = gangSize theGang
-      !workShare  = distributeWork threads sigLength
+      !threads       = gangSize theGang
+      !chunkLen      = sigLength `quot` threads
+      !chunkLeftover = sigLength `rem`  threads
 
-      fillLattice :: Int -> IO ()
-      fillLattice threadId = 
-          fillLatticeS write getElem s c 
-                      (workShare `U.unsafeIndex` (threadId + 1))
-                      (workShare `U.unsafeIndex`  threadId     )
+      {-# INLINE splitIx #-}
+      splitIx thread
+          | thread < chunkLeftover = thread * (chunkLen + 1)
+          | otherwise              = thread * chunkLen  + chunkLeftover
 
 
 fillLatticeS :: (Int -> Double -> IO ())
@@ -90,24 +93,12 @@ fillLatticeS :: (Int -> Double -> IO ())
              -> Int
              -> Int
              -> IO ()
-fillLatticeS write getElem !s !c !count !off = fillLattice off
+fillLatticeS write getElem !s !c !start !end = fillLattice start
     where fillLattice !offset
-              | offset == count = return ()
-              | otherwise       = do
+              | offset == end = return ()
+              | otherwise     = do
                   let !x = getElem offset
                       !y = getElem (offset + 1)
                   write  offset      (x * c + y * s)
                   write (offset + 1) (x * s - y * c)
                   fillLattice (offset + 2)
-
--- FIXME: use the same approach as Chunked.hs in Repa library
-distributeWork :: Int -> Int -> Vector Int
-distributeWork threads sigLength = U.fromList . scanl (+) 0 . 
-                       map (*2) . distribute threads chunkLen $ chunkSlack
-    where
-      distribute !0    _    _   = []
-      distribute !caps !len !0  = len     : distribute (caps - 1) len 0
-      distribute !caps !len !sl = len + 1 : distribute (caps - 1) len (sl - 1)  
-      !baseOpCount  = sigLength   `quot` 2
-      !chunkLen     = baseOpCount `quot` threads
-      !chunkSlack   = baseOpCount `rem`  threads

@@ -40,8 +40,7 @@ benchmarks gen =
         vDataLattice  = V1.dataLattice lDataDwt
 --      lDataExtend   = LC.dataExtend lDataDwt
         rDataExtend   = R2.dataExtend lDataDwt
-        rDataDistrib  = R3.dataDistributeWork lDataDwt
-    in [
+    in [ -- See Note [C/FFI criterion bug]
      bgroup "Lattice" 
       [
         bench "C1"          $ whnf C1.benchLattice cDataLattice
@@ -67,7 +66,7 @@ benchmarks gen =
 --      , bench "Eval2"   $ nf   E2.benchDwt lDataDwt
       ]-}
 {-   , bgroup "IDWT" . (:[])  $ bcompare  
-      [ -- See Note [C criterion bug]
+      [ 
         bench "C1"      $ whnf C1.benchIdwt cDataDwt 
       , bench "Vector1" $ whnf V1.benchIdwt vDataDwt
       , bench "Repa1"   $ whnf R1.benchIdwt rDataDwt
@@ -87,10 +86,6 @@ benchmarks gen =
         bench "Repa2"       $ whnf R2.benchExtendEnd   rDataExtend
 --      , bench "List.Common" $   nf LC.benchExtendEnd   lDataExtend
       ]
-   , bgroup "Other" 
-      [
-        bench "Repa3/distributeWork" $ whnf R3.benchDistributeWork rDataDistrib
-      ]
     ]
 
 
@@ -101,8 +96,9 @@ benchConfig = defaultConfig {
 
 
 {-
-Note [C criterion bug]
-~~~~~~~~~~~~~~~~~~~~~~
+
+Note [C/FFI criterion bug]
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 When benchmarking C bindings with criterion the first benchmark returns 
 correct result. All other benchmarks that use FFI estimate run time 
 to be longer. This does not happen always and seems to depend on CPU. These
