@@ -1,9 +1,11 @@
+{-# LANGUAGE FlexibleContexts, ImpredicativeTypes #-}
 module Signal.Wavelet.Repa1Bench where
 
-import Control.Arrow   ((&&&))
+import Control.Arrow        ((&&&))
 import Data.Array.Repa
+import Data.Array.Repa.Eval (Load)
 
-import Signal.Wavelet.Repa.Common (forceS)
+import Signal.Wavelet.Repa.Common (forceS, forceP)
 import Signal.Wavelet.Repa1
 
 
@@ -27,12 +29,26 @@ dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls,
 
 
 {-# INLINE benchLattice #-}
-benchLattice :: ((Double, Double), Array U DIM1 Double) -> Array U DIM1 Double
-benchLattice (baseOp, sig) = forceS . lattice baseOp $ sig
+benchLattice :: (Source r Double) =>
+               (Array D DIM1 Double -> Array U DIM1 Double, 
+                (Double, Double), Array r DIM1 Double)
+             -> Array U DIM1 Double
+benchLattice (force, baseOp, sig) = force . lattice baseOp $ sig
 
 
-dataLattice :: ([Double], [Double])
-            -> ((Double, Double), Array U DIM1 Double)
-dataLattice (ls, sig) = ((sin &&& cos) . head $ ls, 
+dataLatticeP :: (Load r DIM1 Double)
+             => ([Double], [Double])
+             -> (Array r DIM1 Double -> Array U DIM1 Double,
+                (Double, Double), Array U DIM1 Double)
+dataLatticeP (ls, sig) = (forceP, (sin &&& cos) . head $ ls, 
+                          fromListUnboxed (Z :. sigSize) sig)
+    where sigSize = length sig
+
+
+dataLatticeS :: (Load r DIM1 Double)
+             => ([Double], [Double])
+             -> (Array r DIM1 Double -> Array U DIM1 Double,
+                (Double, Double), Array U DIM1 Double)
+dataLatticeS (ls, sig) = (forceS, (sin &&& cos) . head $ ls, 
                          fromListUnboxed (Z :. sigSize) sig)
     where sigSize = length sig

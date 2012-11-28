@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module Main (
     main
  ) where
@@ -7,12 +8,12 @@ import Criterion.Main
 import System.Random
 
 import qualified Signal.Wavelet.C1Bench          as C1
-import qualified Signal.Wavelet.Eval.CommonBench as EC
-import qualified Signal.Wavelet.Eval1Bench       as E1
-import qualified Signal.Wavelet.Eval2Bench       as E2
-import qualified Signal.Wavelet.List.CommonBench as LC
+--import qualified Signal.Wavelet.Eval.CommonBench as EC
+--import qualified Signal.Wavelet.Eval1Bench       as E1
+--import qualified Signal.Wavelet.Eval2Bench       as E2
+--import qualified Signal.Wavelet.List.CommonBench as LC
 import qualified Signal.Wavelet.List1Bench       as L1
-import qualified Signal.Wavelet.List2Bench       as L2
+--import qualified Signal.Wavelet.List2Bench       as L2
 import qualified Signal.Wavelet.Repa1Bench       as R1
 import qualified Signal.Wavelet.Repa2Bench       as R2
 import qualified Signal.Wavelet.Repa3Bench       as R3
@@ -26,27 +27,31 @@ main = return (mkStdGen 1232134332) >>=
 
 benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
-    let lsSize       = 8
-        sigSize      = 8192
-        lDataDwt     = L1.dataDwt gen lsSize sigSize
-        cDataDwt     = C1.dataDwt lDataDwt
-        rDataDwt     = R1.dataDwt lDataDwt
-        vDataDwt     = V1.dataDwt lDataDwt
---      lDataLattice = LC.dataLattice lDataDwt
-        cDataLattice = C1.dataLattice lDataDwt
-        rDataLattice = R1.dataLattice lDataDwt
-        vDataLattice = V1.dataLattice lDataDwt
---      lDataExtend  = LC.dataExtend lDataDwt
-        rDataExtend  = R2.dataExtend lDataDwt
-        rDataDistrib = R3.dataDistributeWork lDataDwt
+    let lsSize        = 8
+        sigSize       = 8192
+        lDataDwt      = L1.dataDwt gen lsSize sigSize
+        cDataDwt      = C1.dataDwt lDataDwt
+        rDataDwt      = R1.dataDwt lDataDwt
+        vDataDwt      = V1.dataDwt lDataDwt
+--      lDataLattice  = LC.dataLattice lDataDwt
+        cDataLattice  = C1.dataLattice lDataDwt
+        rDataLatticeS = R1.dataLatticeS lDataDwt
+        rDataLatticeP = R1.dataLatticeP lDataDwt
+        vDataLattice  = V1.dataLattice lDataDwt
+--      lDataExtend   = LC.dataExtend lDataDwt
+        rDataExtend   = R2.dataExtend lDataDwt
+        rDataDistrib  = R3.dataDistributeWork lDataDwt
     in [
      bgroup "Lattice" 
       [
         bench "C1"          $ whnf C1.benchLattice cDataLattice
       , bench "Vector1"     $ whnf V1.benchLattice vDataLattice
-      , bench "Repa1"       $ whnf R1.benchLattice rDataLattice
-      , bench "Repa2"       $ whnf R2.benchLattice rDataLattice
-      , bench "Repa3"       $ whnf R3.benchLattice rDataLattice
+      , bench "Repa1/Seq"   $ whnf R1.benchLattice rDataLatticeS
+      , bench "Repa1/Par"   $ whnf R1.benchLattice rDataLatticeP
+      , bench "Repa2/Seq"   $ whnf R2.benchLattice rDataLatticeS
+      , bench "Repa2/Par"   $ whnf R2.benchLattice rDataLatticeP
+      , bench "Repa3/Seq"   $ whnf R3.benchLattice rDataLatticeS
+      , bench "Repa3/Par"   $ whnf R3.benchLattice rDataLatticeP
 --      , bench "List.Common" $   nf LC.benchLattice lDataLattice
 --      , bench "Eval.Common" $   nf EC.benchLattice lDataLattice
       ]

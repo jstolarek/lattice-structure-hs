@@ -61,9 +61,8 @@ instance Load L DIM1 Double where
       traceEventIO "Repa.loadS[Lattice]: end"
 
 
-lattice :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-lattice (s, c) sig = forceP lat
-    where lat = ALattice (extent sig) (s, c) (unsafeLinearIndex sig)
+lattice :: (Double, Double) -> Array U DIM1 Double -> Array L DIM1 Double
+lattice (s, c) sig = ALattice (extent sig) (s, c) (unsafeLinearIndex sig)
 
 
 fillLatticeP :: (Int -> Double -> IO ())

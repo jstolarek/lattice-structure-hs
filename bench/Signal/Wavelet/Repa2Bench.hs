@@ -1,8 +1,9 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Repa2Bench where
 
 import Data.Array.Repa
 
-import Signal.Wavelet.Repa.Common (forceS, forceP)
+import Signal.Wavelet.Repa.Common (forceS)
 import Signal.Wavelet.Repa2
 
 
@@ -17,8 +18,10 @@ benchIdwt (ls, sig) = idwt ls sig
 
 
 {-# INLINE benchLattice #-}
-benchLattice :: ((Double, Double), Array U DIM1 Double) -> Array U DIM1 Double
-benchLattice (baseOp, sig) = forceP . lattice baseOp $ sig
+benchLattice :: (Array D DIM1 Double -> Array U DIM1 Double,
+                 (Double, Double), Array U DIM1 Double)
+             -> Array U DIM1 Double
+benchLattice (force, baseOp, sig) = force . lattice baseOp $ sig
 
 
 {-# INLINE benchExtendFront #-}
