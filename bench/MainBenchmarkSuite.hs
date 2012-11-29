@@ -32,12 +32,13 @@ benchmarks gen =
         cDataDwt       = C1.dataDwt lDataDwt
         rDataDwt       = R1.dataDwt lDataDwt
         vDataDwt       = V1.dataDwt lDataDwt
-        cDataLattice   = C1.dataLattice lDataDwt
-        vDataLattice   = V1.dataLattice lDataDwt
-        rDataLattice   = R1.dataLattice lDataDwt
-        rDataToPairs   = R1.dataToPairs lDataDwt
+        cDataLattice   = C1.dataLattice   lDataDwt
+        vDataLattice   = V1.dataLattice   lDataDwt
+        rDataLattice   = R1.dataLattice   lDataDwt
+        rDataToPairs   = R1.dataToPairs   lDataDwt
         rDataFromPairs = R1.dataFromPairs lDataDwt
-        rDataExtend    = R2.dataExtend  lDataDwt
+        rDataCslCsr    = R1.dataCslCsr    lDataDwt
+        rDataExtend    = R2.dataExtend    lDataDwt
 --      lDataLattice   = LC.dataLattice lDataDwt
 --      lDataExtend    = LC.dataExtend  lDataDwt
     in [ -- See Note [C/FFI criterion bug]
@@ -77,12 +78,16 @@ benchmarks gen =
       ]
    , bgroup "Repa1"
       [
-        bench "Lattice Seq"     $ whnf R1.benchLatticeS rDataLattice
-      , bench "Lattice Par"     $ whnf R1.benchLatticeP rDataLattice
-      , bench "ToPairs Seq"     $ whnf R1.benchToPairsS rDataToPairs
-      , bench "ToPairs Par"     $ whnf R1.benchToPairsS rDataToPairs
+        bench "Lattice Seq"     $ whnf R1.benchLatticeS   rDataLattice
+      , bench "Lattice Par"     $ whnf R1.benchLatticeP   rDataLattice
+      , bench "ToPairs Seq"     $ whnf R1.benchToPairsS   rDataToPairs
+      , bench "ToPairs Par"     $ whnf R1.benchToPairsP   rDataToPairs
       , bench "FromPairs Seq"   $ whnf R1.benchFromPairsS rDataFromPairs
-      , bench "FromPairs Par"   $ whnf R1.benchFromPairsS rDataFromPairs
+      , bench "FromPairs Par"   $ whnf R1.benchFromPairsP rDataFromPairs
+      , bench "Csl Seq"         $ whnf R1.benchCslS       rDataCslCsr
+      , bench "Csl Par"         $ whnf R1.benchCslP       rDataCslCsr
+      , bench "Csr Seq"         $ whnf R1.benchCsrS       rDataCslCsr
+      , bench "Csr Par"         $ whnf R1.benchCsrP       rDataCslCsr
       ]
    , bgroup "Repa2"
       [

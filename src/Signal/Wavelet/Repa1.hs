@@ -54,16 +54,6 @@ dwtWorkerP cs angles signal = go layers signal
       layers          = size . extent $ angles
 
 
-{-# INLINE latticeS #-}
-{-# INLINE latticeP #-}
-latticeS, latticeP :: (Source r Double) 
-                   => (Double, Double) 
-                   -> Array r DIM1 Double
-                   -> Array U DIM1 Double
-latticeS ls xs = forceS . lattice ls $ xs
-latticeP ls xs = forceP . lattice ls $ xs
-
-
 {-# INLINE lattice #-}
 lattice :: (Source r Double) 
         => (Double, Double) 
@@ -72,15 +62,6 @@ lattice :: (Source r Double)
 lattice !(!s, !c) xs = fromPairs . R.map baseOp . toPairs $ xs
     where
       baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
-
-
-{-# INLINE toPairsS #-}
-{-# INLINE toPairsP #-}
-toPairsS, toPairsP :: (Source r Double) 
-                   => Array r DIM1 Double 
-                   -> Array U DIM1 (Double, Double)
-toPairsS = forceS . toPairs
-toPairsP = forceP . toPairs
 
 
 {-# INLINE toPairs #-}
@@ -93,15 +74,6 @@ toPairs xs = unsafeTraverse xs twiceShorter wrapPairs
       twiceShorter (Z :. s) = Z :. s `quot` 2
       {-# INLINE wrapPairs #-}
       wrapPairs f  (Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
-
-
-{-# INLINE fromPairsS #-}
-{-# INLINE fromPairsP #-}
-fromPairsS, fromPairsP :: (Source r (Double,Double))
-                       => Array r DIM1 (Double, Double)
-                       -> Array U DIM1 Double
-fromPairsS = forceS . fromPairs
-fromPairsP = forceP . fromPairs
 
 
 {-# INLINE fromPairs #-}
@@ -188,7 +160,7 @@ is a lot of boilerplate. It would be better to implement dwtWorker as a higher
 order function and pass either forceS or forceP as a parameter. Such approach 
 however interferes with fusion for unknown reason. I noticed however that when 
 I passed forceS/forceP to dwt, but ignored it and passed concrete force to
-dwtWorker:
+dwtWorker like this:
 
 dwt force angles signal = dwtWorker forceS csl angles signal
 
