@@ -56,7 +56,7 @@ benchmarks gen =
 --    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
       ]
-   , bgroup "IDWT" . (:[]) $ bcompare  
+{- , bgroup "IDWT" . (:[]) $ bcompare  
       [ 
         bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt 
       , bench "Vector1 Seq"     $ whnf V1.benchIdwt  vDataDwt
@@ -68,7 +68,7 @@ benchmarks gen =
 --    , bench "List2 Seq"       $ nf   L2.benchIdwt  lDataDwt
 --    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
-      ]
+      ]-}
    , bgroup "C1"
       [
         bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice      
@@ -102,6 +102,8 @@ benchmarks gen =
       [
         bench "Lattice Seq"     $ whnf R2.benchLatticeS     rDataLattice
       , bench "Lattice Par"     $ whnf R2.benchLatticeP     rDataLattice
+      , bench "Trim+lattice Seq"$ whnf R2.benchTrimLatticeS rDataLattice
+      , bench "Trim+lattice Par"$ whnf R2.benchTrimLatticeP rDataLattice
       , bench "ExtendFront Seq" $ whnf R2.benchExtendFrontS rDataExtend
       , bench "ExtendFront Par" $ whnf R2.benchExtendFrontP rDataExtend
       , bench "ExtendEnd Seq"   $ whnf R2.benchExtendEndS   rDataExtend

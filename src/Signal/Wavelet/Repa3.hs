@@ -14,8 +14,6 @@ import Data.Array.Repa.Eval.Load
 import Data.Array.Repa.Eval.Target
 import Debug.Trace
 
-import Signal.Wavelet.Repa.Common (forceS, forceP)
-
 data L
 
 instance Source L Double where
@@ -60,16 +58,6 @@ instance Load L DIM1 Double where
                    s c 0 l
       touchMVec mvec
       traceEventIO "Repa.loadS[Lattice]: end"
-
-
-{-# INLINE latticeS #-}
-latticeS :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-latticeS (s, c) sig = forceS $ lattice (s, c) sig
-
-
-{-# INLINE latticeP #-}
-latticeP :: (Double, Double) -> Array U DIM1 Double -> Array U DIM1 Double
-latticeP (s, c) sig = forceP $ lattice (s, c) sig
 
 
 {-# INLINE lattice #-}

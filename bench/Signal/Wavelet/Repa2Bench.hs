@@ -4,58 +4,71 @@ module Signal.Wavelet.Repa2Bench where
 import Data.Array.Repa
 
 import Signal.Wavelet.Repa2
+import Signal.Wavelet.Repa.Common (forceS, forceP)
 
 
 {-# INLINE benchDwtS #-}
 benchDwtS :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
-benchDwtS (ls, sig) = dwtS ls sig
+benchDwtS = uncurry dwtS
 
 
 {-# INLINE benchDwtP #-}
 benchDwtP :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
-benchDwtP (ls, sig) = dwtP ls sig
+benchDwtP = uncurry dwtP
 
 
 {-# INLINE benchIdwtS #-}
 benchIdwtS :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
-benchIdwtS (ls, sig) = idwtS ls sig
+benchIdwtS = uncurry idwtS
 
 
 {-# INLINE benchIdwtP #-}
 benchIdwtP :: (Array U DIM1 Double, Array U DIM1 Double) -> Array U DIM1 Double
-benchIdwtP (ls, sig) = idwtP ls sig
+benchIdwtP = uncurry idwtP
 
 
 {-# INLINE benchLatticeS #-}
 benchLatticeS :: ((Double, Double), Array U DIM1 Double)
               -> Array U DIM1 Double
-benchLatticeS (baseOp, sig) = latticeS baseOp sig
+benchLatticeS = forceS . (uncurry lattice)
 
 
 {-# INLINE benchLatticeP #-}
 benchLatticeP :: ((Double, Double), Array U DIM1 Double)
               -> Array U DIM1 Double
-benchLatticeP (baseOp, sig) = latticeP baseOp sig
+benchLatticeP = forceP . (uncurry lattice)
+
+
+{-# INLINE benchTrimLatticeS #-}
+benchTrimLatticeS :: ((Double, Double), Array U DIM1 Double)
+                  -> Array U DIM1 Double
+benchTrimLatticeS = forceS . trim . (uncurry lattice)
+
+
+{-# INLINE benchTrimLatticeP #-}
+benchTrimLatticeP :: ((Double, Double), Array U DIM1 Double)
+                  -> Array U DIM1 Double
+benchTrimLatticeP = forceP . trim . (uncurry lattice)
 
 
 {-# INLINE benchExtendFrontS #-}
 benchExtendFrontS :: (Int, Array U DIM1 Double) -> Array U DIM1 Double
-benchExtendFrontS (ls, sig) = extendFrontS ls $ sig
+benchExtendFrontS  = forceS . (uncurry extendFront)
 
 
 {-# INLINE benchExtendFrontP #-}
 benchExtendFrontP :: (Int, Array U DIM1 Double) -> Array U DIM1 Double
-benchExtendFrontP (ls, sig) = extendFrontP ls $ sig
+benchExtendFrontP = forceP . (uncurry extendFront)
 
 
 {-# INLINE benchExtendEndS #-}
 benchExtendEndS :: (Int, Array U DIM1 Double) -> Array U DIM1 Double
-benchExtendEndS (ls, sig) = extendEndS ls $ sig
+benchExtendEndS = forceS . (uncurry extendEnd)
 
 
 {-# INLINE benchExtendEndP #-}
 benchExtendEndP :: (Int, Array U DIM1 Double) -> Array U DIM1 Double
-benchExtendEndP (ls, sig) = extendEndP ls $ sig
+benchExtendEndP = forceP . (uncurry extendEnd)
 
 
 dataExtend :: ([Double], [Double])
