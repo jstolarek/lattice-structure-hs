@@ -111,10 +111,10 @@ tests = [
     , testProvider "Remove first & last element" R2.testTrim R2.dataTrim
   ],
   testGroup "Repa3" [
---    testProvider "DWT"                         R3.testDwt  R3.dataDwt
---  , testProvider "IDWT"                        R3.testIdwt R3.dataIdwt
---  , testProperty "DWT-IDWT identity"           R3.propDWTInvertible
-      testProvider "Lattice layer sequential"    R3.testLatticeS R3.dataLattice
+      testProvider "DWT"                         R3.testDwt  R3.dataDwt
+    , testProvider "IDWT"                        R3.testIdwt R3.dataIdwt
+    , testProperty "DWT-IDWT identity"           R3.propDWTInvertible
+    , testProvider "Lattice layer sequential"    R3.testLatticeS R3.dataLattice
     , testProvider "Lattice layer parallel"      R3.testLatticeP R3.dataLattice
     , testProperty "Inverting lattice layer seq" R3.propDoubleLatticeSIdentity
     , testProperty "Inverting lattice layer par" R3.propDoubleLatticePIdentity
@@ -130,9 +130,9 @@ tests = [
       testProperty "Lattice Eval  like List "    RF.propLatticeEvalLikeList
     , testProperty "Lattice Repa1 like List "    RF.propLatticeRepa1LikeList
     , testProperty "Lattice Repa2 like Repa1"    RF.propLatticeRepa2LikeRepa1
-    , testProperty "Lattice Repa3 like Repa2"    RF.propLatticeRepa3LikeRepa2
     , testProperty "Lattice    C1 like List "    RF.propLatticeC1LikeList
     , testProperty "Lattice Vector1 like C1 "    RF.propLatticeVector1LikeC1
+    , testProperty "Lattice Repa3 like Vector1"  RF.propLatticeRepa3LikeVector1
     , testProperty " DWT Eval1 like List1"       RF.propDWTEval1LikeList1
     , testProperty "IDWT Eval1 like List1"       RF.propIDWTEval1LikeList1
     , testProperty " DWT List2 like Eval1"       RF.propDWTList2LikeEval1

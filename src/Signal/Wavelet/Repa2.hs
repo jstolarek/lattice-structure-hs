@@ -55,9 +55,8 @@ dwtWorkerP extendF angles signal = go layers extendedSignal
 
 
 {-# INLINE lattice #-}
-lattice :: (Source r Double)
-        => (Double, Double) 
-        -> Array r DIM1 Double
+lattice :: (Double, Double) 
+        -> Array U DIM1 Double
         -> Array D DIM1 Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where

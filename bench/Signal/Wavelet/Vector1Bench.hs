@@ -29,4 +29,4 @@ benchLattice (lm, baseOp, sig) = lattice lm baseOp sig
 
 dataLattice :: ([Double], [Double])
             -> (Int, (Double, Double), Vector Double)
-dataLattice (ls, sig) = (0, (sin &&& cos) . Prelude.head $ ls, fromList sig)
+dataLattice (ls, sig) = (1, (sin &&& cos) . Prelude.head $ ls, fromList sig)

@@ -15,6 +15,7 @@ import qualified Test.Framework                 as TF
 import qualified Test.Framework.Providers.HUnit as TFH
 import qualified Test.HUnit                     as HU
 
+infix 4 =~
 
 class AEq a where
     (=~) :: a -> a -> Bool

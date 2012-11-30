@@ -26,8 +26,8 @@ main = return (mkStdGen 1232134332) >>=
 
 benchmarks :: RandomGen g => g -> [Benchmark]
 benchmarks gen =
-    let lsSize         = 8
-        sigSize        = 8192
+    let lsSize         = 6
+        sigSize        = 2 * 8192
         lDataDwt       = L1.dataDwt gen lsSize sigSize
         cDataDwt       = C1.dataDwt lDataDwt
         rDataDwt       = R1.dataDwt lDataDwt
@@ -40,6 +40,7 @@ benchmarks gen =
         rDataCslCsr    = R1.dataCslCsr    lDataDwt
         rDataCslNCsrN  = R1.dataCslNCsrN  lDataDwt
         rDataExtend    = R2.dataExtend    lDataDwt
+        r3DataLattice  = R3.dataLattice   lDataDwt
 --      lDataLattice   = LC.dataLattice lDataDwt
 --      lDataExtend    = LC.dataExtend  lDataDwt
     in [ -- See Note [C/FFI criterion bug]
@@ -51,6 +52,8 @@ benchmarks gen =
       , bench "Repa1 Par"       $ whnf R1.benchDwtP rDataDwt
       , bench "Repa2 Seq"       $ whnf R2.benchDwtS rDataDwt
       , bench "Repa2 Par"       $ whnf R2.benchDwtP rDataDwt
+      , bench "Repa3 Seq"       $ whnf R3.benchDwtS rDataDwt
+      , bench "Repa3 Par"       $ whnf R3.benchDwtP rDataDwt
 --    , bench "List1 Seq"       $ nf   L1.benchDwt  lDataDwt
 --    , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
 --    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
@@ -64,6 +67,8 @@ benchmarks gen =
       , bench "Repa1 Par"       $ whnf R1.benchIdwtP rDataDwt
       , bench "Repa2 Seq"       $ whnf R2.benchIdwtS rDataDwt
       , bench "Repa2 Par"       $ whnf R2.benchIdwtP rDataDwt
+      , bench "Repa3 Seq"       $ whnf R3.benchIdwtS rDataDwt
+      , bench "Repa3 Par"       $ whnf R3.benchIdwtP rDataDwt
 --    , bench "List1 Seq"       $ nf   L1.benchIdwt  lDataDwt
 --    , bench "List2 Seq"       $ nf   L2.benchIdwt  lDataDwt
 --    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
@@ -111,8 +116,8 @@ benchmarks gen =
       ]
    , bgroup "Repa3"
       [
-        bench "Lattice Seq"     $ whnf R3.benchLatticeS rDataLattice
-      , bench "Lattice Par"     $ whnf R3.benchLatticeP rDataLattice
+        bench "Lattice Seq"     $ whnf R3.benchLatticeS r3DataLattice
+      , bench "Lattice Par"     $ whnf R3.benchLatticeP r3DataLattice
       ]
 {- 
    , bgroup "List.Common" 

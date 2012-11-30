@@ -5,7 +5,7 @@ import Data.Array.Repa
 import Test.HUnit      (Assertion)
 
 import Signal.Wavelet.Repa2
-import Signal.Wavelet.Repa.Common (inv)
+import Signal.Wavelet.Repa.Common (inv, forceS)
 import Test.ArbitraryInstances    (DwtInputRepa(..))
 import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
@@ -39,7 +39,7 @@ propDWTInvertible (DwtInputRepa (ls, sig)) =
 testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
 testLattice (baseOp, sig, expected) = 
-    expected @=~? latticeS baseOp sig
+    expected @=~? forceS (lattice baseOp sig)
 
 
 dataLattice :: [((Double,Double), Array U DIM1 Double, Array U DIM1 Double)]
@@ -48,7 +48,7 @@ dataLattice = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataLattice
 
 propDoubleLatticeIdentity :: DwtInputRepa -> Bool
 propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
-    latticeS baseOp (latticeS baseOp sig) =~ sig
+    forceS (lattice baseOp (forceS $ lattice baseOp sig)) =~ sig
         where
           baseOp = (sin &&& cos) $ ls ! (Z :. 0)
 
@@ -56,7 +56,7 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
 testExtendFront :: (Int, Array U DIM1 Double, Array U DIM1 Double)
               -> Assertion
 testExtendFront (ln, sig, expected) = 
-    expected @=~? extendFrontS ln sig
+    expected @=~? forceS (extendFront ln sig)
 
 
 dataExtendFront :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
@@ -66,7 +66,7 @@ dataExtendFront = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataExtendFront
 testExtendEnd :: (Int, Array U DIM1 Double, Array U DIM1 Double)
               -> Assertion
 testExtendEnd (ln, sig, expected) = 
-    expected @=~? extendEndS ln sig
+    expected @=~? forceS (extendEnd ln sig)
 
 
 dataExtendEnd :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]

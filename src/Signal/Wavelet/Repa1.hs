@@ -23,39 +23,37 @@ idwtP angles signal = dwtWorkerP csr angles signal
 
 -- See: Note [Higher order functions interfere with fusion]
 {-# INLINE dwtWorkerS #-}
-dwtWorkerS, dwtWorkerP :: (Array U DIM1 Double -> Array D DIM1 Double)
+dwtWorkerS, dwtWorkerP :: (Array D DIM1 Double -> Array D DIM1 Double)
                        -> Array U DIM1 Double 
                        -> Array U DIM1 Double 
                        -> Array U DIM1 Double
 dwtWorkerS cs angles signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go  0 !sig      = sig
-      go  1 !sig      = doLayer 1 sig
-      go !n !sig      = go (n-1) (forceS . cs $ doLayer n sig)
+      go  0 !sig     = sig
+      go  1 !sig     = forceS $ doLayer 1 sig
+      go !n !sig     = go (n-1) (forceS . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n !sig = forceS . lattice 
-                        (weights `unsafeIndex` (Z :. (layers - n))) $ sig
-      weights         = a2w angles
-      layers          = size . extent $ angles
+      doLayer !n sig = lattice (weights `unsafeIndex` (Z :. (layers - n))) $ sig
+      weights        = a2w angles
+      layers         = size . extent $ angles
 
 
 {-# INLINE dwtWorkerP #-}
 dwtWorkerP cs angles signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go  0 !sig      = sig
-      go  1 !sig      = doLayer 1 sig
-      go !n !sig      = go (n-1) (forceP . cs $ doLayer n sig)
+      go  0 !sig     = sig
+      go  1 !sig     = forceP $ doLayer 1 sig
+      go !n !sig     = go (n-1) (forceP . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n !sig = forceP . lattice 
-                        (weights `unsafeIndex` (Z :. (layers - n))) $ sig
-      weights         = a2w angles
-      layers          = size . extent $ angles
+      doLayer !n sig = lattice (weights `unsafeIndex` (Z :. (layers - n))) $ sig
+      weights        = a2w angles
+      layers         = size . extent $ angles
 
 
 {-# INLINE lattice #-}
-lattice :: (Source r Double) 
+lattice :: (Source r Double)
         => (Double, Double) 
         -> Array r DIM1 Double
         -> Array D DIM1 Double
@@ -91,7 +89,7 @@ fromPairs xs = unsafeTraverse xs twiceLonger unwrapPairs
 
 
 {-# INLINE a2w #-}
-a2w :: (Source r Double) 
+a2w :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 (Double, Double)
 a2w = R.map (sin &&& cos)
@@ -121,7 +119,7 @@ csr xs = unsafeBackpermute ext shift xs
 
 
 {-# INLINE cslN #-}
-cslN :: (Source r Double) 
+cslN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double

@@ -39,7 +39,7 @@ library
                     mtl,
                     parallel,
                     repa >= 3.0,
-                    vector
+                    vector >= 0.9 && < 0.10
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
@@ -69,7 +69,7 @@ test-suite wavelet-hs-test
                     test-framework,
                     test-framework-hunit,
                     test-framework-quickcheck2,
-                    vector
+                    vector >= 0.9 && < 0.10
   cc-options:       -std=c99 -Wall
   c-sources:        src/Signal/Wavelet/C/dwt.c
 
@@ -82,7 +82,7 @@ benchmark wavelet-hs-bench
                     mtl,
                     random,
                     repa >= 3.0,
-                    vector,
+                    vector >= 0.9 && < 0.10,
                     wavelet-hs
   ghc-options:      -Wall 
                     -O2 

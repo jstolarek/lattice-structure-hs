@@ -5,8 +5,8 @@ import Control.Arrow   ((&&&))
 import Data.Array.Repa
 
 import Signal.Wavelet.Repa1
+import Signal.Wavelet.Repa.Common (forceS, forceP)
 
-import Signal.Wavelet.Repa.Common (forceS, forceP, fromUtoD)
 
 {-# INLINE benchDwtS #-}
 benchDwtS :: (Array U DIM1 Double, Array U DIM1 Double) 
@@ -155,13 +155,13 @@ dataCslNCsrN (ls, sig) = (length ls, fromListUnboxed (Z :. sigSize) sig)
 {-# INLINE benchLatticeForceCslS #-}
 benchLatticeForceCslS :: ((Double, Double), Array U DIM1 Double)
                       -> Array U DIM1 Double
-benchLatticeForceCslS = forceS . (fromUtoD csl) . forceS . (uncurry lattice)
+benchLatticeForceCslS = forceS . csl . forceS . (uncurry lattice)
 
 
 {-# INLINE benchLatticeForceCslP #-}
 benchLatticeForceCslP :: ((Double, Double), Array U DIM1 Double)
                       -> Array U DIM1 Double
-benchLatticeForceCslP = forceP . (fromUtoD csl) . forceP . (uncurry lattice)
+benchLatticeForceCslP = forceP . csl . forceP . (uncurry lattice)
 
 
 {-# INLINE benchLatticeCslS #-}

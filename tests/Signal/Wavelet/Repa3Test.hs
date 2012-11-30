@@ -1,69 +1,77 @@
 module Signal.Wavelet.Repa3Test where
 
-import Control.Arrow       ((&&&))
-import Data.Array.Repa     hiding (map)
-import Test.HUnit          (Assertion)
+import Control.Arrow              ((&&&))
+import Data.Array.Repa            hiding (map)
+import Test.HUnit                 (Assertion)
+import Test.QuickCheck            (Property, forAll, elements)
 
+import Signal.Wavelet.List.Common as LC (cslN, csrN)
 import Signal.Wavelet.Repa3
---import Signal.Wavelet.Repa.Common (inv)
+import Signal.Wavelet.Repa.Common (forceS, forceP, inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..))
 import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
 
-{-
+
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testDwt (ls, sig, expected) = 
-    expected @=~? dwt ls sig
+    expected @=~? dwtS ls sig
 
 
 dataDwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
-dataDwt = Prelude.map (DW.all3 f) DW.dataDwt
+dataDwt = Prelude.map convertTuple DW.dataDwt
+    where convertTuple (a, b, c) = (f a, f b, g c)
+              where g = f . LC.csrN n
+                    n = max (Prelude.length a - 1) 0
 
 
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
 testIdwt (ls, sig, expected) = 
-    expected @=~? idwt ls sig
+    expected @=~? idwtS ls sig
 
 
 dataIdwt :: [(Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)]
-dataIdwt = Prelude.map (DW.all3 f) DW.dataIdwt
+dataIdwt = Prelude.map convertTuple DW.dataIdwt
+    where convertTuple (a, b, c) = (f a, f b, g c)
+              where g = f . LC.cslN n
+                    n = max (Prelude.length a - 1) 0
 
 
 propDWTInvertible :: DwtInputRepa -> Bool
 propDWTInvertible (DwtInputRepa (ls, sig)) = 
-    idwt (computeS $ inv ls) (dwt ls sig) =~ sig
+    idwtS (computeS $ inv ls) (dwtS ls sig) =~ sig
 
--}
-testLatticeS :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
+
+testLatticeS :: (Int, (Double,Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
-testLatticeS (baseOp, sig, expected) = 
-    expected @=~? latticeS baseOp sig
+testLatticeS (lm, baseOp, sig, expected) = 
+    expected @=~? forceS (lattice lm baseOp sig)
 
 
-testLatticeP :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
+testLatticeP :: (Int, (Double,Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
-testLatticeP (baseOp, sig, expected) = 
-    expected @=~? latticeP baseOp sig
+testLatticeP (lm, baseOp, sig, expected) = 
+    expected @=~? forceP (lattice lm baseOp sig)
 
 
-dataLattice :: [((Double,Double), Array U DIM1 Double, Array U DIM1 Double)]
-dataLattice = map (\(a, b, c) -> (a, f b, f c)) DW.dataLattice
+dataLattice ::[(Int, (Double,Double), Array U DIM1 Double, Array U DIM1 Double)]
+dataLattice = map (\(a, b, c, d) -> (a, b, f c, f d)) DW.dataLatticeWithLM
 
 
-propDoubleLatticeSIdentity :: DwtInputRepa -> Bool
+propDoubleLatticeSIdentity :: DwtInputRepa -> Property
 propDoubleLatticeSIdentity (DwtInputRepa (ls, sig)) =
-    (latticeS baseOp (latticeS baseOp sig)) =~ sig
-        where
-          baseOp = (sin &&& cos) $ ls ! (Z :. 0)
+    forAll (elements [0,1]) $ \lm ->
+        (forceS (lattice lm baseOp (forceS $ lattice lm baseOp sig))) =~ sig
+            where baseOp   = (sin &&& cos) $ ls ! (Z :. 0)
 
 
-propDoubleLatticePIdentity :: DwtInputRepa -> Bool
+propDoubleLatticePIdentity :: DwtInputRepa -> Property
 propDoubleLatticePIdentity (DwtInputRepa (ls, sig)) =
-    (latticeP baseOp (latticeP baseOp sig)) =~ sig
-        where
-          baseOp = (sin &&& cos) $ ls ! (Z :. 0)
+    forAll (elements [0,1]) $ \lm ->
+        (forceP (lattice lm baseOp (forceP $ lattice lm baseOp sig))) =~ sig
+            where baseOp   = (sin &&& cos) $ ls ! (Z :. 0)
 
 
 f :: [Double] -> Array U DIM1 Double

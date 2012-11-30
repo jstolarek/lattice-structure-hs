@@ -7,7 +7,7 @@ import Test.HUnit      (Assertion, (@=?))
 import Test.QuickCheck (Property, (==>))
 
 import Signal.Wavelet.Repa1
-import Signal.Wavelet.Repa.Common (forceS, inv)
+import Signal.Wavelet.Repa.Common (forceS, fromUtoD, inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..), RepaDIM1Array (..))
 import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
@@ -41,7 +41,7 @@ propDWTInvertible (DwtInputRepa (ls, sig)) =
 testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
             -> Assertion
 testLattice (baseOp, sig, expected) = 
-    expected @=~? latticeS baseOp sig
+    expected @=~? forceS (lattice baseOp sig)
 
 
 dataLattice :: [((Double, Double), Array U DIM1 Double, Array U DIM1 Double)]
@@ -50,9 +50,10 @@ dataLattice = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataLattice
 
 propDoubleLatticeIdentity :: DwtInputRepa -> Bool
 propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
-    latticeS baseOp (latticeS baseOp sig) =~ sig
+    forceS (lattice baseOp (forceS $ lattice baseOp sig)) =~ sig
         where
           baseOp = (sin &&& cos) $ ls ! (Z :. 0)
+
 
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsl (input, expected) = 
@@ -97,17 +98,17 @@ propIdentityShift1 (RepaDIM1Array xs) =
 
 propIdentityShift2 :: RepaDIM1Array -> Bool
 propIdentityShift2 (RepaDIM1Array xs) = 
-    computeS (csr . forceS . csl $ xs) == xs
+    computeS ((fromUtoD csr) . computeS . csl $ xs) == xs
 
 
 propIdentityShift3 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift3 n (RepaDIM1Array xs) =
-    computeS (cslN n . forceS . csrN n $ xs) == xs
+    computeS ((fromUtoD $ cslN n) . computeS . csrN n $ xs) == xs
 
 
 propIdentityShift4 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift4 n (RepaDIM1Array xs) =
-    computeS (csrN n . forceS . cslN n $ xs) == xs
+    computeS ((fromUtoD $ csrN n) . computeS . cslN n $ xs) == xs
 
 
 propIdentityShift5 :: RepaDIM1Array -> Bool

@@ -8,16 +8,16 @@ import Data.Array.Repa.Unsafe as R (unsafeBackpermute)
 
 
 {-# INLINE forceP #-}
-forceP :: (Load r1 DIM1 e, Target r2 e, Source r2 e)
-       => Array r1 DIM1 e 
-       -> Array r2 DIM1 e
+forceP :: (Load r DIM1 e, Target U e, Source U e)
+       => Array r DIM1 e 
+       -> Array U DIM1 e
 forceP = runIdentity . computeP
 
 
 {-# INLINE forceS #-}
-forceS :: (Load r1 DIM1 e, Target r2 e)
-       => Array r1 DIM1 e 
-       -> Array r2 DIM1 e
+forceS :: (Load r DIM1 e, Target U e)
+       => Array r DIM1 e 
+       -> Array U DIM1 e
 forceS = computeS
 
 

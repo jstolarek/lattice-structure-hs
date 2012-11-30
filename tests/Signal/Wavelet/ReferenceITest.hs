@@ -15,6 +15,7 @@ import qualified Signal.Wavelet.Vector1 as V1
 
 import Signal.Wavelet.Eval.Common       as EC
 import Signal.Wavelet.List.Common       as LC
+import Signal.Wavelet.Repa.Common       (forceS)
 import Test.ArbitraryInstances
 import Test.Utils ((=~))
 
@@ -31,8 +32,8 @@ following dependencies are used:
 
 
 List.Common -> Eval.Common
-List.Common -> Repa1 -> Repa2 -> Repa3
-List.Common -> C1 -> Vector1
+List.Common -> Repa1 -> Repa2
+List.Common -> C1 -> Vector1 -> Repa3
 
 Read "List.Common -> C1" as "List.Commonb implementation serves as a reference 
 to C1 implementation".
@@ -40,15 +41,15 @@ to C1 implementation".
 Note [Lattice modifier]
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Implementations operating in situ (C1 and Vector1) need one additional parameter
-compared to other implementations. This parameter takes value of 0 or 1 and 
-denotes the shift of base operations: 
+Implementations operating in situ (C1, Vector1 and Repa3) need one additional 
+parameter compared to other implementations. This parameter takes value of 0 or 
+1 and denotes the shift of base operations: 
 0 - no shift
 1 - one base operation wraps arounf first and last element of a signal
 
 C1 implementation can only be compared to List implementation when there is no
-shift. Vector1 and C1 can be compared if they are passed identical shift value.
-
+shift. Vector1, C1 and Repa3 can be compared if they are passed identical shift
+value.
 
 -}
 
@@ -61,21 +62,15 @@ propLatticeEvalLikeList d xs =
 
 propLatticeRepa1LikeList :: DwtInputRepa -> Bool
 propLatticeRepa1LikeList (DwtInputRepa (ls, sig)) = 
-    LC.latticeSeq (s, c) (R.toList sig) =~ (R.toList $ R1.latticeS (s, c) sig)
+    LC.latticeSeq (s, c) (R.toList sig) =~ (R.toList . forceS $ 
+                                             R1.lattice (s, c) sig)
         where (s, c) = (sin d, cos d)
               d      = ls R.! (Z :. 0)
 
 
 propLatticeRepa2LikeRepa1 :: DwtInputRepa -> Bool
 propLatticeRepa2LikeRepa1 (DwtInputRepa (ls, sig)) = 
-    R1.latticeS (s, c) sig =~ R2.latticeS (s, c) sig
-        where (s, c) = (sin d, cos d)
-              d      = ls R.! (Z :. 0)
-
-
-propLatticeRepa3LikeRepa2 :: DwtInputRepa -> Bool
-propLatticeRepa3LikeRepa2 (DwtInputRepa (ls, sig)) = 
-    R2.latticeS (s, c) sig =~ R3.latticeS (s, c) sig
+    forceS (R1.lattice (s, c) sig) =~ forceS (R2.lattice (s, c) sig)
         where (s, c) = (sin d, cos d)
               d      = ls R.! (Z :. 0)
 
@@ -93,6 +88,15 @@ propLatticeVector1LikeC1 a (DwtInputC (ls, sig)) =
     (V.convert $ C1.lattice l (s, c) sig) =~ V1.lattice l (s, c) (V.convert sig)
         where (s, c) = (sin d, cos d)
               d      = ls V.! 0
+              l      = abs a `rem` 2
+
+
+propLatticeRepa3LikeVector1 :: Int -> DwtInputRepa -> Bool
+propLatticeRepa3LikeVector1 a (DwtInputRepa (ls, sig)) = 
+    V1.lattice l (s, c) vSig =~ (toUnboxed . forceS . R3.lattice l (s, c) $ sig)
+        where vSig   = toUnboxed $ sig
+              (s, c) = (sin d, cos d)
+              d      = ls R.! (Z :. 0)
               l      = abs a `rem` 2
 
 
