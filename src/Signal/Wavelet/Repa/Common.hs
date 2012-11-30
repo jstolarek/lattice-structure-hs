@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleContexts, TypeFamilies #-}
 module Signal.Wavelet.Repa.Common where
 
 import Control.Monad.Identity (runIdentity)
@@ -19,6 +19,13 @@ forceS :: (Load r1 DIM1 e, Target r2 e)
        => Array r1 DIM1 e 
        -> Array r2 DIM1 e
 forceS = computeS
+
+
+{-# INLINE fromUtoD #-}
+fromUtoD :: (Source r Double, r ~ U) 
+         => (Array r DIM1 Double -> Array D DIM1 Double)
+         -> (Array U DIM1 Double -> Array D DIM1 Double)
+fromUtoD = id
 
 
 {-# INLINE toDeg #-}

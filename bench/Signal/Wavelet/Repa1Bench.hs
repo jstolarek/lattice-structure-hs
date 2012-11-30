@@ -6,30 +6,30 @@ import Data.Array.Repa
 
 import Signal.Wavelet.Repa1
 
-import Signal.Wavelet.Repa.Common (forceS, forceP)
+import Signal.Wavelet.Repa.Common (forceS, forceP, fromUtoD)
 
 {-# INLINE benchDwtS #-}
 benchDwtS :: (Array U DIM1 Double, Array U DIM1 Double) 
           -> Array U DIM1 Double
-benchDwtS (ls, sig) = dwtS ls sig
+benchDwtS = uncurry dwtS
 
 
 {-# INLINE benchDwtP #-}
 benchDwtP :: (Array U DIM1 Double, Array U DIM1 Double) 
           -> Array U DIM1 Double
-benchDwtP (ls, sig) = dwtP ls sig
+benchDwtP = uncurry dwtP
 
 
 {-# INLINE benchIdwtS #-}
 benchIdwtS :: (Array U DIM1 Double, Array U DIM1 Double)
            -> Array U DIM1 Double
-benchIdwtS (ls, sig) = idwtS ls sig
+benchIdwtS = uncurry idwtS
 
 
 {-# INLINE benchIdwtP #-}
 benchIdwtP :: (Array U DIM1 Double, Array U DIM1 Double)
            -> Array U DIM1 Double
-benchIdwtP (ls, sig) = idwtP ls sig
+benchIdwtP = uncurry idwtP
 
 
 dataDwt :: ([Double], [Double])
@@ -44,13 +44,13 @@ dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls,
 {-# INLINE benchLatticeS #-}
 benchLatticeS :: ((Double, Double), Array U DIM1 Double)
               -> Array U DIM1 Double
-benchLatticeS (baseOp, sig) = forceS . lattice baseOp $ sig
+benchLatticeS = forceS . (uncurry lattice)
 
 
 {-# INLINE benchLatticeP #-}
 benchLatticeP :: ((Double, Double), Array U DIM1 Double)
               -> Array U DIM1 Double
-benchLatticeP (baseOp, sig) = forceP . lattice baseOp $ sig
+benchLatticeP = forceP . (uncurry lattice)
 
 
 dataLattice :: ([Double], [Double])
@@ -121,3 +121,56 @@ benchCsrP = forceP . csr
 dataCslCsr :: ([Double], [Double]) -> Array U DIM1 Double
 dataCslCsr (_, sig) = fromListUnboxed (Z :. sigSize) sig
     where sigSize = length sig
+
+
+{-# INLINE benchCslNS #-}
+benchCslNS :: (Int, Array U DIM1 Double)
+           -> Array U DIM1 Double
+benchCslNS = forceS . (uncurry cslN)
+
+
+{-# INLINE benchCslNP #-}
+benchCslNP :: (Int, Array U DIM1 Double)
+           -> Array U DIM1 Double
+benchCslNP = forceP . (uncurry cslN)
+
+
+{-# INLINE benchCsrNS #-}
+benchCsrNS :: (Int, Array U DIM1 Double)
+           -> Array U DIM1 Double
+benchCsrNS = forceS . (uncurry csrN)
+
+
+{-# INLINE benchCsrNP #-}
+benchCsrNP :: (Int, Array U DIM1 Double)
+           -> Array U DIM1 Double
+benchCsrNP = forceP . (uncurry csrN)
+
+
+dataCslNCsrN :: ([Double], [Double]) -> (Int, Array U DIM1 Double)
+dataCslNCsrN (ls, sig) = (length ls, fromListUnboxed (Z :. sigSize) sig)
+    where sigSize = length sig
+
+
+{-# INLINE benchLatticeForceCslS #-}
+benchLatticeForceCslS :: ((Double, Double), Array U DIM1 Double)
+                      -> Array U DIM1 Double
+benchLatticeForceCslS = forceS . (fromUtoD csl) . forceS . (uncurry lattice)
+
+
+{-# INLINE benchLatticeForceCslP #-}
+benchLatticeForceCslP :: ((Double, Double), Array U DIM1 Double)
+                      -> Array U DIM1 Double
+benchLatticeForceCslP = forceP . (fromUtoD csl) . forceP . (uncurry lattice)
+
+
+{-# INLINE benchLatticeCslS #-}
+benchLatticeCslS :: ((Double, Double), Array U DIM1 Double)
+                 -> Array U DIM1 Double
+benchLatticeCslS = forceS . csl . (uncurry lattice)
+
+
+{-# INLINE benchLatticeCslP #-}
+benchLatticeCslP :: ((Double, Double), Array U DIM1 Double)
+                 -> Array U DIM1 Double
+benchLatticeCslP = forceP . csl . (uncurry lattice)

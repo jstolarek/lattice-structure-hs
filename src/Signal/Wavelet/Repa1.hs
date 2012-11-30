@@ -61,7 +61,7 @@ lattice :: (Source r Double)
         -> Array D DIM1 Double
 lattice !(!s, !c) xs = fromPairs . R.map baseOp . toPairs $ xs
     where
-      baseOp (!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
+      baseOp !(!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
 
 
 {-# INLINE toPairs #-}
@@ -105,7 +105,7 @@ csl xs = unsafeBackpermute ext shift xs
     where
       shift (Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
       ext = extent xs
-      !sh = size ext :: Int
+      !sh = size ext
 
 
 {-# INLINE csr #-}
@@ -117,7 +117,7 @@ csr xs = unsafeBackpermute ext shift xs
       shift (Z :. 0) = Z :. (sh - 1)
       shift (Z :. i) = Z :. ( i - 1)
       ext = extent xs
-      !sh = size ext :: Int
+      !sh = size ext
 
 
 {-# INLINE cslN #-}
@@ -133,7 +133,7 @@ cslN !m xs = unsafeBackpermute ext shift xs
                        then Z :. (i + n) 
                        else Z :. (i + n - sh)
       ext = extent xs
-      sh  = size ext :: Int
+      !sh = size ext
 
 
 {-# INLINE csrN #-}
@@ -149,7 +149,7 @@ csrN !m xs = unsafeBackpermute ext shift xs
                        then Z :. (i - n) 
                        else Z :. (i - n + sh)
       ext = extent xs
-      !sh  = size ext :: Int
+      !sh = size ext
 
 {-
 

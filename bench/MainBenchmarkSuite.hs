@@ -38,6 +38,7 @@ benchmarks gen =
         rDataToPairs   = R1.dataToPairs   lDataDwt
         rDataFromPairs = R1.dataFromPairs lDataDwt
         rDataCslCsr    = R1.dataCslCsr    lDataDwt
+        rDataCslNCsrN  = R1.dataCslNCsrN  lDataDwt
         rDataExtend    = R2.dataExtend    lDataDwt
 --      lDataLattice   = LC.dataLattice lDataDwt
 --      lDataExtend    = LC.dataExtend  lDataDwt
@@ -78,16 +79,24 @@ benchmarks gen =
       ]
    , bgroup "Repa1"
       [
-        bench "Lattice Seq"     $ whnf R1.benchLatticeS   rDataLattice
-      , bench "Lattice Par"     $ whnf R1.benchLatticeP   rDataLattice
-      , bench "ToPairs Seq"     $ whnf R1.benchToPairsS   rDataToPairs
-      , bench "ToPairs Par"     $ whnf R1.benchToPairsP   rDataToPairs
-      , bench "FromPairs Seq"   $ whnf R1.benchFromPairsS rDataFromPairs
-      , bench "FromPairs Par"   $ whnf R1.benchFromPairsP rDataFromPairs
-      , bench "Csl Seq"         $ whnf R1.benchCslS       rDataCslCsr
-      , bench "Csl Par"         $ whnf R1.benchCslP       rDataCslCsr
-      , bench "Csr Seq"         $ whnf R1.benchCsrS       rDataCslCsr
-      , bench "Csr Par"         $ whnf R1.benchCsrP       rDataCslCsr
+        bench "Lattice Seq"     $ whnf R1.benchLatticeS    rDataLattice
+      , bench "Lattice Par"     $ whnf R1.benchLatticeP    rDataLattice
+      , bench "ToPairs Seq"     $ whnf R1.benchToPairsS    rDataToPairs
+      , bench "ToPairs Par"     $ whnf R1.benchToPairsP    rDataToPairs
+      , bench "FromPairs Seq"   $ whnf R1.benchFromPairsS  rDataFromPairs
+      , bench "FromPairs Par"   $ whnf R1.benchFromPairsP  rDataFromPairs
+      , bench "Csl Seq"         $ whnf R1.benchCslS        rDataCslCsr
+      , bench "Csl Par"         $ whnf R1.benchCslP        rDataCslCsr
+      , bench "Csr Seq"         $ whnf R1.benchCsrS        rDataCslCsr
+      , bench "Csr Par"         $ whnf R1.benchCsrP        rDataCslCsr
+      , bench "CslN Seq"        $ whnf R1.benchCslNS       rDataCslNCsrN
+      , bench "CslN Par"        $ whnf R1.benchCslNP       rDataCslNCsrN
+      , bench "CsrN Seq"        $ whnf R1.benchCsrNS       rDataCslNCsrN
+      , bench "CsrN Par"        $ whnf R1.benchCsrNP       rDataCslNCsrN
+      , bench "Lat+Frc+Csl Seq" $ whnf R1.benchLatticeForceCslS rDataLattice
+      , bench "Lat+Frc+Csl Par" $ whnf R1.benchLatticeForceCslP rDataLattice
+      , bench "Lattice+Csl Seq" $ whnf R1.benchLatticeCslS rDataLattice
+      , bench "Lattice+Csl Par" $ whnf R1.benchLatticeCslP rDataLattice
       ]
    , bgroup "Repa2"
       [
