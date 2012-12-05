@@ -6,17 +6,18 @@ import Criterion.Config
 import Criterion.Main
 import System.Random
 
-import qualified Signal.Wavelet.C1Bench          as C1
---import qualified Signal.Wavelet.Eval.CommonBench as EC
---import qualified Signal.Wavelet.Eval1Bench       as E1
---import qualified Signal.Wavelet.Eval2Bench       as E2
---import qualified Signal.Wavelet.List.CommonBench as LC
-import qualified Signal.Wavelet.List1Bench       as L1
---import qualified Signal.Wavelet.List2Bench       as L2
-import qualified Signal.Wavelet.Repa1Bench       as R1
-import qualified Signal.Wavelet.Repa2Bench       as R2
-import qualified Signal.Wavelet.Repa3Bench       as R3
-import qualified Signal.Wavelet.Vector1Bench     as V1
+import qualified Signal.Wavelet.C1Bench           as C1
+--import qualified Signal.Wavelet.Eval.CommonBench  as EC
+--import qualified Signal.Wavelet.Eval1Bench        as E1
+--import qualified Signal.Wavelet.Eval2Bench        as E2
+--import qualified Signal.Wavelet.List.CommonBench  as LC
+import qualified Signal.Wavelet.List1Bench        as L1
+--import qualified Signal.Wavelet.List2Bench        as L2
+import qualified Signal.Wavelet.Repa1Bench        as R1
+import qualified Signal.Wavelet.Repa2Bench        as R2
+import qualified Signal.Wavelet.Repa3Bench        as R3
+import qualified Signal.Wavelet.Vector1Bench      as V1
+import qualified Signal.Wavelet.Repa.LibraryBench as RL
 
 
 main :: IO ()
@@ -41,10 +42,17 @@ benchmarks gen =
         rDataCslNCsrN  = R1.dataCslNCsrN  lDataDwt
         rDataExtend    = R2.dataExtend    lDataDwt
         r3DataLattice  = R3.dataLattice   lDataDwt
---      lDataLattice   = LC.dataLattice lDataDwt
---      lDataExtend    = LC.dataExtend  lDataDwt
+--      lDataLattice   = LC.dataLattice   lDataDwt
+--      lDataExtend    = LC.dataExtend    lDataDwt
+        rDataCompute   = RL.dataCompute   lDataDwt
+        rDataCopy      = RL.dataCopy      lDataDwt
+        rDataExtract   = RL.dataExtract   lDataDwt
+        rDataAppend    = RL.dataAppend    lDataDwt
+        rDataBckperm   = RL.dataBckperm   lDataDwt
+        rDataMap       = RL.dataMap       lDataDwt
+        rDataTraverse  = RL.dataTraverse  lDataDwt
     in [ -- See Note [C/FFI criterion bug]
-     bgroup "DWT" . (:[]) $ bcompare
+{-     bgroup "DWT" . (:[]) $ bcompare
       [ 
         bench "C1 Seq"          $ whnf C1.benchDwt  cDataDwt
       , bench "Vector1 Seq"     $ whnf V1.benchDwt  vDataDwt
@@ -58,7 +66,7 @@ benchmarks gen =
 --    , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
 --    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
-      ]
+      ]-}
 {- , bgroup "IDWT" . (:[]) $ bcompare  
       [ 
         bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt 
@@ -74,7 +82,7 @@ benchmarks gen =
 --    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
       ]-}
-   , bgroup "C1"
+     bgroup "C1"
       [
         bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice      
       ]
@@ -131,6 +139,23 @@ benchmarks gen =
         bench "Lattice Par"     $   nf EC.benchLattice lDataLattice
       ]
 -}
+   , bgroup "Repa built-in functions"
+      [
+        bench "computeS"           $ whnf    RL.benchComputeS  rDataCompute
+      , bench "computeP"           $ whnfIO (RL.benchComputeP  rDataCompute)
+      , bench "copyS"              $ whnf    RL.benchCopyS     rDataCopy
+      , bench "copyP"              $ whnfIO (RL.benchCopyP     rDataCopy)
+      , bench "extractS"           $ whnf    RL.benchExtractS  rDataExtract
+      , bench "extractP"           $ whnfIO (RL.benchExtractP  rDataExtract)
+      , bench "appendS"            $ whnf    RL.benchAppendS   rDataAppend
+      , bench "appendP"            $ whnfIO (RL.benchAppendP   rDataAppend)
+      , bench "backpermuteS"       $ whnf    RL.benchBckpermS  rDataBckperm
+      , bench "backpermuteP"       $ whnfIO (RL.benchBckpermP  rDataBckperm)
+      , bench "mapS"               $ whnf    RL.benchMapS      rDataMap
+      , bench "mapP"               $ whnfIO (RL.benchMapP      rDataMap)
+      , bench "traverseS"          $ whnf    RL.benchTraverseS rDataTraverse
+      , bench "traverseP"          $ whnfIO (RL.benchTraverseP rDataTraverse)
+      ]
     ]
 
 
