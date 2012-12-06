@@ -1,7 +1,6 @@
 module Signal.Wavelet.Repa.LibraryBench where
 
 import Data.Array.Repa as R
-import System.Random
 
 
 benchComputeS :: Array D DIM1 Double -> Array U DIM1 Double
@@ -25,7 +24,7 @@ benchCopyP = copyP
 
 
 dataCopy :: ([Double], [Double]) -> Array U DIM1 Double
-dataCopy _ = f . snd
+dataCopy = f . snd
 
 
 benchExtractS :: (DIM1, DIM1, Array U DIM1 Double) -> Array U DIM1 Double
