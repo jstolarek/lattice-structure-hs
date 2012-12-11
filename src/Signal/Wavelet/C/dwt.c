@@ -64,9 +64,8 @@ double* c_dwt_worker( int lm, double* ls, int ln, double* xs, int xn ) {
 }
 
 /* Wrapper for lattice function. Used when calling C implementation of lattice
- * from Haskell. C implementation of dwt/idwt call c_lattice_worker directly.
+ * from Haskell. C implementations of dwt/idwt call c_lattice_worker directly.
  * See c_lattice_worker below for parameter description.
- *
  */
 double* c_lattice( int lm, double sin_, double cos_, double* inArr, 
                    int arrLen ) { 
@@ -100,8 +99,8 @@ int c_lattice_worker( int lm, double* inArr, double* outArr, int arrLen,
   // processing signal elements in pairs. If layer modifier lm is 1, then
   // loop makes one less iteration - it ignores the border case operating
   // on first and last elements of the signal
-  for ( int xnc = 0; xnc < (arrLen - (lm << 1)); xnc += 2 ) {
-    xi = xnc + lm;
+  for ( int xnc = lm; xnc < (arrLen - (lm << 1)); xnc += 2 ) {
+    xi = xnc;
     yi = xi + 1;
     x  = inArr[ xi ];
     y  = inArr[ yi ];
@@ -119,6 +118,6 @@ int c_lattice_worker( int lm, double* inArr, double* outArr, int arrLen,
     outArr[ yi ] = x * sin_ - y * cos_;
   }
   
-  // floping the lm modifier
+  // fliping the lm modifier
   return 1 - lm;
 }

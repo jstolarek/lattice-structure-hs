@@ -95,6 +95,7 @@ a2w :: (Source r Double)
 a2w = R.map (sin &&& cos)
 
 
+--FIXME: use partitioned arrays to deal with border effects in csl/csr/cslN/csrN
 {-# INLINE csl #-}
 csl :: (Source r Double)
     => Array r DIM1 Double 
@@ -125,7 +126,7 @@ cslN :: (Source r Double)
      -> Array D DIM1 Double
 cslN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0 -- See Note [Preventing division by 0]
+      !n | sh == 0   = 0 -- See: Note [Preventing division by 0]
          | otherwise = m `mod` sh :: Int
       shift (Z :. i) = if i < (sh - n) 
                        then Z :. (i + n) 
@@ -141,7 +142,7 @@ csrN :: (Source r Double)
      -> Array D DIM1 Double
 csrN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0 -- See Note [Preventing division by 0]
+      !n | sh == 0   = 0 -- See: Note [Preventing division by 0]
          | otherwise = m `mod` sh :: Int
       shift (Z :. i) = if i >= n
                        then Z :. (i - n) 
@@ -156,9 +157,9 @@ Note [Higher order functions interfere with fusion]
 Creating two specialized workers that differ only with forceS/forceP function
 is a lot of boilerplate. It would be better to implement dwtWorker as a higher
 order function and pass either forceS or forceP as a parameter. Such approach 
-however interferes with fusion for unknown reason. I noticed however that when 
-I passed forceS/forceP to dwt, but ignored it and passed concrete force to
-dwtWorker like this:
+however interferes with fusion for unknown reason. I noticed that when
+I passed forceS/forceP as a parameter to dwt, but ignored it and passed concrete
+force to dwtWorker like this:
 
 dwt force angles signal = dwtWorker forceS csl angles signal
 
