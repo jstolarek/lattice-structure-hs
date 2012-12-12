@@ -22,7 +22,7 @@ double* c_dwt( double* ls, int ln, double* xs, int xn ) {
 
 
 double* c_idwt( double* ls, int ln, double* xs, int xn ) {
-  // this is just the fancy way of getting 1 if ln is even ln and 0 if
+  // this is just a fancy way of getting 1 if ln is even ln and 0 if
   // it is odd
   int lm = 1 - (ln - ((ln >> 1) << 1));
   return c_dwt_worker( lm, ls, ln, xs, xn ); 

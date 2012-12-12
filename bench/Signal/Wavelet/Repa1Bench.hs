@@ -106,6 +106,18 @@ benchCslP :: Array U DIM1 Double
 benchCslP = forceP . csl
 
 
+{-# INLINE benchCslSP #-}
+benchCslSP :: Array U DIM1 Double
+           -> Array U DIM1 Double
+benchCslSP = forceS . cslP
+
+
+{-# INLINE benchCslPP #-}
+benchCslPP :: Array U DIM1 Double
+           -> Array U DIM1 Double
+benchCslPP = forceP . cslP
+
+
 {-# INLINE benchCsrS #-}
 benchCsrS :: Array U DIM1 Double
           -> Array U DIM1 Double
@@ -116,6 +128,18 @@ benchCsrS = forceS . csr
 benchCsrP :: Array U DIM1 Double
           -> Array U DIM1 Double
 benchCsrP = forceP . csr
+
+
+{-# INLINE benchCsrSP #-}
+benchCsrSP :: Array U DIM1 Double
+           -> Array U DIM1 Double
+benchCsrSP = forceS . csrP
+
+
+{-# INLINE benchCsrPP #-}
+benchCsrPP :: Array U DIM1 Double
+           -> Array U DIM1 Double
+benchCsrPP = forceP . csrP
 
 
 dataCslCsr :: ([Double], [Double]) -> Array U DIM1 Double

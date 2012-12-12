@@ -1,11 +1,27 @@
-{-# LANGUAGE FlexibleContexts, BangPatterns #-}
+{-# LANGUAGE BangPatterns, 
+  FlexibleContexts, 
+  FlexibleInstances,
+  MultiParamTypeClasses,
+  TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Signal.Wavelet.Repa1 where
 
-import Control.Arrow          ((&&&))
-import Data.Array.Repa        as R
-import Data.Array.Repa.Unsafe (unsafeBackpermute, unsafeTraverse)
+import Control.Arrow                    ((&&&))
+import Data.Array.Repa                  as R
+import Data.Array.Repa.Eval             (Elt)
+import Data.Array.Repa.Eval.Gang        (theGang, gangIO, gangSize)
+import Data.Array.Repa.Eval.Load        (LoadRange(..))
+import Data.Array.Repa.Eval.Target      (Target(..))
+import Data.Array.Repa.Repr.HintSmall   (S)
+import Data.Array.Repa.Repr.Partitioned (P, Range(..))
+import Data.Array.Repa.Repr.Undefined   (X)
+import Data.Array.Repa.Unsafe           (unsafeBackpermute, unsafeTraverse)
+import Debug.Trace                      (traceEventIO)
 
 import Signal.Wavelet.Repa.Common (forceS, forceP)
+
+
+type PS = P D (P (S D) X)
 
 
 {-# INLINE dwtS #-}
@@ -95,7 +111,6 @@ a2w :: (Source r Double)
 a2w = R.map (sin &&& cos)
 
 
---FIXME: use partitioned arrays to deal with border effects in csl/csr/cslN/csrN
 {-# INLINE csl #-}
 csl :: (Source r Double)
     => Array r DIM1 Double 
@@ -105,6 +120,25 @@ csl xs = unsafeBackpermute ext shift xs
       shift (Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
       ext = extent xs
       !sh = size ext
+
+
+{-# INLINE cslP #-}
+cslP :: (Source r Double) 
+     => Array r DIM1 Double 
+     -> Array PS DIM1 Double
+cslP xs = 
+    let !ext   = extent xs
+        !sh    = size ext
+        !limit = max 0 (sh - 1)
+        {-# INLINE innerRange #-}
+        innerRange (Z :. i) = i /= (sh - 1)
+        {-# INLINE outerRange #-}
+        outerRange = not . innerRange
+        inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i + 1)) xs
+        outer = ASmall $ unsafeBackpermute ext (\_        -> Z :. 0      ) xs
+    in APart ext (Range (Z :. 0)     (Z :. limit) innerRange) inner $ 
+       APart ext (Range (Z :. limit) (Z :. sh   ) outerRange) outer $
+       AUndefined ext
 
 
 {-# INLINE csr #-}
@@ -117,6 +151,25 @@ csr xs = unsafeBackpermute ext shift xs
       shift (Z :. i) = Z :. ( i - 1)
       ext = extent xs
       !sh = size ext
+
+
+{-# INLINE csrP #-}
+csrP :: (Source r Double) 
+     => Array r DIM1 Double 
+     -> Array PS DIM1 Double
+csrP xs = 
+    let !ext   = extent xs
+        !sh    = size ext
+        !limit = if sh == 0 then 0 else 1
+        {-# INLINE innerRange #-}
+        innerRange (Z :. i) = i /= 0
+        {-# INLINE outerRange #-}
+        outerRange = not . innerRange
+        inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i  - 1)) xs
+        outer = ASmall $ unsafeBackpermute ext (\_        -> Z :. (sh - 1)) xs
+    in APart ext (Range (Z :. limit) (Z :. sh   ) innerRange) inner $ 
+       APart ext (Range (Z :. 0    ) (Z :. limit) outerRange) outer $
+       AUndefined ext
 
 
 {-# INLINE cslN #-}
@@ -149,6 +202,64 @@ csrN !m xs = unsafeBackpermute ext shift xs
                        else Z :. (i - n + sh)
       ext = extent xs
       !sh = size ext
+
+
+instance Elt e => LoadRange D DIM1 e where
+  {-# INLINE loadRangeP #-}
+  loadRangeP (ADelayed _ getElem) mvec (Z :. start) (Z :. end)
+    = mvec `deepSeqMVec` do  
+      traceEventIO "Repa.loadRangeP[Delayed DIM1]: start"
+      fillBlock1P (unsafeWriteMVec mvec) getElem start end
+      touchMVec mvec
+      traceEventIO "Repa.loadRangeP[Delayed DIM1]: end"
+
+
+  {-# INLINE loadRangeS #-}
+  loadRangeS (ADelayed _ getElem) mvec (Z :. start) (Z :. end)
+    = mvec `deepSeqMVec` do  
+      traceEventIO "Repa.loadRangeS[Delayed DIM1]: start"
+      fillBlock1S (unsafeWriteMVec mvec) getElem start end
+      touchMVec mvec
+      traceEventIO "Repa.loadRangeS[Delayed DIM1]: end"
+
+
+{-# INLINE fillBlock1S #-}
+fillBlock1S :: (Int  -> a -> IO ())
+            -> (DIM1 -> a)
+            -> Int
+            -> Int
+            -> IO ()
+fillBlock1S write getElem !start !end = fillBlock start
+    where fillBlock !y
+              | y >= end  = return ()
+              | otherwise = do 
+                  write y (getElem (Z :. y))
+                  fillBlock (y + 1)
+          {-# INLINE fillBlock #-}
+
+
+{-# INLINE fillBlock1P #-}
+fillBlock1P :: (Int  -> a -> IO ())
+            -> (DIM1 -> a)
+            -> Int
+            -> Int
+            -> IO ()
+fillBlock1P write getElem !start !end = do
+    gangIO theGang $ \(threadId) ->
+              let !from = splitIx  threadId
+                  !to   = splitIx (threadId + 1)
+              in  fillBlock1S write getElem from to
+    where
+      !threads       = gangSize theGang
+      !len           = end - start
+      !chunkLen      = len `quot` threads
+      !chunkLeftover = len `rem`  threads
+
+      {-# INLINE splitIx #-}
+      splitIx thread
+          | thread < chunkLeftover = start + thread * (chunkLen + 1)
+          | otherwise              = start + thread * chunkLen  + chunkLeftover
+
 
 {-
 

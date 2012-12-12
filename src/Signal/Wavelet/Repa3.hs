@@ -9,14 +9,14 @@
   #-}
 module Signal.Wavelet.Repa3 where
 
-import Control.Arrow ((&&&))
-import Data.Array.Repa hiding (map)
-import Data.Array.Repa.Eval.Gang
-import Data.Array.Repa.Eval.Load
-import Data.Array.Repa.Eval.Target
-import Debug.Trace
+import Control.Arrow               ((&&&))
+import Data.Array.Repa             hiding (map)
+import Data.Array.Repa.Eval.Gang   (theGang, gangIO, gangSize)
+import Data.Array.Repa.Eval.Load   (Load(..))
+import Data.Array.Repa.Eval.Target (Target(..))
+import Debug.Trace                 (traceEventIO)
 
-import Signal.Wavelet.Repa.Common (forceS, forceP)
+import Signal.Wavelet.Repa.Common  (forceS, forceP)
 
 data L
 
@@ -49,8 +49,7 @@ instance Load L DIM1 Double where
   loadP (ALattice (Z :. l) (s, c) getSig lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadP[Lattice]: start"
-      fillLatticeP (unsafeWriteMVec mvec) getSig lm
-                   s c l
+      fillLatticeP (unsafeWriteMVec mvec) getSig lm s c l
       touchMVec mvec
       traceEventIO "Repa.loadP[Lattice]: end"
  
@@ -59,8 +58,7 @@ instance Load L DIM1 Double where
   loadS (ALattice (Z :. l) (s, c) getSig lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadS[Lattice]: start"
-      fillLatticeS (unsafeWriteMVec mvec) getSig lm
-                   s c 0 l (l - 1)
+      fillLatticeS (unsafeWriteMVec mvec) getSig lm s c 0 l (l - 1)
       touchMVec mvec
       traceEventIO "Repa.loadS[Lattice]: end"
 

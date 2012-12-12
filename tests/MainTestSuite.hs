@@ -85,12 +85,18 @@ tests = [
     , testProperty "DWT-IDWT identity"           R1.propDWTInvertible
     , testProvider "Lattice layer"               R1.testLattice R1.dataLattice
     , testProperty "Inverting lattice layer"     R1.propDoubleLatticeIdentity
-    , testProvider "Cyclic shift left"           R1.testCsl  R1.dataCsl
-    , testProvider "Cyclic shift right"          R1.testCsr  R1.dataCsr
-    , testProvider "Cyclic shift left by N"      R1.testCslN R1.dataCslN
-    , testProvider "Cyclic shift right by N"     R1.testCsrN R1.dataCsrN
+    , testProvider "Shift left"                  R1.testCsl   R1.dataCsl
+    , testProvider "Shift left partitioned seq"  R1.testCslPS R1.dataCsl
+    , testProvider "Shift left partitioned par"  R1.testCslPP R1.dataCsl
+    , testProvider "Shift right"                 R1.testCsr   R1.dataCsr
+    , testProvider "Shift right partitioned seq" R1.testCsrPS R1.dataCsr
+    , testProvider "Shift right partitioned par" R1.testCsrPP R1.dataCsr
+    , testProvider "Cyclic shift left by N"      R1.testCslN  R1.dataCslN
+    , testProvider "Cyclic shift right by N"     R1.testCsrN  R1.dataCsrN
     , testProperty "L/R shift composition"       R1.propIdentityShift1
+    , testProperty "L/R shift composition part." R1.propIdentityShift1P
     , testProperty "R/L shift composition"       R1.propIdentityShift2
+    , testProperty "R/L shift composition part." R1.propIdentityShift2P
     , testProperty "L/R shift by N composition"  R1.propIdentityShift3
     , testProperty "R/L shift by N composition"  R1.propIdentityShift4
     , testProperty "Periodic left shift"         R1.propIdentityShift5

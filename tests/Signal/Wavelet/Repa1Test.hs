@@ -7,7 +7,7 @@ import Test.HUnit      (Assertion, (@=?))
 import Test.QuickCheck (Property, (==>))
 
 import Signal.Wavelet.Repa1
-import Signal.Wavelet.Repa.Common (forceS, fromUtoD, inv)
+import Signal.Wavelet.Repa.Common (forceS, forceP, inv)
 import Test.ArbitraryInstances    (DwtInputRepa(..), RepaDIM1Array (..))
 import Test.Data.Wavelet          as DW
 import Test.Utils                 ((=~), (@=~?))
@@ -35,7 +35,7 @@ dataIdwt = Prelude.map (DW.all3 f) DW.dataIdwt
 
 propDWTInvertible :: DwtInputRepa -> Bool
 propDWTInvertible (DwtInputRepa (ls, sig)) = 
-    idwtS (computeS $ inv ls) (dwtS ls sig) =~ sig
+    idwtS (forceS $ inv ls) (dwtS ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
@@ -57,7 +57,17 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
 
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsl (input, expected) = 
-    expected @=? (computeS $ csl input)
+    expected @=? (forceS $ csl input)
+
+
+testCslPS :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCslPS (input, expected) = 
+    expected @=? (forceS $ cslP input)
+
+
+testCslPP :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCslPP (input, expected) = 
+    expected @=? (forceP $ cslP input)
 
 
 dataCsl :: [(Array U DIM1 Double, Array U DIM1 Double)]
@@ -66,7 +76,17 @@ dataCsl = Prelude.map (DW.all2 f) DW.dataCsl
 
 testCsr :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsr (input, expected) = 
-    expected @=? (computeS $ csr input)
+    expected @=? (forceS $ csr input)
+
+
+testCsrPS :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCsrPS (input, expected) = 
+    expected @=? (forceS $ csrP input)
+
+
+testCsrPP :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
+testCsrPP (input, expected) = 
+    expected @=? (forceP $ csrP input)
 
 
 dataCsr :: [(Array U DIM1 Double, Array U DIM1 Double)]
@@ -75,7 +95,7 @@ dataCsr = Prelude.map (DW.all2 f) DW.dataCsr
 
 testCslN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCslN (n, input, expected) = 
-    expected @=? (computeS $ cslN n input)
+    expected @=? (forceS $ cslN n input)
 
 
 dataCslN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
@@ -84,7 +104,7 @@ dataCslN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCslN
 
 testCsrN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
 testCsrN (n, input, expected) = 
-    expected @=? (computeS $ csrN n input)
+    expected @=? (forceS $ csrN n input)
 
 
 dataCsrN :: [(Int, Array U DIM1 Double, Array U DIM1 Double)]
@@ -93,48 +113,58 @@ dataCsrN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCsrN
 
 propIdentityShift1 :: RepaDIM1Array -> Bool
 propIdentityShift1 (RepaDIM1Array xs) = 
-    computeS (csl . forceS . csr $ xs) == xs
+    forceS (csl . forceS . csr $ xs) == xs
+
+
+propIdentityShift1P :: RepaDIM1Array -> Bool
+propIdentityShift1P (RepaDIM1Array xs) = 
+    forceP (cslP . forceP . csrP $ xs) == xs
 
 
 propIdentityShift2 :: RepaDIM1Array -> Bool
 propIdentityShift2 (RepaDIM1Array xs) = 
-    computeS ((fromUtoD csr) . computeS . csl $ xs) == xs
+    forceS (csr . forceS . csl $ xs) == xs
+
+
+propIdentityShift2P :: RepaDIM1Array -> Bool
+propIdentityShift2P (RepaDIM1Array xs) = 
+    forceP (csrP . forceS . cslP $ xs) == xs
 
 
 propIdentityShift3 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift3 n (RepaDIM1Array xs) =
-    computeS ((fromUtoD $ cslN n) . computeS . csrN n $ xs) == xs
+    forceS (cslN n . forceS . csrN n $ xs) == xs
 
 
 propIdentityShift4 :: Int -> RepaDIM1Array -> Bool
 propIdentityShift4 n (RepaDIM1Array xs) =
-    computeS ((fromUtoD $ csrN n) . computeS . cslN n $ xs) == xs
+    forceS (csrN n . forceS . cslN n $ xs) == xs
 
 
 propIdentityShift5 :: RepaDIM1Array -> Bool
 propIdentityShift5 (RepaDIM1Array xs) = 
-    computeS (cslN n xs) == xs
+    forceS (cslN n xs) == xs
         where n = size . extent $ xs
 
 
 propIdentityShift6 :: RepaDIM1Array -> Bool
 propIdentityShift6 (RepaDIM1Array xs) = 
-    computeS (csrN n xs) == xs
+    forceS (csrN n xs) == xs
         where n = size . extent $ xs
 
 
 propPairsIdentity1 :: RepaDIM1Array -> Property
 propPairsIdentity1 (RepaDIM1Array xs) =
     (even . size . extent $ xs) ==>
-        computeS (fromPairs . toPairs $ xs) == xs
+        forceS (fromPairs . toPairs $ xs) == xs
 
 
 propPairsIdentity2 :: RepaDIM1Array -> Bool
 propPairsIdentity2 (RepaDIM1Array xs) = 
-    computeS (toPairs . fromPairs $ ys) == ys
+    forceS (toPairs . fromPairs $ ys) == ys
         where 
           ys :: (Source U (Double, Double)) => Array U DIM1 (Double,Double)
-          ys = computeS $ R.zipWith (,) xs xs
+          ys = forceS $ R.zipWith (,) xs xs
 
 
 f :: [Double] -> Array U DIM1 Double

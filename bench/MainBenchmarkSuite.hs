@@ -51,8 +51,8 @@ benchmarks gen =
         rDataBckperm   = RL.dataBckperm   lDataDwt
         rDataMap       = RL.dataMap       lDataDwt
         rDataTraverse  = RL.dataTraverse  lDataDwt
-    in [ -- See Note [C/FFI criterion bug]
-{-     bgroup "DWT" . (:[]) $ bcompare
+    in [ -- See: Note [C/FFI criterion bug]
+     bgroup "DWT" . (:[]) $ bcompare
       [ 
         bench "C1 Seq"          $ whnf C1.benchDwt  cDataDwt
       , bench "Vector1 Seq"     $ whnf V1.benchDwt  vDataDwt
@@ -66,7 +66,7 @@ benchmarks gen =
 --    , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
 --    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
-      ]-}
+      ]
 {- , bgroup "IDWT" . (:[]) $ bcompare  
       [ 
         bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt 
@@ -82,7 +82,7 @@ benchmarks gen =
 --    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
       ]-}
-     bgroup "C1"
+   , bgroup "C1"
       [
         bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice      
       ]
@@ -100,8 +100,12 @@ benchmarks gen =
       , bench "FromPairs Par"   $ whnf R1.benchFromPairsP  rDataFromPairs
       , bench "Csl Seq"         $ whnf R1.benchCslS        rDataCslCsr
       , bench "Csl Par"         $ whnf R1.benchCslP        rDataCslCsr
+      , bench "CslP Seq"        $ whnf R1.benchCslSP       rDataCslCsr
+      , bench "CslP Par"        $ whnf R1.benchCslPP       rDataCslCsr
       , bench "Csr Seq"         $ whnf R1.benchCsrS        rDataCslCsr
       , bench "Csr Par"         $ whnf R1.benchCsrP        rDataCslCsr
+      , bench "CsrP Seq"        $ whnf R1.benchCsrSP       rDataCslCsr
+      , bench "CsrP Par"        $ whnf R1.benchCsrPP       rDataCslCsr
       , bench "CslN Seq"        $ whnf R1.benchCslNS       rDataCslNCsrN
       , bench "CslN Par"        $ whnf R1.benchCslNP       rDataCslNCsrN
       , bench "CsrN Seq"        $ whnf R1.benchCsrNS       rDataCslNCsrN
