@@ -127,25 +127,27 @@ tests = [
     , testProperty "Inverting lattice layer"     C1.propDoubleLatticeIdentity
   ],
   testGroup "Verify equivalence of all DWT/IDWT implementations" [
-      testProperty "Lattice Eval  like List "    RF.propLatticeEvalLikeList
-    , testProperty "Lattice Repa1 like List "    RF.propLatticeRepa1LikeList
-    , testProperty "Lattice Repa2 like Repa1"    RF.propLatticeRepa2LikeRepa1
-    , testProperty "Lattice    C1 like List "    RF.propLatticeC1LikeList
-    , testProperty "Lattice Vector1 like C1 "    RF.propLatticeVector1LikeC1
+      testProperty "Lattice Eval  like List   "  RF.propLatticeEvalLikeList
+    , testProperty "Lattice Repa1 like List   "  RF.propLatticeRepa1LikeList
+    , testProperty "Lattice Repa2 like Repa1  "  RF.propLatticeRepa2LikeRepa1
+    , testProperty "Lattice    C1 like List   "  RF.propLatticeC1LikeList
+    , testProperty "Lattice Vector1 like C1   "  RF.propLatticeVector1LikeC1
     , testProperty "Lattice Repa3 like Vector1"  RF.propLatticeRepa3LikeVector1
-    , testProperty " DWT Eval1 like List1"       RF.propDWTEval1LikeList1
-    , testProperty "IDWT Eval1 like List1"       RF.propIDWTEval1LikeList1
-    , testProperty " DWT List2 like Eval1"       RF.propDWTList2LikeEval1
-    , testProperty "IDWT List2 like Eval1"       RF.propIDWTList2LikeEval1
-    , testProperty " DWT Eval2 like List2"       RF.propDWTEval2LikeList2
-    , testProperty "IDWT Eval2 like List2"       RF.propIDWTEval2LikeList2
-    , testProperty " DWT Repa1 like List1"       RF.propDWTRepa1LikeList1
-    , testProperty "IDWT Repa1 like List1"       RF.propIDWTRepa1LikeList1
-    , testProperty " DWT Repa2 like Repa1"       RF.propDWTRepa2LikeRepa1
-    , testProperty "IDWT Repa2 like Repa1"       RF.propIDWTRepa2LikeRepa1
-    , testProperty " DWT    C1 like List1"       RF.propDWTC1LikeList1
-    , testProperty "IDWT    C1 like List1"       RF.propIDWTC1LikeList1
-    , testProperty " DWT Vector1 like  C1"       RF.propDWTVector1LikeC1
-    , testProperty "IDWT Vector1 like  C1"       RF.propIDWTVector1LikeC1
+    , testProperty " DWT Eval1 like List1     "  RF.propDWTEval1LikeList1
+    , testProperty "IDWT Eval1 like List1     "  RF.propIDWTEval1LikeList1
+    , testProperty " DWT List2 like Eval1     "  RF.propDWTList2LikeEval1
+    , testProperty "IDWT List2 like Eval1     "  RF.propIDWTList2LikeEval1
+    , testProperty " DWT Eval2 like List2     "  RF.propDWTEval2LikeList2
+    , testProperty "IDWT Eval2 like List2     "  RF.propIDWTEval2LikeList2
+    , testProperty " DWT Repa1 like List1     "  RF.propDWTRepa1LikeList1
+    , testProperty "IDWT Repa1 like List1     "  RF.propIDWTRepa1LikeList1
+    , testProperty " DWT Repa2 like Repa1     "  RF.propDWTRepa2LikeRepa1
+    , testProperty "IDWT Repa2 like Repa1     "  RF.propIDWTRepa2LikeRepa1
+    , testProperty " DWT    C1 like List1     "  RF.propDWTC1LikeList1
+    , testProperty "IDWT    C1 like List1     "  RF.propIDWTC1LikeList1
+    , testProperty " DWT Vector1 like  C1     "  RF.propDWTVector1LikeC1
+    , testProperty "IDWT Vector1 like  C1     "  RF.propIDWTVector1LikeC1
+    , testProperty " DWT Repa3 like Vector1   "  RF.propDWTRepa3LikeVector1
+    , testProperty "IDWT Repa3 like Vector1   "  RF.propIDWTRepa3LikeVector1
   ]
  ]

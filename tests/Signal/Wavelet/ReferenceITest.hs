@@ -111,9 +111,9 @@ Repa-based algorithms only sequential implementations are tested. This assumes
 that instances of Repa's Load type class are implemented correctly. The 
 following dependencies are used:
 
-List1 -> Eval1 -> List2 -> Eval2
+List1 -> Eval1 -> List2 -> Eva2
 List1 -> Repa1 -> Repa2
-List1 -> C1 -> Vector1
+List1 -> C1 -> Vector1 -> Repa3
 
 Read "List1 -> C1" as "List1 implementation serves as a reference to C1 
 implementation".
@@ -122,7 +122,8 @@ implementation".
 Note: [Shifting input/output signal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Implementations operating in situ (C1 and Vector1):
+Implementations operating without shifts and signal extending (C1, Vector1 and 
+Repa3):
 
 a) return shifted signal in case of DWT
 b) require that input signal is shofted in case of IDWT
@@ -210,3 +211,13 @@ propDWTVector1LikeC1 (DwtInputVector (ls, sig)) =
 propIDWTVector1LikeC1 :: DwtInputVector -> Bool
 propIDWTVector1LikeC1 (DwtInputVector (ls, sig)) = 
     C1.idwt (V.convert ls) (V.convert sig) =~ (V.convert $ V1.idwt ls sig)
+
+
+propDWTRepa3LikeVector1 :: DwtInputRepa -> Bool
+propDWTRepa3LikeVector1 (DwtInputRepa (ls, sig)) = 
+    V1.dwt (toUnboxed ls) (toUnboxed sig) =~ toUnboxed (R3.dwtS ls sig)
+
+
+propIDWTRepa3LikeVector1 :: DwtInputRepa -> Bool
+propIDWTRepa3LikeVector1 (DwtInputRepa (ls, sig)) = 
+    V1.idwt (toUnboxed ls) (toUnboxed sig) =~ toUnboxed (R3.idwtS ls sig)

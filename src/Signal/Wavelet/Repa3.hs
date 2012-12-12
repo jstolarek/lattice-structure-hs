@@ -45,7 +45,7 @@ instance Source L Double where
 
 
 instance Load L DIM1 Double where
-  {-# INLINE [4] loadP #-}
+  {-# INLINE loadP #-}
   loadP (ALattice (Z :. l) (s, c) getSig lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadP[Lattice]: start"
@@ -55,7 +55,7 @@ instance Load L DIM1 Double where
       traceEventIO "Repa.loadP[Lattice]: end"
  
 
-  {-# INLINE [4] loadS #-}
+  {-# INLINE loadS #-}
   loadS (ALattice (Z :. l) (s, c) getSig lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadS[Lattice]: start"
