@@ -14,10 +14,10 @@ import Signal.Wavelet.Repa.Common
 dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
                          -> Array U DIM1 Double 
                          -> Array U DIM1 Double
-dwtS  angles signal = dwtWorkerS extendEnd   angles signal
-dwtP  angles signal = dwtWorkerP extendEnd   angles signal
-idwtS angles signal = dwtWorkerS extendFront angles signal
-idwtP angles signal = dwtWorkerP extendFront angles signal
+dwtS  !angles !signal = dwtWorkerS extendEnd   angles signal
+dwtP  !angles !signal = dwtWorkerP extendEnd   angles signal
+idwtS !angles !signal = dwtWorkerS extendFront angles signal
+idwtP !angles !signal = dwtWorkerP extendFront angles signal
 
 
 -- See: Note [Higher order functions interfere with fusion] in Repa1.hs
@@ -27,31 +27,33 @@ dwtWorkerS, dwtWorkerP :: (Source r Double)
                        -> Array U DIM1 Double
                        -> Array r DIM1 Double 
                        -> Array U DIM1 Double
-dwtWorkerS extendF angles signal = go layers extendedSignal
+dwtWorkerS extendF !angles !signal = go layers extendedSignal
     where
       !extendedSignal = forceS $ extendF layers signal
       !layers = size . extent $ angles
+      {-# INLINE go #-}
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
       go !n sig
           | n == 0    = sig
           | n == 1    = forceS . lattice (sin_, cos_) $ sig
           | otherwise = go (n - 1) (forceS . trim . lattice (sin_, cos_) $ sig)
-          where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
-                cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
+          where !sin_ = sin $ angles `unsafeIndex` (Z :. (layers - n))
+                !cos_ = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
 
 {-# INLINE dwtWorkerP #-}
-dwtWorkerP extendF angles signal = go layers extendedSignal
+dwtWorkerP extendF !angles !signal = go layers extendedSignal
     where
       !extendedSignal = forceP $ extendF layers signal
       !layers = size . extent $ angles
+      {-# INLINE go #-}
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go !n sig
+      go !n !sig
           | n == 0    = sig
           | n == 1    = forceP . lattice (sin_, cos_) $ sig
           | otherwise = go (n - 1) (forceP . trim . lattice (sin_, cos_) $ sig)
-          where sin_  = sin $ angles `unsafeIndex` (Z :. (layers - n))
-                cos_  = cos $ angles `unsafeIndex` (Z :. (layers - n))
+          where !sin_ = sin $ angles `unsafeIndex` (Z :. (layers - n))
+                !cos_ = cos $ angles `unsafeIndex` (Z :. (layers - n))
 
 
 {-# INLINE lattice #-}
@@ -60,7 +62,8 @@ lattice :: (Double, Double)
         -> Array D DIM1 Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
-      baseOp f (Z :. i) 
+      {-# INLINE baseOp #-}
+      baseOp f !(Z :. i) 
              | even i    = let x = f (Z :. i    )
                                y = f (Z :. i + 1)
                            in x * c + y * s
@@ -74,10 +77,11 @@ extendFront :: (Source r Double)
             => Int
             -> Array r DIM1 Double
             -> Array D DIM1 Double
-extendFront !layers signal = go (delay signal) initExt initSigSize
+extendFront !layers !signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
           !initSigSize = size . extent $ signal :: Int
-          go sig !ln !sigSize
+          {-# INLINE go #-}
+          go !sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
@@ -90,10 +94,11 @@ extendEnd :: (Source r Double)
           => Int
           -> Array r DIM1 Double
           -> Array D DIM1 Double
-extendEnd !layers signal = go (delay signal) initExt initSigSize
+extendEnd !layers !signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
           !initSigSize = size . extent $ signal :: Int
-          go sig !ln !sigSize
+          {-# INLINE go #-}
+          go !sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
@@ -104,9 +109,9 @@ extendEnd !layers signal = go (delay signal) initExt initSigSize
 trim :: (Source r Double) 
      => Array r DIM1 Double
      -> Array D DIM1 Double
-trim signal = unsafeTraverse signal trimExtent mapElems
+trim !signal = unsafeTraverse signal trimExtent mapElems
     where
       {-# INLINE trimExtent #-}
-      trimExtent (Z :. i) =   (Z :. max (i - 2) 0)
+      trimExtent !(Z :. i) =   (Z :. max (i - 2) 0)
       {-# INLINE mapElems #-}
-      mapElems f (Z :. i) = f (Z :. (i + 1))
+      mapElems f !(Z :. i) = f (Z :. (i + 1))

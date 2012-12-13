@@ -31,10 +31,10 @@ type PS = P D (P (S D) X)
 dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
                          -> Array U DIM1 Double 
                          -> Array U DIM1 Double
-dwtS  angles signal = dwtWorkerS csl angles signal
-dwtP  angles signal = dwtWorkerP csl angles signal
-idwtS angles signal = dwtWorkerS csr angles signal
-idwtP angles signal = dwtWorkerP csr angles signal
+dwtS  !angles !signal = dwtWorkerS csl angles signal
+dwtP  !angles !signal = dwtWorkerP csl angles signal
+idwtS !angles !signal = dwtWorkerS csr angles signal
+idwtP !angles !signal = dwtWorkerP csr angles signal
 
 
 -- See: Note [Higher order functions interfere with fusion]
@@ -43,29 +43,29 @@ dwtWorkerS, dwtWorkerP :: (Array D DIM1 Double -> Array D DIM1 Double)
                        -> Array U DIM1 Double 
                        -> Array U DIM1 Double 
                        -> Array U DIM1 Double
-dwtWorkerS cs angles signal = go layers signal
+dwtWorkerS cs !angles !signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go  0 !sig     = sig
-      go  1 !sig     = forceS $ doLayer 1 sig
-      go !n !sig     = go (n-1) (forceS . cs $ doLayer n sig)
+      go  0 !sig      = sig
+      go  1 !sig      = forceS $ doLayer 1 sig
+      go !n !sig      = go (n-1) (forceS . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n sig = lattice (weights `unsafeIndex` (Z :. (layers - n))) $ sig
-      weights        = a2w angles
-      layers         = size . extent $ angles
+      doLayer !n !sig = lattice (weights `unsafeIndex` (Z :.(layers - n))) $ sig
+      !weights        = a2w angles
+      !layers         = size . extent $ angles
 
 
 {-# INLINE dwtWorkerP #-}
-dwtWorkerP cs angles signal = go layers signal
+dwtWorkerP cs !angles !signal = go layers signal
     where
       go :: Int -> Array U DIM1 Double -> Array U DIM1 Double
-      go  0 !sig     = sig
-      go  1 !sig     = forceP $ doLayer 1 sig
-      go !n !sig     = go (n-1) (forceP . cs $ doLayer n sig)
+      go  0 !sig      = sig
+      go  1 !sig      = forceP $ doLayer 1 sig
+      go !n !sig      = go (n-1) (forceP . cs $ doLayer n sig)
       {-# INLINE doLayer #-}
-      doLayer !n sig = lattice (weights `unsafeIndex` (Z :. (layers - n))) $ sig
-      weights        = a2w angles
-      layers         = size . extent $ angles
+      doLayer !n !sig = lattice (weights `unsafeIndex` (Z :.(layers - n))) $ sig
+      !weights        = a2w angles
+      !layers         = size . extent $ angles
 
 
 {-# INLINE lattice #-}
@@ -73,7 +73,7 @@ lattice :: (Source r Double)
         => (Double, Double) 
         -> Array r DIM1 Double
         -> Array D DIM1 Double
-lattice !(!s, !c) xs = fromPairs . R.map baseOp . toPairs $ xs
+lattice !(!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
     where
       baseOp !(!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
 
@@ -82,24 +82,24 @@ lattice !(!s, !c) xs = fromPairs . R.map baseOp . toPairs $ xs
 toPairs :: (Source r Double) 
         => Array r DIM1 Double 
         -> Array D DIM1 (Double, Double)
-toPairs xs = unsafeTraverse xs twiceShorter wrapPairs
+toPairs !xs = unsafeTraverse xs twiceShorter wrapPairs
     where
       {-# INLINE twiceShorter #-}
-      twiceShorter (Z :. s) = Z :. s `quot` 2
+      twiceShorter !(Z :. s) = Z :. s `quot` 2
       {-# INLINE wrapPairs #-}
-      wrapPairs f  (Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
+      wrapPairs f  !(Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
 
 
 {-# INLINE fromPairs #-}
 fromPairs :: (Source r (Double,Double))
           => Array r DIM1 (Double, Double)
           -> Array D DIM1 Double
-fromPairs xs = unsafeTraverse xs twiceLonger unwrapPairs
+fromPairs !xs = unsafeTraverse xs twiceLonger unwrapPairs
     where
       {-# INLINE twiceLonger #-}
-      twiceLonger (Z :. s) = Z :. 2 * s
+      twiceLonger !(Z :. s) = Z :. 2 * s
       {-# INLINE unwrapPairs #-}
-      unwrapPairs f (Z :. i) 
+      unwrapPairs f !(Z :. i) 
                       | even i    = fst . f $ ( Z :. i `quot` 2)
                       | otherwise = snd . f $ ( Z :. i `quot` 2)
 
@@ -115,10 +115,11 @@ a2w = R.map (sin &&& cos)
 csl :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-csl xs = unsafeBackpermute ext shift xs
+csl !xs = unsafeBackpermute ext shift xs
     where
-      shift (Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
-      ext = extent xs
+      {-# INLINE shift #-}
+      shift !(Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
+      !ext = extent xs
       !sh = size ext
 
 
@@ -126,12 +127,12 @@ csl xs = unsafeBackpermute ext shift xs
 cslP :: (Source r Double) 
      => Array r DIM1 Double 
      -> Array PS DIM1 Double
-cslP xs = 
+cslP !xs = 
     let !ext   = extent xs
         !sh    = size ext
         !limit = max 0 (sh - 1)
         {-# INLINE innerRange #-}
-        innerRange (Z :. i) = i /= (sh - 1)
+        innerRange !(Z :. i) = i /= (sh - 1)
         {-# INLINE outerRange #-}
         outerRange = not . innerRange
         inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i + 1)) xs
@@ -145,24 +146,25 @@ cslP xs =
 csr :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-csr xs = unsafeBackpermute ext shift xs
+csr !xs = unsafeBackpermute ext shift xs
     where
-      shift (Z :. 0) = Z :. (sh - 1)
-      shift (Z :. i) = Z :. ( i - 1)
-      ext = extent xs
-      !sh = size ext
+      {-# INLINE shift #-}
+      shift !(Z :. 0) = Z :. (sh - 1)
+      shift !(Z :. i) = Z :. ( i - 1)
+      !ext = extent xs
+      !sh  = size ext
 
 
 {-# INLINE csrP #-}
 csrP :: (Source r Double) 
      => Array r DIM1 Double 
      -> Array PS DIM1 Double
-csrP xs = 
+csrP !xs = 
     let !ext   = extent xs
         !sh    = size ext
         !limit = if sh == 0 then 0 else 1
         {-# INLINE innerRange #-}
-        innerRange (Z :. i) = i /= 0
+        innerRange !(Z :. i) = i /= 0
         {-# INLINE outerRange #-}
         outerRange = not . innerRange
         inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i  - 1)) xs
@@ -177,7 +179,7 @@ cslN :: (Source r Double)
      => Int
      -> Array r DIM1 Double 
      -> Array D DIM1 Double
-cslN !m xs = unsafeBackpermute ext shift xs
+cslN !m !xs = unsafeBackpermute ext shift xs
     where
       !n | sh == 0   = 0 -- See: Note [Preventing division by 0]
          | otherwise = m `mod` sh :: Int
@@ -195,13 +197,13 @@ csrN :: (Source r Double)
      -> Array D DIM1 Double
 csrN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0 -- See: Note [Preventing division by 0]
-         | otherwise = m `mod` sh :: Int
-      shift (Z :. i) = if i >= n
-                       then Z :. (i - n) 
-                       else Z :. (i - n + sh)
-      ext = extent xs
-      !sh = size ext
+      !n | sh == 0    = 0 -- See: Note [Preventing division by 0]
+         | otherwise  = m `mod` sh :: Int
+      shift !(Z :. i) = if i >= n
+                        then Z :. (i - n) 
+                        else Z :. (i - n + sh)
+      !ext = extent xs
+      !sh  = size ext
 
 
 instance Elt e => LoadRange D DIM1 e where
@@ -256,7 +258,7 @@ fillBlock1P write getElem !start !end = do
       !chunkLeftover = len `rem`  threads
 
       {-# INLINE splitIx #-}
-      splitIx thread
+      splitIx !thread
           | thread < chunkLeftover = start + thread * (chunkLen + 1)
           | otherwise              = start + thread * chunkLen  + chunkLeftover
 

@@ -46,7 +46,7 @@ instance Source L Double where
 
 instance Load L DIM1 Double where
   {-# INLINE loadP #-}
-  loadP (ALattice (Z :. l) (s, c) getSig lm) mvec
+  loadP (ALattice !(Z :. l) (!s, !c) getSig !lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadP[Lattice]: start"
       fillLatticeP (unsafeWriteMVec mvec) getSig lm s c l
@@ -55,7 +55,7 @@ instance Load L DIM1 Double where
  
 
   {-# INLINE loadS #-}
-  loadS (ALattice (Z :. l) (s, c) getSig lm) mvec
+  loadS (ALattice !(Z :. l) (!s, !c) getSig !lm) mvec
     = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadS[Lattice]: start"
       fillLatticeS (unsafeWriteMVec mvec) getSig lm s c 0 l (l - 1)
@@ -65,33 +65,33 @@ instance Load L DIM1 Double where
 dwtS, dwtP :: Array U DIM1 Double
            -> Array U DIM1 Double 
            -> Array U DIM1 Double
-dwtS angles signal = dwtWorkerS 0 layersCount layerModifier angles signal
+dwtS !angles !signal = dwtWorkerS 0 layersCount layerModifier angles signal
     where
-      layerModifier = 0
-      layersCount   = size . extent $ angles
+      !layerModifier = 0
+      !layersCount   = size . extent $ angles
 
 
-dwtP angles signal = dwtWorkerP 0 layersCount layerModifier angles signal
+dwtP !angles !signal = dwtWorkerP 0 layersCount layerModifier angles signal
     where
-      layerModifier = 0
-      layersCount   = size . extent $ angles
+      !layerModifier = 0
+      !layersCount   = size . extent $ angles
 
 
 idwtS, idwtP :: Array U DIM1 Double
              -> Array U DIM1 Double 
              -> Array U DIM1 Double
-idwtS angles signal = dwtWorkerS 0 layersCount layerModifier angles signal
+idwtS !angles !signal = dwtWorkerS 0 layersCount layerModifier angles signal
     where
-      layerModifier | even layersCount = 1
-                    | otherwise        = 0
-      layersCount   = size . extent $ angles
+      !layerModifier | even layersCount = 1
+                     | otherwise        = 0
+      !layersCount   = size . extent $ angles
 
 
-idwtP angles signal = dwtWorkerP 0 layersCount layerModifier angles signal
+idwtP !angles !signal = dwtWorkerP 0 layersCount layerModifier angles signal
     where
-      layerModifier | even layersCount = 1
-                    | otherwise        = 0
-      layersCount   = size . extent $ angles
+      !layerModifier | even layersCount = 1
+                     | otherwise        = 0
+      !layersCount   = size . extent $ angles
 
 
 {-# INLINE dwtWorkerS #-}
@@ -105,10 +105,10 @@ dwtWorkerS !currentLayer !layersCount !layerModifier angles signal
     | currentLayer == layersCount = signal
     | otherwise = dwtWorkerS nextLayer layersCount newModifier angles newSignal
     where
-      nextLayer    = currentLayer + 1
-      newModifier  = 1 - layerModifier
-      (sin_, cos_) = (sin &&& cos) $ angles `unsafeIndex` (Z :. currentLayer)
-      newSignal    = forceS $ lattice layerModifier (sin_, cos_) signal
+      !nextLayer      = currentLayer + 1
+      !newModifier    = 1 - layerModifier
+      !(!sin_, !cos_) = (sin &&& cos) $ angles `unsafeIndex` (Z :. currentLayer)
+      !newSignal      = forceS $ lattice layerModifier (sin_, cos_) signal
 
 
 {-# INLINE dwtWorkerP #-}
@@ -116,10 +116,10 @@ dwtWorkerP !currentLayer !layersCount !layerModifier angles signal
     | currentLayer == layersCount = signal
     | otherwise = dwtWorkerP nextLayer layersCount newModifier angles newSignal
     where
-      nextLayer    = currentLayer + 1
-      newModifier  = 1 - layerModifier
-      (sin_, cos_) = (sin &&& cos) $ angles `unsafeIndex` (Z :. currentLayer)
-      newSignal    = forceP $ lattice layerModifier (sin_, cos_) signal
+      !nextLayer      = currentLayer + 1
+      !newModifier    = 1 - layerModifier
+      !(!sin_, !cos_) = (sin &&& cos) $ angles `unsafeIndex` (Z :. currentLayer)
+      !newSignal      = forceP $ lattice layerModifier (sin_, cos_) signal
 
 
 {-# INLINE lattice #-}
@@ -127,7 +127,8 @@ lattice :: Int
         -> (Double, Double) 
         -> Array U DIM1 Double 
         -> Array L DIM1 Double
-lattice lm (s, c) sig = ALattice (extent sig) (s, c) (unsafeLinearIndex sig) lm
+lattice !lm !(!s, !c) !sig = ALattice (extent sig) (s, c) 
+                                      (unsafeLinearIndex sig) lm
 
 
 {-# INLINE fillLatticeP #-}
@@ -168,7 +169,7 @@ fillLatticeS :: (Int -> Double -> IO ())
              -> Int
              -> IO ()
 fillLatticeS write getElem !lm !s !c !start !end !lastE = 
-    fillLattice (start + lm)
+        fillLattice (start + lm)
     where fillLattice !offset
               | offset >= end   = return ()
               | offset == lastE = do

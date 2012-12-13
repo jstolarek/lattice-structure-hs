@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, TypeFamilies #-}
+{-# LANGUAGE FlexibleContexts, TypeFamilies, BangPatterns #-}
 module Signal.Wavelet.Repa.Common where
 
 import Control.Monad.Identity (runIdentity)
@@ -46,8 +46,9 @@ toRad = R.map (\x -> x * pi / 180)
 inv :: (Source r Double)
     => Array r DIM1 Double 
     -> Array D DIM1 Double
-inv xs = R.unsafeBackpermute ext reversedIndex xs
+inv !xs = R.unsafeBackpermute ext reversedIndex xs
     where
-      reversedIndex (Z :. i) = Z :. (sh - i - 1)
-      ext = extent xs
-      sh  = size ext
+      {-# INLINE reversedIndex #-}
+      reversedIndex !(Z :. i) = Z :. (sh - i - 1)
+      !ext = extent xs
+      !sh  = size ext
