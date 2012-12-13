@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Repa2Bench where
 
 import Data.Array.Repa

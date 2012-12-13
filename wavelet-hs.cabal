@@ -8,7 +8,7 @@ copyright:          (c) 2012 Jan Stolarek
 bug-reports:        jan.stolarek@p.lodz.pl
 -- homepage
 synopsis:           Wavelet transform library
-description:        Wavelet-hs provides function to calculate wavelet transform
+description:        Wavelet-hs provides functions to calculate wavelet transform
 stability:          experimental
 category:           Math
 build-type:         Simple
@@ -40,6 +40,15 @@ library
                     parallel,
                     repa >= 3.0,
                     vector >= 0.9 && < 0.10
+  extensions:       BangPatterns
+                    EmptyDataDecls
+                    FlexibleContexts
+                    FlexibleInstances
+                    ForeignFunctionInterface
+                    MagicHash
+                    MultiParamTypeClasses 
+                    TypeSynonymInstances
+--                  TypeFamilies
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
@@ -56,9 +65,6 @@ test-suite wavelet-hs-test
   type:             exitcode-stdio-1.0
   hs-source-dirs:   src, tests
   main-is:          MainTestSuite.hs
-  ghc-options:      -Wall
-                    -threaded
-                    -rtsopts
   build-depends:    base,
                     Cabal,
                     HUnit,
@@ -70,6 +76,19 @@ test-suite wavelet-hs-test
                     test-framework-hunit,
                     test-framework-quickcheck2,
                     vector >= 0.9 && < 0.10
+  extensions:       BangPatterns
+                    EmptyDataDecls
+                    FlexibleContexts
+                    FlexibleInstances
+                    ForeignFunctionInterface
+                    MagicHash
+                    MultiParamTypeClasses 
+                    TypeSynonymInstances
+--                  TypeFamilies
+                    UndecidableInstances
+  ghc-options:      -Wall
+                    -threaded
+                    -rtsopts
   cc-options:       -std=c99 -Wall
   c-sources:        src/Signal/Wavelet/C/dwt.c
 

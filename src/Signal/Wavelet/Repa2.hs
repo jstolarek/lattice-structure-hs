@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts, BangPatterns #-}
 module Signal.Wavelet.Repa2 where
 
 import Data.Array.Repa        as R

@@ -1,8 +1,3 @@
-{-# LANGUAGE BangPatterns, 
-  FlexibleContexts, 
-  FlexibleInstances,
-  MultiParamTypeClasses,
-  TypeSynonymInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Signal.Wavelet.Repa1 where
 

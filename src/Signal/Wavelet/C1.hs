@@ -1,4 +1,3 @@
-{-# LANGUAGE ForeignFunctionInterface, BangPatterns #-}
 {-# CFILES C/dwt.c #-}
 module Signal.Wavelet.C1 where
 

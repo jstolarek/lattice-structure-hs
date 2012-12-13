@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Test.Utils (
     testProvider
   , (@=~?)

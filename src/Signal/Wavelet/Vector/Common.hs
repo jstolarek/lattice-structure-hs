@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Vector.Common where
 
 import Data.Vector.Generic as V (Vector, reverse, map)

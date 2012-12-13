@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Signal.Wavelet.Repa1Test where
 
 import Control.Arrow   ((&&&))

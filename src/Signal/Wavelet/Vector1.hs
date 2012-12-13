@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Signal.Wavelet.Vector1 where
 
 import Control.Arrow    ((&&&))

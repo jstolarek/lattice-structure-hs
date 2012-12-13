@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, TypeFamilies, BangPatterns #-}
+{-# LANGUAGE TypeFamilies #-}
 module Signal.Wavelet.Repa.Common where
 
 import Control.Monad.Identity (runIdentity)
