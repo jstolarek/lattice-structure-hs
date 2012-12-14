@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeFamilies #-}
 module Signal.Wavelet.Repa3 where
 
 import Control.Arrow               ((&&&))

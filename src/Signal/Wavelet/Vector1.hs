@@ -47,14 +47,9 @@ lattice :: Int
         -> Vector Double
         -> Vector Double
 lattice !layerModifier !(!sin_, !cos_) signal = runST $ do
-    outVec <- VM.unsafeNew sigSize
-    inVec  <- VG.unsafeThaw signal
-    fill inVec outVec layerModifier
-    VG.unsafeFreeze outVec
-        where
-          !sigSpan = sigSize - 2 * layerModifier
-          !sigSize = U.length signal
-          fill inV outV !i
+    let !sigSpan = sigSize - 2 * layerModifier
+        !sigSize = U.length signal
+        fill inV outV !i
               | i < sigSpan = do
                   x <- VM.unsafeRead inV i
                   y <- VM.unsafeRead inV (i + 1)
@@ -69,3 +64,7 @@ lattice !layerModifier !(!sin_, !cos_) signal = runST $ do
                     y <- VM.unsafeRead inV 0
                     VM.unsafeWrite outV (sigSize - 1) (x * cos_ + y * sin_)
                     VM.unsafeWrite outV 0             (x * sin_ - y * cos_)
+    outVec <- VM.unsafeNew sigSize
+    inVec  <- VG.unsafeThaw signal
+    fill inVec outVec layerModifier
+    VG.unsafeFreeze outVec

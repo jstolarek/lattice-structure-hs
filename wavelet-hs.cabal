@@ -48,7 +48,7 @@ library
                     MagicHash
                     MultiParamTypeClasses 
                     TypeSynonymInstances
---                  TypeFamilies
+                    TypeFamilies
   ghc-options:      -Wall 
                     -O2 
                     -Odph 
@@ -84,7 +84,7 @@ test-suite wavelet-hs-test
                     MagicHash
                     MultiParamTypeClasses 
                     TypeSynonymInstances
---                  TypeFamilies
+                    TypeFamilies
                     UndecidableInstances
   ghc-options:      -Wall
                     -threaded
