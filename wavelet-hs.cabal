@@ -1,6 +1,6 @@
 name:               wavelet-hs
 version:            0.0.1
-license:            GPL-3
+license:            BSD3
 license-file:       LICENSE
 author:             Jan Stolarek <jan.stolarek@p.lodz.pl>
 maintainer:         jan.stolarek@p.lodz.pl
@@ -46,16 +46,16 @@ library
                     FlexibleInstances
                     ForeignFunctionInterface
                     MagicHash
-                    MultiParamTypeClasses 
+                    MultiParamTypeClasses
                     TypeSynonymInstances
                     TypeFamilies
-  ghc-options:      -Wall 
-                    -O2 
-                    -Odph 
-                    -threaded 
-                    -fno-liberate-case 
-                    -funfolding-use-threshold1000 
-                    -funfolding-keeness-factor1000 
+  ghc-options:      -Wall
+                    -O2
+                    -Odph
+                    -threaded
+                    -fno-liberate-case
+                    -funfolding-use-threshold1000
+                    -funfolding-keeness-factor1000
                     -fllvm
                     -optlo-O3
   cc-options:       -std=c99 -O3 -Wall
@@ -82,7 +82,7 @@ test-suite wavelet-hs-test
                     FlexibleInstances
                     ForeignFunctionInterface
                     MagicHash
-                    MultiParamTypeClasses 
+                    MultiParamTypeClasses
                     TypeSynonymInstances
                     TypeFamilies
                     UndecidableInstances
@@ -103,14 +103,14 @@ benchmark wavelet-hs-bench
                     repa >= 3.0,
                     vector >= 0.9 && < 0.10,
                     wavelet-hs
-  ghc-options:      -Wall 
-                    -O2 
-                    -Odph 
+  ghc-options:      -Wall
+                    -O2
+                    -Odph
                     -rtsopts
                     -eventlog
-                    -threaded 
-                    -fno-liberate-case 
-                    -funfolding-use-threshold1000 
-                    -funfolding-keeness-factor1000 
+                    -threaded
+                    -fno-liberate-case
+                    -funfolding-use-threshold1000
+                    -funfolding-keeness-factor1000
                     -fllvm
                     -optlo-O3
