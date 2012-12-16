@@ -64,39 +64,39 @@ dwtWorkerP cs !angles !signal = go layers signal
 
 
 {-# INLINE lattice #-}
-lattice :: (Source r Double)
+lattice :: (Source r Double, Shape sh)
         => (Double, Double) 
-        -> Array r DIM1 Double
-        -> Array D DIM1 Double
+        -> Array r (sh :. Int) Double
+        -> Array D (sh :. Int) Double
 lattice !(!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
     where
       baseOp !(!x1, !x2) = (x1 * c + x2 * s,  x1 * s - x2 * c)
 
 
 {-# INLINE toPairs #-}
-toPairs :: (Source r Double) 
-        => Array r DIM1 Double 
-        -> Array D DIM1 (Double, Double)
+toPairs :: (Source r Double, Shape sh) 
+        => Array r (sh :. Int) Double 
+        -> Array D (sh :. Int) (Double, Double)
 toPairs !xs = unsafeTraverse xs twiceShorter wrapPairs
     where
       {-# INLINE twiceShorter #-}
-      twiceShorter !(Z :. s) = Z :. s `quot` 2
+      twiceShorter !(sh :. s) = sh :. s `quot` 2
       {-# INLINE wrapPairs #-}
-      wrapPairs f  !(Z :. i) = (f ( Z :. 2 * i ), f ( Z :. 2 * i + 1))
+      wrapPairs f  !(sh :. i) = (f (sh :. 2 * i ), f (sh :. 2 * i + 1))
 
 
 {-# INLINE fromPairs #-}
-fromPairs :: (Source r (Double,Double))
-          => Array r DIM1 (Double, Double)
-          -> Array D DIM1 Double
+fromPairs :: (Source r (Double,Double), Shape sh)
+          => Array r (sh :. Int) (Double, Double)
+          -> Array D (sh :. Int) Double
 fromPairs !xs = unsafeTraverse xs twiceLonger unwrapPairs
     where
       {-# INLINE twiceLonger #-}
-      twiceLonger !(Z :. s) = Z :. 2 * s
+      twiceLonger !(sh :. s) = sh :. 2 * s
       {-# INLINE unwrapPairs #-}
-      unwrapPairs f !(Z :. i) 
-                      | even i    = fst . f $ ( Z :. i `quot` 2)
-                      | otherwise = snd . f $ ( Z :. i `quot` 2)
+      unwrapPairs f !(sh :. i) 
+                      | even i    = fst . f $ (sh :. i `quot` 2)
+                      | otherwise = snd . f $ (sh :. i `quot` 2)
 
 
 {-# INLINE a2w #-}

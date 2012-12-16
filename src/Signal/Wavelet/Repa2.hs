@@ -56,61 +56,64 @@ dwtWorkerP extendF !angles !signal = go layers extendedSignal
 
 
 {-# INLINE lattice #-}
-lattice :: (Double, Double) 
-        -> Array U DIM1 Double
-        -> Array D DIM1 Double
+lattice :: (Shape sh)
+        => (Double, Double)
+        -> Array U (sh :. Int) Double
+        -> Array D (sh :. Int) Double
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
       {-# INLINE baseOp #-}
-      baseOp f !(Z :. i) 
-             | even i    = let x = f (Z :. i    )
-                               y = f (Z :. i + 1)
+      baseOp f !(sh :. i) 
+             | even i    = let x = f (sh :. i    )
+                               y = f (sh :. i + 1)
                            in x * c + y * s
-             | otherwise = let x = f (Z :. i - 1)
-                               y = f (Z :. i    )
+             | otherwise = let x = f (sh :. i - 1)
+                               y = f (sh :. i    )
                            in x * s - y * c
 
 
 {-# INLINE extendFront #-}
-extendFront :: (Source r Double) 
+extendFront :: (Source r Double, Shape sh)
             => Int
-            -> Array r DIM1 Double
-            -> Array D DIM1 Double
+            -> Array r (sh :. Int) Double
+            -> Array D (sh :. Int) Double
 extendFront !layers !signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
           !initSigSize = size . extent $ signal :: Int
+          !(sh :. _)   = extent signal
           {-# INLINE go #-}
           go !sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
-                    !extSignal = extract (Z :. sigSize - extSize) 
-                                         (Z :. extSize) sig R.++ sig
+                    !extSignal = extract (sh :. sigSize - extSize) 
+                                         (sh :. extSize) sig R.++ sig
 
 
 {-# INLINE extendEnd #-}
-extendEnd :: (Source r Double) 
+extendEnd :: (Source r Double, Shape sh) 
           => Int
-          -> Array r DIM1 Double
-          -> Array D DIM1 Double
+          -> Array r (sh :. Int) Double
+          -> Array D (sh :. Int) Double
 extendEnd !layers !signal = go (delay signal) initExt initSigSize
     where !initExt     = 2 * layers - 2 :: Int
           !initSigSize = size . extent $ signal :: Int
+          !(sh :. _)   = extent signal
           {-# INLINE go #-}
           go !sig !ln !sigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
-                    !extSignal = sig R.++ extract (Z :. 0) (Z :. extSize) sig
+                    !extSignal = sig R.++ extract (sh :. 0) (sh :. extSize) sig
 
 
 {-# INLINE trim #-}
-trim :: (Source r Double) 
-     => Array r DIM1 Double
-     -> Array D DIM1 Double
+trim :: (Source r Double, Shape sh) 
+     => Array r (sh :. Int) Double
+     -> Array D (sh :. Int) Double
 trim !signal = unsafeTraverse signal trimExtent mapElems
     where
       {-# INLINE trimExtent #-}
-      trimExtent !(Z :. i) =   (Z :. max (i - 2) 0)
+      trimExtent !(sh :. i) =   (sh :. max (i - 2) 0)
       {-# INLINE mapElems #-}
-      mapElems f !(Z :. i) = f (Z :. (i + 1))
+      mapElems f !(sh :. i) = f (sh :. (i + 1))

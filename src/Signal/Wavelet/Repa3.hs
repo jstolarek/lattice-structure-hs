@@ -15,7 +15,7 @@ instance Source L Double where
 
     data Array L sh Double
         = ALattice 
-          { lLength   :: sh -- only DIM1
+          { lLength   :: sh -- at least DIM1
           , lBaseOp   :: !(Double, Double)
           , lGetSig   :: Int -> Double
           , lModifier :: Int
@@ -26,6 +26,7 @@ instance Source L Double where
     deepSeqArray (ALattice sh (s, c) getSig lm) y = 
         sh `deepSeq` s `seq` c `seq` getSig `seq` lm `seq` y
 
+    --BUG: linearIndex ignores lModifier!
     linearIndex (ALattice _ (!s, !c) f _) i
              | even i    = let x = f i
                                y = f (i + 1)
@@ -114,10 +115,11 @@ dwtWorkerP !currentLayer !layersCount !layerModifier angles signal
 
 
 {-# INLINE lattice #-}
-lattice :: Int 
+lattice :: (Shape sh)
+        => Int 
         -> (Double, Double) 
-        -> Array U DIM1 Double 
-        -> Array L DIM1 Double
+        -> Array U (sh :. Int) Double 
+        -> Array L (sh :. Int) Double
 lattice !lm !(!s, !c) !sig = ALattice (extent sig) (s, c) 
                                       (unsafeLinearIndex sig) lm
 
