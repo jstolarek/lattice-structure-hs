@@ -107,98 +107,102 @@ a2w = R.map (sin &&& cos)
 
 
 {-# INLINE csl #-}
-csl :: (Source r Double)
-    => Array r DIM1 Double 
-    -> Array D DIM1 Double
+csl :: (Source r Double, Shape sh)
+    => Array r (sh :. Int) Double 
+    -> Array D (sh :. Int) Double
 csl !xs = unsafeBackpermute ext shift xs
     where
       {-# INLINE shift #-}
-      shift !(Z :. i) = if i /= (sh - 1) then Z :. (i + 1) else Z :. 0
+      shift !(sh :. i) = if i /= (dim - 1) 
+                         then sh :. (i + 1) 
+                         else sh :. 0
       !ext = extent xs
-      !sh = size ext
+      !dim = size ext
 
 
 {-# INLINE cslP #-}
-cslP :: (Source r Double) 
-     => Array r DIM1 Double 
-     -> Array PS DIM1 Double
+cslP :: (Source r Double, Shape sh)
+     => Array r  (sh :. Int) Double 
+     -> Array PS (sh :. Int) Double
 cslP !xs = 
-    let !ext   = extent xs
-        !sh    = size ext
-        !limit = max 0 (sh - 1)
+    let !ext@(ex :. _) = extent xs
+        !dim           = size ext
+        !limit         = max 0 (dim - 1)
         {-# INLINE innerRange #-}
-        innerRange !(Z :. i) = i /= (sh - 1)
+        innerRange !(_ :. i) = i /= (dim - 1)
         {-# INLINE outerRange #-}
         outerRange = not . innerRange
-        inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i + 1)) xs
-        outer = ASmall $ unsafeBackpermute ext (\_        -> Z :. 0      ) xs
-    in APart ext (Range (Z :. 0)     (Z :. limit) innerRange) inner $ 
-       APart ext (Range (Z :. limit) (Z :. sh   ) outerRange) outer $
+        inner =          unsafeBackpermute ext (\(sh :. i) -> sh :. (i + 1)) xs
+        outer = ASmall $ unsafeBackpermute ext (\(sh :. _) -> sh :. 0      ) xs
+    in APart ext (Range (ex :. 0)     (ex :. limit) innerRange) inner $ 
+       APart ext (Range (ex :. limit) (ex :. dim  ) outerRange) outer $
        AUndefined ext
 
 
 {-# INLINE csr #-}
-csr :: (Source r Double)
-    => Array r DIM1 Double 
-    -> Array D DIM1 Double
+csr :: (Source r Double, Shape sh)
+    => Array r (sh :. Int) Double 
+    -> Array D (sh :. Int) Double
 csr !xs = unsafeBackpermute ext shift xs
     where
       {-# INLINE shift #-}
-      shift !(Z :. 0) = Z :. (sh - 1)
-      shift !(Z :. i) = Z :. ( i - 1)
+      shift !(sh :. 0) = sh :. (dim - 1)
+      shift !(sh :. i) = sh :. (  i - 1)
       !ext = extent xs
-      !sh  = size ext
+      !dim = size ext
 
 
 {-# INLINE csrP #-}
-csrP :: (Source r Double) 
-     => Array r DIM1 Double 
-     -> Array PS DIM1 Double
+csrP :: (Source r Double, Shape sh) 
+     => Array r  (sh :. Int) Double 
+     -> Array PS (sh :. Int) Double
 csrP !xs = 
-    let !ext   = extent xs
-        !sh    = size ext
-        !limit = if sh == 0 then 0 else 1
+    let !ext@(ex :. _) = extent xs
+        !len           = size ext
+        !limit         = if len == 0 then 0 else 1
         {-# INLINE innerRange #-}
-        innerRange !(Z :. i) = i /= 0
+        innerRange !(_ :. i) = i /= 0
         {-# INLINE outerRange #-}
         outerRange = not . innerRange
-        inner =          unsafeBackpermute ext (\(Z :. i) -> Z :. (i  - 1)) xs
-        outer = ASmall $ unsafeBackpermute ext (\_        -> Z :. (sh - 1)) xs
-    in APart ext (Range (Z :. limit) (Z :. sh   ) innerRange) inner $ 
-       APart ext (Range (Z :. 0    ) (Z :. limit) outerRange) outer $
+        inner =          unsafeBackpermute ext (\(sh:. i) -> sh :. (i   - 1)) xs
+        outer = ASmall $ unsafeBackpermute ext (\(sh:. _) -> sh :. (len - 1)) xs
+    in APart ext (Range (ex :. limit) (ex :. len  ) innerRange) inner $ 
+       APart ext (Range (ex :. 0    ) (ex :. limit) outerRange) outer $
        AUndefined ext
 
 
 {-# INLINE cslN #-}
-cslN :: (Source r Double)
+cslN :: (Source r Double, Shape sh)
      => Int
-     -> Array r DIM1 Double 
-     -> Array D DIM1 Double
+     -> Array r (sh :. Int) Double
+     -> Array D (sh :. Int) Double
 cslN !m !xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0   = 0 -- See: Note [Preventing division by 0]
-         | otherwise = m `mod` sh :: Int
-      shift (Z :. i) = if i < (sh - n) 
-                       then Z :. (i + n) 
-                       else Z :. (i + n - sh)
-      ext = extent xs
-      !sh = size ext
+      !n | len == 0  = 0 -- See: Note [Preventing division by 0]
+         | otherwise = m `mod` len :: Int
+      {-# INLINE shift #-}
+      shift (sh :. i) = if i < (len - n) 
+                        then sh :. (i + n) 
+                        else sh :. (i + n - len)
+      !ext = extent xs
+      !len = size ext
 
 
 {-# INLINE csrN #-}
-csrN :: (Source r Double)
+csrN :: (Source r Double, Shape sh)
      => Int
-     -> Array r DIM1 Double 
-     -> Array D DIM1 Double
+     -> Array r (sh :. Int) Double 
+     -> Array D (sh :. Int) Double
 csrN !m xs = unsafeBackpermute ext shift xs
     where
-      !n | sh == 0    = 0 -- See: Note [Preventing division by 0]
-         | otherwise  = m `mod` sh :: Int
-      shift !(Z :. i) = if i >= n
-                        then Z :. (i - n) 
-                        else Z :. (i - n + sh)
+      !n | len == 0   = 0 -- See: Note [Preventing division by 0]
+         | otherwise  = m `mod` len :: Int
+      {-# INLINE shift #-}
+      shift !(sh :. i) = if i >= n
+                         then sh :. (i - n) 
+                         else sh :. (i - n + len)
       !ext = extent xs
-      !sh  = size ext
+      !len = size ext
 
 
 instance Elt e => LoadRange D DIM1 e where

@@ -49,6 +49,7 @@ library
                     MultiParamTypeClasses
                     TypeSynonymInstances
                     TypeFamilies
+                    TypeOperators
   ghc-options:      -Wall
                     -O2
                     -Odph
@@ -85,6 +86,7 @@ test-suite wavelet-hs-test
                     MultiParamTypeClasses
                     TypeSynonymInstances
                     TypeFamilies
+                    TypeOperators
                     UndecidableInstances
   ghc-options:      -Wall
                     -threaded
