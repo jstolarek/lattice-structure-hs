@@ -2,6 +2,7 @@ module Signal.Wavelet.Repa3Test where
 
 import Control.Arrow              ((&&&))
 import Data.Array.Repa            hiding (map)
+import qualified Data.Vector      as V (fromList, (!))
 import Test.HUnit                 (Assertion)
 import Test.QuickCheck            (Property, forAll, elements)
 
@@ -73,6 +74,34 @@ propDoubleLatticePIdentity (DwtInputRepa (ls, sig)) =
         (forceP (lattice lm baseOp (forceP $ lattice lm baseOp sig))) =~ sig
             where baseOp   = (sin &&& cos) $ ls ! (Z :. 0)
 
+
+testLinearIndex :: (Array L DIM1 Double, Int, Double)
+                -> Assertion
+testLinearIndex (array, ind, expected) = 
+    expected @=~? array `linearIndex` ind
+
+
+dataLinearIndex :: [(Array L DIM1 Double, Int, Double)]
+dataLinearIndex = Prelude.map transformData . filterEmpty $ DW.dataLatticeWithLM
+    where filterEmpty = Prelude.filter (\(_,_,x,_) -> not . null $ x)
+          transformData (lm, bOp, inL, outL) = 
+              (ALattice (Z :. len) bOp (inV V.!) lm, ind, expected)
+              where inV      = V.fromList inL
+                    len      = length inL
+                    ind     = len - 1
+                    expected = (V.fromList outL) V.! ind
+
+
+propLinearIndexSameAsLattice :: DwtInputRepa -> Int -> Property
+propLinearIndexSameAsLattice (DwtInputRepa (ls, sig)) i =
+    forAll (elements [0,1]) $ \lm ->
+        (forceS . lattice lm baseOp $ sig) ! (Z :. ind) == 
+                                               (array lm) `linearIndex` ind
+            where baseOp = (sin &&& cos) $ ls ! (Z :. 0)
+                  ind    = (abs i) `rem` len
+                  len    = size . extent $ sig
+                  array  = ALattice (Z :. len) baseOp ((sig !) . (Z :.))
+    
 
 f :: [Double] -> Array U DIM1 Double
 f xs = fromListUnboxed (Z :. (length xs)) xs

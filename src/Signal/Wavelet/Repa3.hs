@@ -15,7 +15,7 @@ instance Source L Double where
 
     data Array L sh Double
         = ALattice 
-          { lLength   :: sh -- at least DIM1
+          { lLength   :: sh -- DIM1
           , lBaseOp   :: !(Double, Double)
           , lGetSig   :: Int -> Double
           , lModifier :: Int
@@ -26,14 +26,15 @@ instance Source L Double where
     deepSeqArray (ALattice sh (s, c) getSig lm) y = 
         sh `deepSeq` s `seq` c `seq` getSig `seq` lm `seq` y
 
-    --BUG: linearIndex ignores lModifier!
-    linearIndex (ALattice _ (!s, !c) f _) i
-             | even i    = let x = f i
-                               y = f (i + 1)
-                           in x * c + y * s
-             | otherwise = let x = f (i - 1)
-                               y = f i
-                           in x * s - y * c
+    linearIndex (ALattice l (!s, !c) f lm) i
+        | i < lm     = high (len - 1) 0 -- only when i = 0 && lm = 1
+        | off == len = low  (len - 1) 0
+        | even off   = low   i       (i + 1)
+        | otherwise  = high (i - 1)   i
+        where low  x y = (f x) * c + (f y) * s
+              high x y = (f x) * s - (f y) * c
+              len = size l
+              off = i + lm
 
 
 instance Load L DIM1 Double where
@@ -53,6 +54,7 @@ instance Load L DIM1 Double where
       fillLatticeS (unsafeWriteMVec mvec) getSig lm s c 0 l (l - 1)
       touchMVec mvec
       traceEventIO "Repa.loadS[Lattice]: end"
+
 
 dwtS, dwtP :: Array U DIM1 Double
            -> Array U DIM1 Double 
@@ -115,14 +117,18 @@ dwtWorkerP !currentLayer !layersCount !layerModifier angles signal
 
 
 {-# INLINE lattice #-}
-lattice :: (Shape sh)
-        => Int 
+lattice :: Int 
         -> (Double, Double) 
-        -> Array U (sh :. Int) Double 
-        -> Array L (sh :. Int) Double
+        -> Array U DIM1 Double 
+        -> Array L DIM1 Double
 lattice !lm !(!s, !c) !sig = ALattice (extent sig) (s, c) 
                                       (unsafeLinearIndex sig) lm
 
+
+-- fillLatticeP and fillLatticeS are designed to work only with DIM1 arrays and 
+-- hence the whole Repa3 implementation can process only DIM1 arrays. 
+-- Generalization to higher rank arrays would require a rewrite of these two 
+-- functions.
 
 {-# INLINE fillLatticeP #-}
 fillLatticeP :: (Int -> Double -> IO ())
@@ -134,7 +140,7 @@ fillLatticeP :: (Int -> Double -> IO ())
              -> IO ()
 fillLatticeP write getElem !lm !s !c !sigLength = 
     -- this algorithm adapted from Data.Array.Repa.Eval.Chunked.hs
-    -- from Repa library
+    -- from Repa 3.2.2.3 library
     gangIO theGang $ \(threadId) ->
               let !start   = splitIx  threadId
                   !end     = splitIx (threadId + 1)

@@ -124,6 +124,9 @@ tests = [
     , testProvider "Lattice layer parallel"      R3.testLatticeP R3.dataLattice
     , testProperty "Inverting lattice layer seq" R3.propDoubleLatticeSIdentity
     , testProperty "Inverting lattice layer par" R3.propDoubleLatticePIdentity
+    , testProvider "Linear index"                R3.testLinearIndex
+                                                 R3.dataLinearIndex
+    , testProperty "Indexing same as lattice"    R3.propLinearIndexSameAsLattice
   ],
   testGroup "C1" [
       testProvider "DWT"                         C1.testDwt  C1.dataDwt
