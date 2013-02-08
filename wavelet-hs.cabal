@@ -55,6 +55,7 @@ library
                     -Odph
                     -threaded
                     -fno-liberate-case
+                    -fsimpl-tick-factor=1000
                     -funfolding-use-threshold1000
                     -funfolding-keeness-factor1000
                     -fllvm
@@ -112,6 +113,7 @@ benchmark wavelet-hs-bench
                     -eventlog
                     -threaded
                     -fno-liberate-case
+                    -fsimpl-tick-factor=1000
                     -funfolding-use-threshold1000
                     -funfolding-keeness-factor1000
                     -fllvm
