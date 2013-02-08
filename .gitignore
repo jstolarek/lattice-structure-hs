@@ -1,12 +1,22 @@
+# Build directories
 dist
-#*
-*#
-*.o
-*.hcr
-*.hi
-*.eventlog
-*.html
-*.txt
 .dist-buildwrapper
 .externalToolBuilders
+
+# Build artifacts
+*.hi
+*.o
+*.a
+
+# Emacs backup
+#*
+*#
+
+# documentation and notes
+*.html
+*.txt
+
+# other
+*.eventlog
+*.hcr
 ghci.hs
