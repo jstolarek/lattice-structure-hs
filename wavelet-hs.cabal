@@ -61,7 +61,7 @@ library
                     -fllvm
                     -optlo-O3
   cc-options:       -std=c99 -O3 -Wall
-  c-sources:        src/Signal/Wavelet/C/dwt.c
+  c-sources:        cbits/dwt.c
 
 test-suite wavelet-hs-test
   type:             exitcode-stdio-1.0
@@ -93,7 +93,7 @@ test-suite wavelet-hs-test
                     -threaded
                     -rtsopts
   cc-options:       -std=c99 -Wall
-  c-sources:        src/Signal/Wavelet/C/dwt.c
+  c-sources:        cbits/dwt.c
 
 benchmark wavelet-hs-bench
   type:             exitcode-stdio-1.0
