@@ -1,4 +1,3 @@
-{-# CFILES C/dwt.c #-}
 module Signal.Wavelet.C1 where
 
 import Control.Monad        (liftM)
@@ -8,11 +7,11 @@ import Foreign.C
 import System.IO.Unsafe     (unsafePerformIO)
 
 
-foreign import ccall unsafe "C/dwt.h"
+foreign import ccall unsafe "dwt.h"
   c_dwt  :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
-foreign import ccall unsafe "C/dwt.h"
+foreign import ccall unsafe "dwt.h"
   c_idwt :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
-foreign import ccall unsafe "C/dwt.h"
+foreign import ccall unsafe "dwt.h"
   c_lattice :: CInt -> CDouble -> CDouble -> Ptr CDouble -> CInt ->
                IO (Ptr CDouble)
 
