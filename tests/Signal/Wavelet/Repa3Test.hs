@@ -16,7 +16,7 @@ import Test.Utils                 ((=~), (@=~?))
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testDwt (ls, sig, expected) = 
+testDwt (ls, sig, expected) =
     expected @=~? dwtS ls sig
 
 
@@ -29,7 +29,7 @@ dataDwt = Prelude.map convertTuple DW.dataDwt
 
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testIdwt (ls, sig, expected) = 
+testIdwt (ls, sig, expected) =
     expected @=~? idwtS ls sig
 
 
@@ -41,19 +41,19 @@ dataIdwt = Prelude.map convertTuple DW.dataIdwt
 
 
 propDWTInvertible :: DwtInputRepa -> Bool
-propDWTInvertible (DwtInputRepa (ls, sig)) = 
+propDWTInvertible (DwtInputRepa (ls, sig)) =
     idwtS (computeS $ inv ls) (dwtS ls sig) =~ sig
 
 
 testLatticeS :: (Int, (Double,Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
-testLatticeS (lm, baseOp, sig, expected) = 
+testLatticeS (lm, baseOp, sig, expected) =
     expected @=~? forceS (lattice lm baseOp sig)
 
 
 testLatticeP :: (Int, (Double,Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
-testLatticeP (lm, baseOp, sig, expected) = 
+testLatticeP (lm, baseOp, sig, expected) =
     expected @=~? forceP (lattice lm baseOp sig)
 
 
@@ -77,14 +77,14 @@ propDoubleLatticePIdentity (DwtInputRepa (ls, sig)) =
 
 testLinearIndex :: (Array L DIM1 Double, Int, Double)
                 -> Assertion
-testLinearIndex (array, ind, expected) = 
+testLinearIndex (array, ind, expected) =
     expected @=~? array `linearIndex` ind
 
 
 dataLinearIndex :: [(Array L DIM1 Double, Int, Double)]
 dataLinearIndex = Prelude.map transformData . filterEmpty $ DW.dataLatticeWithLM
     where filterEmpty = Prelude.filter (\(_,_,x,_) -> not . null $ x)
-          transformData (lm, bOp, inL, outL) = 
+          transformData (lm, bOp, inL, outL) =
               (ALattice (Z :. len) bOp (inV V.!) lm, ind, expected)
               where inV      = V.fromList inL
                     len      = length inL
@@ -95,13 +95,13 @@ dataLinearIndex = Prelude.map transformData . filterEmpty $ DW.dataLatticeWithLM
 propLinearIndexSameAsLattice :: DwtInputRepa -> Int -> Property
 propLinearIndexSameAsLattice (DwtInputRepa (ls, sig)) i =
     forAll (elements [0,1]) $ \lm ->
-        (forceS . lattice lm baseOp $ sig) ! (Z :. ind) == 
+        (forceS . lattice lm baseOp $ sig) ! (Z :. ind) ==
                                                (array lm) `linearIndex` ind
             where baseOp = (sin &&& cos) $ ls ! (Z :. 0)
                   ind    = (abs i) `rem` len
                   len    = size . extent $ sig
                   array  = ALattice (Z :. len) baseOp ((sig !) . (Z :.))
-    
+
 
 f :: [Double] -> Array U DIM1 Double
 f xs = fromListUnboxed (Z :. (length xs)) xs

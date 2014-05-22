@@ -5,19 +5,19 @@ import qualified Data.Vector.Storable as VS
 import qualified Data.Vector.Unboxed  as VU
 import Test.QuickCheck as QC
 
-newtype DwtInputList = DwtInputList ([Double], [Double]) 
+newtype DwtInputList = DwtInputList ([Double], [Double])
     deriving (Show)
 
-newtype DwtInputVector = DwtInputVector (VU.Vector Double, VU.Vector Double) 
+newtype DwtInputVector = DwtInputVector (VU.Vector Double, VU.Vector Double)
     deriving (Show)
 
-newtype DwtInputRepa = DwtInputRepa (Array U DIM1 Double, Array U DIM1 Double) 
+newtype DwtInputRepa = DwtInputRepa (Array U DIM1 Double, Array U DIM1 Double)
     deriving (Show)
 
-newtype DwtInputC = DwtInputC (VS.Vector Double, VS.Vector Double) 
+newtype DwtInputC = DwtInputC (VS.Vector Double, VS.Vector Double)
     deriving (Show)
 
-newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double) 
+newtype RepaDIM1Array = RepaDIM1Array (Array U DIM1 Double)
     deriving (Show)
 
 
@@ -36,7 +36,7 @@ instance Arbitrary DwtInputRepa where
         (ls, sig) <- genDwtInput
         let lsSize  = length ls
             sigSize = length sig
-        return $ DwtInputRepa (fromListUnboxed (Z :. lsSize ) ls, 
+        return $ DwtInputRepa (fromListUnboxed (Z :. lsSize ) ls,
                                fromListUnboxed (Z :. sigSize) sig)
 
 

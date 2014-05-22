@@ -47,12 +47,12 @@ instance (AEq a, AEq b, AEq c) => AEq (a, b, c) where
 
 
 instance (AEq a, AEq b, AEq c, AEq d) => AEq (a, b, c, d) where
-    (a, b, c, d) =~ (aa, bb, cc, dd) = (a =~ aa) && (b =~ bb) && 
+    (a, b, c, d) =~ (aa, bb, cc, dd) = (a =~ aa) && (b =~ bb) &&
                                        (c =~ cc) && (d =~ dd)
 
 
 instance (AEq e, R.Shape sh, R.Source r e) => AEq (R.Array r sh e) where
-    xs =~ ys = (R.extent xs == R.extent ys) && 
+    xs =~ ys = (R.extent xs == R.extent ys) &&
                (R.foldAllS (&&) True $ R.zipWith (=~) xs ys)
 
 
@@ -69,7 +69,7 @@ instance (AEq a, VG.Vector VS.Vector a) => AEq (VS.Vector a) where
 testProvider :: String -> (a -> HU.Assertion) -> [a] -> TF.Test
 testProvider testGroupName testFunction =
     TF.testGroup testGroupName . map createTest . zipWith assignName [1::Int ..]
-      where 
+      where
         createTest (name, dataSet)   = TFH.testCase name $ testFunction dataSet
         assignName setNumber dataSet = ("Data set " ++ show setNumber, dataSet)
 
@@ -80,7 +80,7 @@ infix 4 @=~?
 (@=~?) :: (Show a, AEq a) => a -> a -> HU.Assertion
 (@=~?) expected actual  = expected =~ actual HU.@? assertionMsg
     where
-      assertionMsg = "Expected : " ++ show expected ++ 
+      assertionMsg = "Expected : " ++ show expected ++
                      "\nActual   : " ++ show actual
 
 infix 4 ?=~@

@@ -8,13 +8,13 @@ import Signal.Wavelet.Repa.Common (forceS, forceP)
 
 
 {-# INLINE benchDwtS #-}
-benchDwtS :: (Array U DIM1 Double, Array U DIM1 Double) 
+benchDwtS :: (Array U DIM1 Double, Array U DIM1 Double)
           -> Array U DIM1 Double
 benchDwtS = uncurry dwtS
 
 
 {-# INLINE benchDwtP #-}
-benchDwtP :: (Array U DIM1 Double, Array U DIM1 Double) 
+benchDwtP :: (Array U DIM1 Double, Array U DIM1 Double)
           -> Array U DIM1 Double
 benchDwtP = uncurry dwtP
 
@@ -33,7 +33,7 @@ benchIdwtP = uncurry idwtP
 
 dataDwt :: ([Double], [Double])
          -> (Array U DIM1 Double, Array U DIM1 Double)
-dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls, 
+dataDwt (ls, sig) = (fromListUnboxed (Z :. lsSize ) ls,
                      fromListUnboxed (Z :. sigSize) sig)
     where
       lsSize  = length ls
@@ -54,7 +54,7 @@ benchLatticeP = forceP . (uncurry lattice)
 
 dataLattice :: ([Double], [Double])
             -> ((Double, Double), Array U DIM1 Double)
-dataLattice (ls, sig) = ((sin &&& cos) . head $ ls, 
+dataLattice (ls, sig) = ((sin &&& cos) . head $ ls,
                           fromListUnboxed (Z :. sigSize) sig)
     where sigSize = length sig
 

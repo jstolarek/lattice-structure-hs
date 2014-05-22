@@ -14,7 +14,7 @@ import Test.Utils                 ((=~), (@=~?))
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testDwt (ls, sig, expected) = 
+testDwt (ls, sig, expected) =
     expected @=~? dwtS ls sig
 
 
@@ -24,7 +24,7 @@ dataDwt = Prelude.map (DW.all3 f) DW.dataDwt
 
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testIdwt (ls, sig, expected) = 
+testIdwt (ls, sig, expected) =
     expected @=~? idwtS ls sig
 
 
@@ -33,13 +33,13 @@ dataIdwt = Prelude.map (DW.all3 f) DW.dataIdwt
 
 
 propDWTInvertible :: DwtInputRepa -> Bool
-propDWTInvertible (DwtInputRepa (ls, sig)) = 
+propDWTInvertible (DwtInputRepa (ls, sig)) =
     idwtS (forceS $ inv ls) (dwtS ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
             -> Assertion
-testLattice (baseOp, sig, expected) = 
+testLattice (baseOp, sig, expected) =
     expected @=~? forceS (lattice baseOp sig)
 
 
@@ -55,17 +55,17 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
 
 
 testCsl :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCsl (input, expected) = 
+testCsl (input, expected) =
     expected @=? (forceS $ csl input)
 
 
 testCslPS :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCslPS (input, expected) = 
+testCslPS (input, expected) =
     expected @=? (forceS $ cslP input)
 
 
 testCslPP :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCslPP (input, expected) = 
+testCslPP (input, expected) =
     expected @=? (forceP $ cslP input)
 
 
@@ -74,17 +74,17 @@ dataCsl = Prelude.map (DW.all2 f) DW.dataCsl
 
 
 testCsr :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCsr (input, expected) = 
+testCsr (input, expected) =
     expected @=? (forceS $ csr input)
 
 
 testCsrPS :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCsrPS (input, expected) = 
+testCsrPS (input, expected) =
     expected @=? (forceS $ csrP input)
 
 
 testCsrPP :: (Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCsrPP (input, expected) = 
+testCsrPP (input, expected) =
     expected @=? (forceP $ csrP input)
 
 
@@ -93,7 +93,7 @@ dataCsr = Prelude.map (DW.all2 f) DW.dataCsr
 
 
 testCslN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCslN (n, input, expected) = 
+testCslN (n, input, expected) =
     expected @=? (forceS $ cslN n input)
 
 
@@ -102,7 +102,7 @@ dataCslN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCslN
 
 
 testCsrN :: (Int, Array U DIM1 Double, Array U DIM1 Double) -> Assertion
-testCsrN (n, input, expected) = 
+testCsrN (n, input, expected) =
     expected @=? (forceS $ csrN n input)
 
 
@@ -111,22 +111,22 @@ dataCsrN = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataCsrN
 
 
 propIdentityShift1 :: RepaDIM1Array -> Bool
-propIdentityShift1 (RepaDIM1Array xs) = 
+propIdentityShift1 (RepaDIM1Array xs) =
     forceS (csl . forceS . csr $ xs) == xs
 
 
 propIdentityShift1P :: RepaDIM1Array -> Bool
-propIdentityShift1P (RepaDIM1Array xs) = 
+propIdentityShift1P (RepaDIM1Array xs) =
     forceP (cslP . forceP . csrP $ xs) == xs
 
 
 propIdentityShift2 :: RepaDIM1Array -> Bool
-propIdentityShift2 (RepaDIM1Array xs) = 
+propIdentityShift2 (RepaDIM1Array xs) =
     forceS (csr . forceS . csl $ xs) == xs
 
 
 propIdentityShift2P :: RepaDIM1Array -> Bool
-propIdentityShift2P (RepaDIM1Array xs) = 
+propIdentityShift2P (RepaDIM1Array xs) =
     forceP (csrP . forceS . cslP $ xs) == xs
 
 
@@ -141,13 +141,13 @@ propIdentityShift4 n (RepaDIM1Array xs) =
 
 
 propIdentityShift5 :: RepaDIM1Array -> Bool
-propIdentityShift5 (RepaDIM1Array xs) = 
+propIdentityShift5 (RepaDIM1Array xs) =
     forceS (cslN n xs) == xs
         where n = size . extent $ xs
 
 
 propIdentityShift6 :: RepaDIM1Array -> Bool
-propIdentityShift6 (RepaDIM1Array xs) = 
+propIdentityShift6 (RepaDIM1Array xs) =
     forceS (csrN n xs) == xs
         where n = size . extent $ xs
 
@@ -159,9 +159,9 @@ propPairsIdentity1 (RepaDIM1Array xs) =
 
 
 propPairsIdentity2 :: RepaDIM1Array -> Bool
-propPairsIdentity2 (RepaDIM1Array xs) = 
+propPairsIdentity2 (RepaDIM1Array xs) =
     forceS (toPairs . fromPairs $ ys) == ys
-        where 
+        where
           ys :: (Source U (Double, Double)) => Array U DIM1 (Double,Double)
           ys = forceS $ R.zipWith (,) xs xs
 

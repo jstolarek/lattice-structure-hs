@@ -6,7 +6,7 @@ import Signal.Wavelet.List.Common
 dwt :: [Double] -> [Double] -> [Double]
 dwt _ [] = []
 dwt angles signal = dwtWorker latticeSeq tail angles extendedSignal
-    where 
+    where
       extendedSignal = extendEnd layers signal
       layers         = length angles
 

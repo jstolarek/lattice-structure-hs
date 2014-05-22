@@ -13,7 +13,7 @@ import Test.Utils                 ((=~), (@=~?))
 
 testDwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testDwt (ls, sig, expected) = 
+testDwt (ls, sig, expected) =
     expected @=~? dwtS ls sig
 
 
@@ -23,7 +23,7 @@ dataDwt = Prelude.map (DW.all3 f) DW.dataDwt
 
 testIdwt :: (Array U DIM1 Double, Array U DIM1 Double, Array U DIM1 Double)
         -> Assertion
-testIdwt (ls, sig, expected) = 
+testIdwt (ls, sig, expected) =
     expected @=~? idwtS ls sig
 
 
@@ -32,13 +32,13 @@ dataIdwt = Prelude.map (DW.all3 f) DW.dataIdwt
 
 
 propDWTInvertible :: DwtInputRepa -> Bool
-propDWTInvertible (DwtInputRepa (ls, sig)) = 
+propDWTInvertible (DwtInputRepa (ls, sig)) =
     idwtS (computeS $ inv ls) (dwtS ls sig) =~ sig
 
 
 testLattice :: ((Double, Double), Array U DIM1 Double, Array U DIM1 Double)
              -> Assertion
-testLattice (baseOp, sig, expected) = 
+testLattice (baseOp, sig, expected) =
     expected @=~? forceS (lattice baseOp sig)
 
 
@@ -55,7 +55,7 @@ propDoubleLatticeIdentity (DwtInputRepa (ls, sig)) =
 
 testExtendFront :: (Int, Array U DIM1 Double, Array U DIM1 Double)
               -> Assertion
-testExtendFront (ln, sig, expected) = 
+testExtendFront (ln, sig, expected) =
     expected @=~? forceS (extendFront ln sig)
 
 
@@ -65,7 +65,7 @@ dataExtendFront = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataExtendFront
 
 testExtendEnd :: (Int, Array U DIM1 Double, Array U DIM1 Double)
               -> Assertion
-testExtendEnd (ln, sig, expected) = 
+testExtendEnd (ln, sig, expected) =
     expected @=~? forceS (extendEnd ln sig)
 
 
@@ -75,7 +75,7 @@ dataExtendEnd = Prelude.map (\(a, b, c) -> (a, f b, f c)) DW.dataExtendEnd
 
 testTrim :: (Array U DIM1 Double, Array U DIM1 Double)
          -> Assertion
-testTrim (sig, expected) = 
+testTrim (sig, expected) =
     expected @=~? (computeS . trim . delay $ sig)
 
 

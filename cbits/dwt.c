@@ -17,7 +17,7 @@
  */
 double* c_dwt( double* ls, int ln, double* xs, int xn ) {
   int lm = 0;
-  return c_dwt_worker( lm, ls, ln, xs, xn ); 
+  return c_dwt_worker( lm, ls, ln, xs, xn );
 }
 
 
@@ -25,7 +25,7 @@ double* c_idwt( double* ls, int ln, double* xs, int xn ) {
   // this is just a fancy way of getting 1 if ln is even ln and 0 if
   // it is odd
   int lm = 1 - (ln - ((ln >> 1) << 1));
-  return c_dwt_worker( lm, ls, ln, xs, xn ); 
+  return c_dwt_worker( lm, ls, ln, xs, xn );
 }
 
 
@@ -67,8 +67,8 @@ double* c_dwt_worker( int lm, double* ls, int ln, double* xs, int xn ) {
  * from Haskell. C implementations of dwt/idwt call c_lattice_worker directly.
  * See c_lattice_worker below for parameter description.
  */
-double* c_lattice( int lm, double sin_, double cos_, double* inArr, 
-                   int arrLen ) { 
+double* c_lattice( int lm, double sin_, double cos_, double* inArr,
+                   int arrLen ) {
   double* outArr = malloc( arrLen * sizeof( double ) );
 
   // do computations only if non-empty array was passed
@@ -117,7 +117,7 @@ int c_lattice_worker( int lm, double* inArr, double* outArr, int arrLen,
     outArr[ xi ] = x * cos_ + y * sin_;
     outArr[ yi ] = x * sin_ - y * cos_;
   }
-  
+
   // fliping the lm modifier
   return 1 - lm;
 }

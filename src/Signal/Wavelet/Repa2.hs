@@ -11,7 +11,7 @@ import Signal.Wavelet.Repa.Common
 {-# INLINE idwtS #-}
 {-# INLINE idwtP #-}
 dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
-                         -> Array U DIM1 Double 
+                         -> Array U DIM1 Double
                          -> Array U DIM1 Double
 dwtS  !angles !signal = dwtWorkerS extendEnd   angles signal
 dwtP  !angles !signal = dwtWorkerP extendEnd   angles signal
@@ -21,10 +21,10 @@ idwtP !angles !signal = dwtWorkerP extendFront angles signal
 
 -- See: Note [Higher order functions interfere with fusion] in Repa1.hs
 {-# INLINE dwtWorkerS #-}
-dwtWorkerS, dwtWorkerP :: (Source r Double) 
+dwtWorkerS, dwtWorkerP :: (Source r Double)
                        => (Int -> Array r DIM1 Double -> Array D DIM1 Double)
                        -> Array U DIM1 Double
-                       -> Array r DIM1 Double 
+                       -> Array r DIM1 Double
                        -> Array U DIM1 Double
 dwtWorkerS extendF !angles !signal = go layers extendedSignal
     where
@@ -63,7 +63,7 @@ lattice :: (Shape sh)
 lattice !(!s, !c) !signal = unsafeTraverse signal id baseOp
     where
       {-# INLINE baseOp #-}
-      baseOp f !(sh :. i) 
+      baseOp f !(sh :. i)
              | even i    = let x = f (sh :. i    )
                                y = f (sh :. i + 1)
                            in x * c + y * s
@@ -86,12 +86,12 @@ extendFront !layers !signal = go (delay signal) initExt initSigSize
               | extSize <= 0   = sig
               | otherwise      = go extSignal (ln - extSize) (sigSize + extSize)
               where !extSize   = min sigSize ln :: Int
-                    !extSignal = extract (sh :. sigSize - extSize) 
+                    !extSignal = extract (sh :. sigSize - extSize)
                                          (sh :. extSize) sig R.++ sig
 
 
 {-# INLINE extendEnd #-}
-extendEnd :: (Source r Double, Shape sh) 
+extendEnd :: (Source r Double, Shape sh)
           => Int
           -> Array r (sh :. Int) Double
           -> Array D (sh :. Int) Double
@@ -108,7 +108,7 @@ extendEnd !layers !signal = go (delay signal) initExt initSigSize
 
 
 {-# INLINE trim #-}
-trim :: (Source r Double, Shape sh) 
+trim :: (Source r Double, Shape sh)
      => Array r (sh :. Int) Double
      -> Array D (sh :. Int) Double
 trim !signal = unsafeTraverse signal trimExtent mapElems

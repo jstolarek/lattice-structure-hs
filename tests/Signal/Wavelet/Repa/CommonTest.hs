@@ -8,7 +8,7 @@ import Test.Utils                 ((=~))
 
 
 propDegRadInvertible :: RepaDIM1Array -> Bool
-propDegRadInvertible (RepaDIM1Array xs) = 
+propDegRadInvertible (RepaDIM1Array xs) =
     computeS (toDeg (toRad xs)) =~ xs
 
 
@@ -18,5 +18,5 @@ propRadDegInvertible (RepaDIM1Array xs) =
 
 
 propLatticeInverseInverse :: RepaDIM1Array -> Bool
-propLatticeInverseInverse (RepaDIM1Array ls) = 
+propLatticeInverseInverse (RepaDIM1Array ls) =
     computeS (inv . inv $ ls) == ls

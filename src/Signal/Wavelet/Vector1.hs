@@ -8,7 +8,7 @@ import           Data.Vector.Unboxed         as U
 
 
 dwt :: Vector Double
-    -> Vector Double 
+    -> Vector Double
     -> Vector Double
 dwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
     where
@@ -17,7 +17,7 @@ dwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
 
 
 idwt :: Vector Double
-     -> Vector Double 
+     -> Vector Double
      -> Vector Double
 idwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
     where
@@ -26,11 +26,11 @@ idwt angles signal = dwtWorker 0 layersCount layerModifier angles signal
       layersCount = U.length angles
 
 
-dwtWorker :: Int 
+dwtWorker :: Int
           -> Int
           -> Int
-          -> Vector Double 
-          -> Vector Double 
+          -> Vector Double
+          -> Vector Double
           -> Vector Double
 dwtWorker !currentLayer !layersCount !layerModifier angles signal
     | currentLayer == layersCount = signal
@@ -56,9 +56,9 @@ lattice !layerModifier !(!sin_, !cos_) signal = runST $ do
                   VM.unsafeWrite outV i       (x * cos_ + y * sin_)
                   VM.unsafeWrite outV (i + 1) (x * sin_ - y * cos_)
                   fill inV outV (i + 2)
-              | otherwise = 
-                  if (layerModifier == 0 || sigSize == 0) 
-                  then return () 
+              | otherwise =
+                  if (layerModifier == 0 || sigSize == 0)
+                  then return ()
                   else do
                     x <- VM.unsafeRead inV (sigSize - 1)
                     y <- VM.unsafeRead inV 0

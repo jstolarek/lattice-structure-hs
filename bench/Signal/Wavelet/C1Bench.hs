@@ -22,7 +22,7 @@ dataDwt (ls, sig) = (fromList ls, fromList sig)
 
 
 {-# INLINE benchLattice #-}
-benchLattice :: (Int, (Double, Double), Vector Double) 
+benchLattice :: (Int, (Double, Double), Vector Double)
              -> Vector Double
 benchLattice (lm, baseOp, sig) = lattice lm baseOp sig
 

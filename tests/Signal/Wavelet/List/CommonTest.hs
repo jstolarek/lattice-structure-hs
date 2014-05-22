@@ -11,7 +11,7 @@ import Test.Utils                 ((=~), (@=~?))
 
 
 testLattice :: ((Double, Double), [Double], [Double]) -> Assertion
-testLattice (baseOp, sig, expected) = 
+testLattice (baseOp, sig, expected) =
     expected @=~? latticeSeq baseOp sig
 
 
@@ -27,7 +27,7 @@ propDoubleLatticeIdentity (DwtInputList (ls, sig)) =
 
 
 testExtendFront :: (Int, [Double], [Double]) -> Assertion
-testExtendFront (ln, sig, expected) = 
+testExtendFront (ln, sig, expected) =
     expected @=~? extendFront ln sig
 
 
@@ -36,7 +36,7 @@ dataExtendFront = DW.dataExtendFront
 
 
 testExtendEnd :: (Int, [Double], [Double]) -> Assertion
-testExtendEnd (ln, sig, expected) = 
+testExtendEnd (ln, sig, expected) =
     expected @=~? extendEnd ln sig
 
 
@@ -45,7 +45,7 @@ dataExtendEnd = DW.dataExtendEnd
 
 
 testCsl :: ([Double], [Double]) -> Assertion
-testCsl (input, expected) = 
+testCsl (input, expected) =
     expected @=? csl input
 
 
@@ -54,7 +54,7 @@ dataCsl = DW.dataCsl
 
 
 testCsr :: ([Double], [Double]) -> Assertion
-testCsr (input, expected) = 
+testCsr (input, expected) =
     expected @=? csr input
 
 
@@ -63,7 +63,7 @@ dataCsr = DW.dataCsr
 
 
 testCslN :: (Int, [Double], [Double]) -> Assertion
-testCslN (n, input, expected) = 
+testCslN (n, input, expected) =
     expected @=? cslN n input
 
 
@@ -72,7 +72,7 @@ dataCslN = DW.dataCslN
 
 
 testCsrN :: (Int, [Double], [Double]) -> Assertion
-testCsrN (n, input, expected) = 
+testCsrN (n, input, expected) =
     expected @=? csrN n input
 
 
@@ -89,14 +89,14 @@ propIdentityShift2 xs = csr (csl xs) == xs
 
 
 propIdentityShift3 :: [Double] -> Property
-propIdentityShift3 xs = forAll (sized $ \s -> 
-    choose (1, s) ) $ \n -> 
+propIdentityShift3 xs = forAll (sized $ \s ->
+    choose (1, s) ) $ \n ->
         cslN n (csrN n xs) == xs
 
 
 propIdentityShift4 :: [Double] -> Property
-propIdentityShift4 xs = forAll (sized $ \s -> 
-    choose (1, s)) $ \n -> 
+propIdentityShift4 xs = forAll (sized $ \s ->
+    choose (1, s)) $ \n ->
         csrN n (cslN n xs) == xs
 
 

@@ -21,7 +21,7 @@ import qualified Signal.Wavelet.Repa.LibraryBench as RL
 
 
 main :: IO ()
-main = return (mkStdGen 1232134332) >>= 
+main = return (mkStdGen 1232134332) >>=
        defaultMainWith benchConfig (return ()) . benchmarks
 
 
@@ -53,7 +53,7 @@ benchmarks gen =
         rDataTraverse  = RL.dataTraverse  lDataDwt
     in [ -- See: Note [C/FFI criterion bug]
      bgroup "DWT" . (:[]) $ bcompare
-      [ 
+      [
         bench "C1 Seq"          $ whnf C1.benchDwt  cDataDwt
       , bench "Vector1 Seq"     $ whnf V1.benchDwt  vDataDwt
       , bench "Repa1 Seq"       $ whnf R1.benchDwtS rDataDwt
@@ -67,9 +67,9 @@ benchmarks gen =
 --    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
 --    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
       ]
-{- , bgroup "IDWT" . (:[]) $ bcompare  
-      [ 
-        bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt 
+{- , bgroup "IDWT" . (:[]) $ bcompare
+      [
+        bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt
       , bench "Vector1 Seq"     $ whnf V1.benchIdwt  vDataDwt
       , bench "Repa1 Seq"       $ whnf R1.benchIdwtS rDataDwt
       , bench "Repa1 Par"       $ whnf R1.benchIdwtP rDataDwt
@@ -84,11 +84,11 @@ benchmarks gen =
       ]-}
    , bgroup "C1"
       [
-        bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice      
+        bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice
       ]
    , bgroup "Vector1"
       [
-        bench "Lattice Seq"     $ whnf V1.benchLattice vDataLattice      
+        bench "Lattice Seq"     $ whnf V1.benchLattice vDataLattice
       ]
    , bgroup "Repa1"
       [
@@ -131,14 +131,14 @@ benchmarks gen =
         bench "Lattice Seq"     $ whnf R3.benchLatticeS r3DataLattice
       , bench "Lattice Par"     $ whnf R3.benchLatticeP r3DataLattice
       ]
-{- 
-   , bgroup "List.Common" 
+{-
+   , bgroup "List.Common"
       [
         bench "Lattice Seq"     $   nf LC.benchLattice     lDataLattice
       , bench "ExtendFront Seq" $   nf LC.benchExtendFront lDataExtend
       , bench "ExtendEnd Seq"   $   nf LC.benchExtendEnd   lDataExtend
       ]
-    , bgroup "Eval.Common" 
+    , bgroup "Eval.Common"
       [
         bench "Lattice Par"     $   nf EC.benchLattice lDataLattice
       ]
@@ -173,8 +173,8 @@ benchConfig = defaultConfig {
 
 Note [C/FFI criterion bug]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-When benchmarking C bindings with criterion the first benchmark returns 
-correct result. All other benchmarks that use FFI estimate run time 
+When benchmarking C bindings with criterion the first benchmark returns
+correct result. All other benchmarks that use FFI estimate run time
 to be longer. This does not happen always and seems to depend on CPU and size
 of processed data. These are possibly cache effects. This bug does not occur
 on some machines. If you observe any of below it means your results are affected

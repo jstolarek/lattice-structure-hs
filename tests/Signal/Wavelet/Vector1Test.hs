@@ -14,11 +14,11 @@ import Test.Utils                       ((=~), (@=~?))
 
 
 testDwt :: (Vector Double, Vector Double, Vector Double) -> Assertion
-testDwt (ls, sig, expected) = 
+testDwt (ls, sig, expected) =
     expected @=~? dwt ls sig
 
 
-dataDwt :: [(Vector Double, Vector Double, Vector Double)] 
+dataDwt :: [(Vector Double, Vector Double, Vector Double)]
 dataDwt = Prelude.map f DW.dataDwt
     where f (a, b, c) = (fromList a, fromList b, g c)
               where g xs = fromList . LC.csrN n $ xs
@@ -26,11 +26,11 @@ dataDwt = Prelude.map f DW.dataDwt
 
 
 testIdwt :: (Vector Double, Vector Double, Vector Double) -> Assertion
-testIdwt (ls, sig, expected) = 
+testIdwt (ls, sig, expected) =
     expected @=~? idwt ls sig
 
 
-dataIdwt :: [(Vector Double, Vector Double, Vector Double)] 
+dataIdwt :: [(Vector Double, Vector Double, Vector Double)]
 dataIdwt = Prelude.map f DW.dataIdwt
     where f (a, b, c) = (fromList a, fromList b, g c)
               where g xs = fromList . LC.cslN n $ xs
@@ -38,18 +38,18 @@ dataIdwt = Prelude.map f DW.dataIdwt
 
 
 propDWTInvertible :: DwtInputVector -> Bool
-propDWTInvertible (DwtInputVector (ls, sig)) = 
+propDWTInvertible (DwtInputVector (ls, sig)) =
     idwt (inv ls) (dwt ls sig) =~ sig
 
 
-testLattice :: (Int, (Double, Double), Vector Double, Vector Double) 
+testLattice :: (Int, (Double, Double), Vector Double, Vector Double)
             -> Assertion
-testLattice (lm, baseOp, sig, expected) = 
+testLattice (lm, baseOp, sig, expected) =
     expected @=~? lattice lm baseOp sig
 
 
 dataLattice :: [(Int, (Double, Double), Vector Double, Vector Double)]
-dataLattice = Prelude.map (\(a, b, c, d) -> (a, b, fromList c, fromList d)) 
+dataLattice = Prelude.map (\(a, b, c, d) -> (a, b, fromList c, fromList d))
                 DW.dataLatticeWithLM
 
 

@@ -6,5 +6,5 @@ import Signal.Wavelet.List.Common  (latticeSeq, chunk)
 
 
 latticePar :: (Double, Double) -> [Double] -> [Double]
-latticePar (s, c) xss = runEval $ 
+latticePar (s, c) xss = runEval $
     concat <$> parList (rdeepseq . latticeSeq (s, c)) (chunk 2048 xss)

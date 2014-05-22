@@ -1,5 +1,5 @@
-module Main ( 
-    main 
+module Main (
+    main
  ) where
 
 import Test.Framework
@@ -25,7 +25,7 @@ main = defaultMain tests
 
 
 tests :: [Test]
-tests = [ 
+tests = [
    testGroup "List common" [
       testProvider "Lattice layer"               LC.testLattice LC.dataLattice
     , testProperty "Inverting lattice layer"     LC.propDoubleLatticeIdentity
@@ -47,22 +47,22 @@ tests = [
     , testProperty "Periodic left shift"         LC.propIdentityShift5
     , testProperty "Periodic right shift"        LC.propIdentityShift6
   ],
-  testGroup "List1" [ 
+  testGroup "List1" [
       testProvider "DWT"                         L1.testDwt  L1.dataDwt
     , testProvider "IDWT"                        L1.testIdwt L1.dataIdwt
     , testProperty "DWT-IDWT identity"           L1.propDWTInvertible
   ],
-  testGroup "List2" [ 
+  testGroup "List2" [
       testProvider "DWT"                         L2.testDwt  L2.dataDwt
     , testProvider "IDWT"                        L2.testIdwt L2.dataIdwt
     , testProperty "DWT-IDWT identity"           L2.propDWTInvertible
   ],
-  testGroup "Eval1" [ 
+  testGroup "Eval1" [
       testProvider "DWT"                         E1.testDwt  E1.dataDwt
     , testProvider "IDWT"                        E1.testIdwt E1.dataIdwt
     , testProperty "DWT-IDWT identity"           E1.propDWTInvertible
   ],
-  testGroup "Eval2" [ 
+  testGroup "Eval2" [
       testProvider "DWT"                         E2.testDwt  E2.dataDwt
     , testProvider "IDWT"                        E2.testIdwt E2.dataIdwt
     , testProperty "DWT-IDWT identity"           E2.propDWTInvertible

@@ -14,7 +14,7 @@ data L
 instance Source L Double where
 
     data Array L sh Double
-        = ALattice 
+        = ALattice
           { lLength   :: sh -- DIM1
           , lBaseOp   :: !(Double, Double)
           , lGetSig   :: Int -> Double
@@ -23,7 +23,7 @@ instance Source L Double where
 
     extent = lLength
 
-    deepSeqArray (ALattice sh (s, c) getSig lm) y = 
+    deepSeqArray (ALattice sh (s, c) getSig lm) y =
         sh `deepSeq` s `seq` c `seq` getSig `seq` lm `seq` y
 
     linearIndex (ALattice l (!s, !c) f lm) i
@@ -45,7 +45,7 @@ instance Load L DIM1 Double where
       fillLatticeP (unsafeWriteMVec mvec) getSig lm s c l
       touchMVec mvec
       traceEventIO "Repa.loadP[Lattice]: end"
- 
+
 
   {-# INLINE loadS #-}
   loadS (ALattice !(Z :. l) (!s, !c) getSig !lm) mvec
@@ -57,7 +57,7 @@ instance Load L DIM1 Double where
 
 
 dwtS, dwtP :: Array U DIM1 Double
-           -> Array U DIM1 Double 
+           -> Array U DIM1 Double
            -> Array U DIM1 Double
 dwtS !angles !signal = dwtWorkerS 0 layersCount layerModifier angles signal
     where
@@ -72,7 +72,7 @@ dwtP !angles !signal = dwtWorkerP 0 layersCount layerModifier angles signal
 
 
 idwtS, idwtP :: Array U DIM1 Double
-             -> Array U DIM1 Double 
+             -> Array U DIM1 Double
              -> Array U DIM1 Double
 idwtS !angles !signal = dwtWorkerS 0 layersCount layerModifier angles signal
     where
@@ -89,11 +89,11 @@ idwtP !angles !signal = dwtWorkerP 0 layersCount layerModifier angles signal
 
 
 {-# INLINE dwtWorkerS #-}
-dwtWorkerS, dwtWorkerP :: Int 
+dwtWorkerS, dwtWorkerP :: Int
                        -> Int
                        -> Int
-                       -> Array U DIM1 Double 
-                       -> Array U DIM1 Double 
+                       -> Array U DIM1 Double
+                       -> Array U DIM1 Double
                        -> Array U DIM1 Double
 dwtWorkerS !currentLayer !layersCount !layerModifier angles signal
     | currentLayer == layersCount = signal
@@ -117,17 +117,17 @@ dwtWorkerP !currentLayer !layersCount !layerModifier angles signal
 
 
 {-# INLINE lattice #-}
-lattice :: Int 
-        -> (Double, Double) 
-        -> Array U DIM1 Double 
+lattice :: Int
+        -> (Double, Double)
+        -> Array U DIM1 Double
         -> Array L DIM1 Double
-lattice !lm !(!s, !c) !sig = ALattice (extent sig) (s, c) 
+lattice !lm !(!s, !c) !sig = ALattice (extent sig) (s, c)
                                       (unsafeLinearIndex sig) lm
 
 
--- fillLatticeP and fillLatticeS are designed to work only with DIM1 arrays and 
--- hence the whole Repa3 implementation can process only DIM1 arrays. 
--- Generalization to higher rank arrays would require a rewrite of these two 
+-- fillLatticeP and fillLatticeS are designed to work only with DIM1 arrays and
+-- hence the whole Repa3 implementation can process only DIM1 arrays.
+-- Generalization to higher rank arrays would require a rewrite of these two
 -- functions.
 
 {-# INLINE fillLatticeP #-}
@@ -138,7 +138,7 @@ fillLatticeP :: (Int -> Double -> IO ())
              -> Double
              -> Int
              -> IO ()
-fillLatticeP write getElem !lm !s !c !sigLength = 
+fillLatticeP write getElem !lm !s !c !sigLength =
     -- this algorithm adapted from Data.Array.Repa.Eval.Chunked.hs
     -- from Repa 3.2.2.3 library
     gangIO theGang $ \(threadId) ->
@@ -167,7 +167,7 @@ fillLatticeS :: (Int -> Double -> IO ())
              -> Int
              -> Int
              -> IO ()
-fillLatticeS write getElem !lm !s !c !start !end !lastE = 
+fillLatticeS write getElem !lm !s !c !start !end !lastE =
         fillLattice (start + lm)
     where fillLattice !offset
               | offset >= end   = return ()

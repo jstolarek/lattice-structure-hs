@@ -16,5 +16,5 @@ benchIdwt (ls, sig) = idwt ls sig
 
 
 dataDwt :: RandomGen g => g -> Int -> Int -> ([Double], [Double])
-dataDwt gen lsSize sigSize = 
+dataDwt gen lsSize sigSize =
     (take lsSize $ randoms gen, take sigSize $ randoms gen)

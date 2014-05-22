@@ -24,7 +24,7 @@ type PS = P D (P (S D) X)
 {-# INLINE idwtS #-}
 {-# INLINE idwtP #-}
 dwtS, dwtP, idwtS, idwtP :: Array U DIM1 Double
-                         -> Array U DIM1 Double 
+                         -> Array U DIM1 Double
                          -> Array U DIM1 Double
 dwtS  !angles !signal = dwtWorkerS csl angles signal
 dwtP  !angles !signal = dwtWorkerP csl angles signal
@@ -35,8 +35,8 @@ idwtP !angles !signal = dwtWorkerP csr angles signal
 -- See: Note [Higher order functions interfere with fusion]
 {-# INLINE dwtWorkerS #-}
 dwtWorkerS, dwtWorkerP :: (Array D DIM1 Double -> Array D DIM1 Double)
-                       -> Array U DIM1 Double 
-                       -> Array U DIM1 Double 
+                       -> Array U DIM1 Double
+                       -> Array U DIM1 Double
                        -> Array U DIM1 Double
 dwtWorkerS cs !angles !signal = go layers signal
     where
@@ -65,7 +65,7 @@ dwtWorkerP cs !angles !signal = go layers signal
 
 {-# INLINE lattice #-}
 lattice :: (Source r Double, Shape sh)
-        => (Double, Double) 
+        => (Double, Double)
         -> Array r (sh :. Int) Double
         -> Array D (sh :. Int) Double
 lattice !(!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
@@ -74,8 +74,8 @@ lattice !(!s, !c) !xs = fromPairs . R.map baseOp . toPairs $ xs
 
 
 {-# INLINE toPairs #-}
-toPairs :: (Source r Double, Shape sh) 
-        => Array r (sh :. Int) Double 
+toPairs :: (Source r Double, Shape sh)
+        => Array r (sh :. Int) Double
         -> Array D (sh :. Int) (Double, Double)
 toPairs !xs = unsafeTraverse xs twiceShorter wrapPairs
     where
@@ -94,27 +94,27 @@ fromPairs !xs = unsafeTraverse xs twiceLonger unwrapPairs
       {-# INLINE twiceLonger #-}
       twiceLonger !(sh :. s) = sh :. 2 * s
       {-# INLINE unwrapPairs #-}
-      unwrapPairs f !(sh :. i) 
+      unwrapPairs f !(sh :. i)
                       | even i    = fst . f $ (sh :. i `quot` 2)
                       | otherwise = snd . f $ (sh :. i `quot` 2)
 
 
 {-# INLINE a2w #-}
 a2w :: (Source r Double)
-    => Array r DIM1 Double 
+    => Array r DIM1 Double
     -> Array D DIM1 (Double, Double)
 a2w = R.map (sin &&& cos)
 
 
 {-# INLINE csl #-}
 csl :: (Source r Double, Shape sh)
-    => Array r (sh :. Int) Double 
+    => Array r (sh :. Int) Double
     -> Array D (sh :. Int) Double
 csl !xs = unsafeBackpermute ext shift xs
     where
       {-# INLINE shift #-}
-      shift !(sh :. i) = if i /= (dim - 1) 
-                         then sh :. (i + 1) 
+      shift !(sh :. i) = if i /= (dim - 1)
+                         then sh :. (i + 1)
                          else sh :. 0
       !ext = extent xs
       !dim = size ext
@@ -122,9 +122,9 @@ csl !xs = unsafeBackpermute ext shift xs
 
 {-# INLINE cslP #-}
 cslP :: (Source r Double, Shape sh)
-     => Array r  (sh :. Int) Double 
+     => Array r  (sh :. Int) Double
      -> Array PS (sh :. Int) Double
-cslP !xs = 
+cslP !xs =
     let !ext@(ex :. _) = extent xs
         !dim           = size ext
         !limit         = max 0 (dim - 1)
@@ -134,14 +134,14 @@ cslP !xs =
         outerRange = not . innerRange
         inner =          unsafeBackpermute ext (\(sh :. i) -> sh :. (i + 1)) xs
         outer = ASmall $ unsafeBackpermute ext (\(sh :. _) -> sh :. 0      ) xs
-    in APart ext (Range (ex :. 0)     (ex :. limit) innerRange) inner $ 
+    in APart ext (Range (ex :. 0)     (ex :. limit) innerRange) inner $
        APart ext (Range (ex :. limit) (ex :. dim  ) outerRange) outer $
        AUndefined ext
 
 
 {-# INLINE csr #-}
 csr :: (Source r Double, Shape sh)
-    => Array r (sh :. Int) Double 
+    => Array r (sh :. Int) Double
     -> Array D (sh :. Int) Double
 csr !xs = unsafeBackpermute ext shift xs
     where
@@ -153,10 +153,10 @@ csr !xs = unsafeBackpermute ext shift xs
 
 
 {-# INLINE csrP #-}
-csrP :: (Source r Double, Shape sh) 
-     => Array r  (sh :. Int) Double 
+csrP :: (Source r Double, Shape sh)
+     => Array r  (sh :. Int) Double
      -> Array PS (sh :. Int) Double
-csrP !xs = 
+csrP !xs =
     let !ext@(ex :. _) = extent xs
         !len           = size ext
         !limit         = if len == 0 then 0 else 1
@@ -166,7 +166,7 @@ csrP !xs =
         outerRange = not . innerRange
         inner =          unsafeBackpermute ext (\(sh:. i) -> sh :. (i   - 1)) xs
         outer = ASmall $ unsafeBackpermute ext (\(sh:. _) -> sh :. (len - 1)) xs
-    in APart ext (Range (ex :. limit) (ex :. len  ) innerRange) inner $ 
+    in APart ext (Range (ex :. limit) (ex :. len  ) innerRange) inner $
        APart ext (Range (ex :. 0    ) (ex :. limit) outerRange) outer $
        AUndefined ext
 
@@ -181,8 +181,8 @@ cslN !m !xs = unsafeBackpermute ext shift xs
       !n | len == 0  = 0 -- See: Note [Preventing division by 0]
          | otherwise = m `mod` len :: Int
       {-# INLINE shift #-}
-      shift (sh :. i) = if i < (len - n) 
-                        then sh :. (i + n) 
+      shift (sh :. i) = if i < (len - n)
+                        then sh :. (i + n)
                         else sh :. (i + n - len)
       !ext = extent xs
       !len = size ext
@@ -191,7 +191,7 @@ cslN !m !xs = unsafeBackpermute ext shift xs
 {-# INLINE csrN #-}
 csrN :: (Source r Double, Shape sh)
      => Int
-     -> Array r (sh :. Int) Double 
+     -> Array r (sh :. Int) Double
      -> Array D (sh :. Int) Double
 csrN !m xs = unsafeBackpermute ext shift xs
     where
@@ -199,7 +199,7 @@ csrN !m xs = unsafeBackpermute ext shift xs
          | otherwise  = m `mod` len :: Int
       {-# INLINE shift #-}
       shift !(sh :. i) = if i >= n
-                         then sh :. (i - n) 
+                         then sh :. (i - n)
                          else sh :. (i - n + len)
       !ext = extent xs
       !len = size ext
@@ -208,7 +208,7 @@ csrN !m xs = unsafeBackpermute ext shift xs
 instance Elt e => LoadRange D DIM1 e where
   {-# INLINE loadRangeP #-}
   loadRangeP (ADelayed _ getElem) mvec (Z :. start) (Z :. end)
-    = mvec `deepSeqMVec` do  
+    = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadRangeP[Delayed DIM1]: start"
       fillBlock1P (unsafeWriteMVec mvec) getElem start end
       touchMVec mvec
@@ -217,7 +217,7 @@ instance Elt e => LoadRange D DIM1 e where
 
   {-# INLINE loadRangeS #-}
   loadRangeS (ADelayed _ getElem) mvec (Z :. start) (Z :. end)
-    = mvec `deepSeqMVec` do  
+    = mvec `deepSeqMVec` do
       traceEventIO "Repa.loadRangeS[Delayed DIM1]: start"
       fillBlock1S (unsafeWriteMVec mvec) getElem start end
       touchMVec mvec
@@ -233,7 +233,7 @@ fillBlock1S :: (Int  -> a -> IO ())
 fillBlock1S write getElem !start !end = fillBlock start
     where fillBlock !y
               | y >= end  = return ()
-              | otherwise = do 
+              | otherwise = do
                   write y (getElem (Z :. y))
                   fillBlock (y + 1)
           {-# INLINE fillBlock #-}
@@ -268,7 +268,7 @@ Note [Higher order functions interfere with fusion]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Creating two specialized workers that differ only with forceS/forceP function
 is a lot of boilerplate. It would be better to implement dwtWorker as a higher
-order function and pass either forceS or forceP as a parameter. Such approach 
+order function and pass either forceS or forceP as a parameter. Such approach
 however interferes with fusion for unknown reason. I noticed that when
 I passed forceS/forceP as a parameter to dwt, but ignored it and passed concrete
 force to dwtWorker like this:
