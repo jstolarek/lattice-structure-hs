@@ -4,21 +4,23 @@ license:            BSD3
 license-file:       LICENSE
 author:             Jan Stolarek <jan.stolarek@p.lodz.pl>
 maintainer:         jan.stolarek@p.lodz.pl
-copyright:          (c) 2012 Jan Stolarek
+copyright:          (c) 2012-2014 Jan Stolarek
 bug-reports:        jan.stolarek@p.lodz.pl
--- homepage
-synopsis:           Wavelet transform library
-description:        Wavelet-hs provides functions to calculate wavelet transform
+synopsis:           Parallel orthogonal lattice structure in Haskell
+description:        This library is my failed attempt to implement efficient
+                    parallel lattice structure in Haskell. See
+                    <http:http://lambda.jstolarek.com/2014/05/parallel-haskell-challange-also-how-to-make-your-research-project-fail this blog post>
+                    for more information.
 stability:          experimental
 category:           Math
 build-type:         Simple
 cabal-version:      >=1.8
-tested-with:        GHC>=7.6
---extra-source-files:  README
+tested-with:        GHC>=7.6.3
+extra-source-files: README.md
 
--- source-repository head
---   type:     git
---   location: git://github.com/...
+source-repository head
+   type:     git
+   location: git://github.com/jstolarek/lattice-structure-hs
 
 library
   hs-source-dirs:   src
@@ -52,7 +54,6 @@ library
                     TypeOperators
   ghc-options:      -Wall
                     -O2
-                    -Odph
                     -threaded
                     -fno-liberate-case
                     -fsimpl-tick-factor=1000
@@ -108,7 +109,6 @@ benchmark wavelet-hs-bench
                     wavelet-hs
   ghc-options:      -Wall
                     -O2
-                    -Odph
                     -rtsopts
                     -eventlog
                     -threaded
