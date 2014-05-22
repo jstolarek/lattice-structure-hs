@@ -1,8 +1,13 @@
+{-# LANGUAGE CPP #-}
 module Signal.Wavelet.C1 where
 
 import Control.Monad        (liftM)
 import Data.Vector.Storable (Vector, unsafeToForeignPtr, unsafeFromForeignPtr0)
+#if __GLASGOW_HASKELL__ > 706
 import Foreign
+#else
+import Foreign hiding (unsafePerformIO)
+#endif
 import Foreign.C
 import System.IO.Unsafe     (unsafePerformIO)
 
