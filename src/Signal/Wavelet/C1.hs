@@ -11,7 +11,6 @@ import Foreign hiding (unsafePerformIO)
 import Foreign.C
 import System.IO.Unsafe     (unsafePerformIO)
 
-
 foreign import ccall unsafe "dwt.h"
   c_dwt  :: Ptr CDouble -> CInt -> Ptr CDouble -> CInt -> IO (Ptr CDouble)
 foreign import ccall unsafe "dwt.h"

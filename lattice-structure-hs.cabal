@@ -22,6 +22,10 @@ source-repository head
    type:     git
    location: git://github.com/jstolarek/lattice-structure-hs
 
+Flag sse3
+  Description: use SSE3 to compute DWT with C implementation
+  Default: True
+
 library
   hs-source-dirs:   src
   exposed-modules:  Signal.Wavelet.C1,
@@ -63,6 +67,8 @@ library
                     -optlo-O3
   cc-options:       -std=c99 -O3 -Wall
   c-sources:        cbits/dwt.c
+  if flag(sse3)
+    cc-options: -DUSE_SSE3 -msse3
 
 test-suite wavelet-hs-test
   type:             exitcode-stdio-1.0
@@ -95,6 +101,8 @@ test-suite wavelet-hs-test
                     -rtsopts
   cc-options:       -std=c99 -Wall
   c-sources:        cbits/dwt.c
+  if flag(sse3)
+    cc-options: -DUSE_SSE3 -msse3
 
 benchmark wavelet-hs-bench
   type:             exitcode-stdio-1.0
@@ -118,3 +126,5 @@ benchmark wavelet-hs-bench
                     -funfolding-keeness-factor1000
                     -fllvm
                     -optlo-O3
+  if flag(sse3)
+    cc-options: -DUSE_SSE3 -msse3
