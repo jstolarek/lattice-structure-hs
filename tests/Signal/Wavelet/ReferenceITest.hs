@@ -20,38 +20,35 @@ import Test.ArbitraryInstances
 import Test.Utils ((=~))
 
 
-{-
+-- Note [Verifying equivalence of all lattice implementations]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- List.Common implementation of one lattice layer is assumed to be a reference
+-- one. Each implementation verifies that it is identical to another one. In
+-- case of Repa-based algorithms only sequential implementations are
+-- tested. This assumes that instances of Repa's Load type class are implemented
+-- correctly. The following dependencies are used:
+--
+-- List.Common -> Eval.Common
+-- List.Common -> Repa1 -> Repa2
+-- List.Common -> C1 -> Vector1 -> Repa3
+--
+-- Read "List.Common -> C1" as "List.Commonb implementation serves as a
+-- reference to C1 implementation".
 
-Note [Verifying equivalence of all lattice implementations]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-List.Common implementation of one lattice layer  is assumed to be a reference
-one. Each implementation verifies that it is identical to another one. In case
-of Repa-based algorithms only sequential implementations are tested. This
-assumes that instances of Repa's Load type class are implemented correctly. The
-following dependencies are used:
-
-
-List.Common -> Eval.Common
-List.Common -> Repa1 -> Repa2
-List.Common -> C1 -> Vector1 -> Repa3
-
-Read "List.Common -> C1" as "List.Commonb implementation serves as a reference
-to C1 implementation".
-
-Note [Lattice modifier]
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Implementations operating in situ (C1, Vector1 and Repa3) need one additional
-parameter compared to other implementations. This parameter takes value of 0 or
-1 and denotes the shift of base operations:
-0 - no shift
-1 - one base operation wraps arounf first and last element of a signal
-
-C1 implementation can only be compared to List implementation when there is no
-shift. Vector1, C1 and Repa3 can be compared if they are passed identical shift
-value.
-
--}
+-- Note [Lattice modifier]
+-- ~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- Implementations operating in situ (C1, Vector1 and Repa3) need one additional
+-- parameter compared to other implementations. This parameter takes value of 0
+-- or 1 and denotes the shift of base operations:
+--
+--  0 - no shift
+--  1 - one base operation wraps arounf first and last element of a signal
+--
+-- C1 implementation can only be compared to List implementation when there is
+-- no shift. Vector1, C1 and Repa3 can be compared if they are passed identical
+-- shift value.
 
 propLatticeEvalLikeList :: Double -> [Double] -> Bool
 propLatticeEvalLikeList d xs =
@@ -100,39 +97,35 @@ propLatticeRepa3LikeVector1 a (DwtInputRepa (ls, sig)) =
               l      = abs a `rem` 2
 
 
-{-
-
-Note [Verifying equivalence of all DWT/IDWT implementations]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-List1 implementation of DWT and IDWT is assumed to be a reference one. Each
-implementation verifies that it is identical to another one. In case of
-Repa-based algorithms only sequential implementations are tested. This assumes
-that instances of Repa's Load type class are implemented correctly. The
-following dependencies are used:
-
-List1 -> Eval1 -> List2 -> Eva2
-List1 -> Repa1 -> Repa2
-List1 -> C1 -> Vector1 -> Repa3
-
-Read "List1 -> C1" as "List1 implementation serves as a reference to C1
-implementation".
+-- Note [Verifying equivalence of all DWT/IDWT implementations]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- List1 implementation of DWT and IDWT is assumed to be a reference one. Each
+-- implementation verifies that it is identical to another one. In case of
+-- Repa-based algorithms only sequential implementations are tested. This
+-- assumes that instances of Repa's Load type class are implemented
+-- correctly. The following dependencies are used:
+--
+-- List1 -> Eval1 -> List2 -> Eva2
+-- List1 -> Repa1 -> Repa2
+-- List1 -> C1 -> Vector1 -> Repa3
+--
+-- Read "List1 -> C1" as "List1 implementation serves as a reference to C1
+-- implementation".
 
 
-Note: [Shifting input/output signal]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Implementations operating without shifts and signal extending (C1, Vector1 and
-Repa3):
-
-a) return shifted signal in case of DWT
-b) require that input signal is shofted in case of IDWT
-
-This means that signals need to be shifted accordingly in order to compare them
-with different implementation. Test dependencies are designed in such a way that
-only one test requires shifting of signals (List1 -> C1).
-
--}
+-- Note: [Shifting input/output signal]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- Implementations operating without shifts and signal extending (C1, Vector1
+-- and Repa3):
+--
+-- a) return shifted signal in case of DWT
+-- b) require that input signal is shofted in case of IDWT
+--
+-- This means that signals need to be shifted accordingly in order to compare
+-- them with different implementation. Test dependencies are designed in such a
+-- way that only one test requires shifting of signals (List1 -> C1).
 
 
 propDWTEval1LikeList1 :: DwtInputList -> Bool

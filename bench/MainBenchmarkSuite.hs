@@ -7,12 +7,12 @@ import Criterion.Main
 import System.Random
 
 import qualified Signal.Wavelet.C1Bench           as C1
---import qualified Signal.Wavelet.Eval.CommonBench  as EC
---import qualified Signal.Wavelet.Eval1Bench        as E1
---import qualified Signal.Wavelet.Eval2Bench        as E2
---import qualified Signal.Wavelet.List.CommonBench  as LC
+import qualified Signal.Wavelet.Eval.CommonBench  as EC
+import qualified Signal.Wavelet.Eval1Bench        as E1
+import qualified Signal.Wavelet.Eval2Bench        as E2
+import qualified Signal.Wavelet.List.CommonBench  as LC
 import qualified Signal.Wavelet.List1Bench        as L1
---import qualified Signal.Wavelet.List2Bench        as L2
+import qualified Signal.Wavelet.List2Bench        as L2
 import qualified Signal.Wavelet.Repa1Bench        as R1
 import qualified Signal.Wavelet.Repa2Bench        as R2
 import qualified Signal.Wavelet.Repa3Bench        as R3
@@ -42,8 +42,8 @@ benchmarks gen =
         rDataCslNCsrN  = R1.dataCslNCsrN  lDataDwt
         rDataExtend    = R2.dataExtend    lDataDwt
         r3DataLattice  = R3.dataLattice   lDataDwt
---      lDataLattice   = LC.dataLattice   lDataDwt
---      lDataExtend    = LC.dataExtend    lDataDwt
+        lDataLattice   = LC.dataLattice   lDataDwt
+        lDataExtend    = LC.dataExtend    lDataDwt
         rDataCompute   = RL.dataCompute   lDataDwt
         rDataCopy      = RL.dataCopy      lDataDwt
         rDataExtract   = RL.dataExtract   lDataDwt
@@ -62,12 +62,12 @@ benchmarks gen =
       , bench "Repa2 Par"       $ whnf R2.benchDwtP rDataDwt
       , bench "Repa3 Seq"       $ whnf R3.benchDwtS rDataDwt
       , bench "Repa3 Par"       $ whnf R3.benchDwtP rDataDwt
---    , bench "List1 Seq"       $ nf   L1.benchDwt  lDataDwt
---    , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
---    , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
---    , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
+      , bench "List1 Seq"       $ nf   L1.benchDwt  lDataDwt
+      , bench "List2 Seq"       $ nf   L2.benchDwt  lDataDwt
+      , bench "Eval1 Par"       $ nf   E1.benchDwt  lDataDwt
+      , bench "Eval2 Par"       $ nf   E2.benchDwt  lDataDwt
       ]
-{- , bgroup "IDWT" . (:[]) $ bcompare
+   , bgroup "IDWT" . (:[]) $ bcompare
       [
         bench "C1 Seq"          $ whnf C1.benchIdwt  cDataDwt
       , bench "Vector1 Seq"     $ whnf V1.benchIdwt  vDataDwt
@@ -77,11 +77,11 @@ benchmarks gen =
       , bench "Repa2 Par"       $ whnf R2.benchIdwtP rDataDwt
       , bench "Repa3 Seq"       $ whnf R3.benchIdwtS rDataDwt
       , bench "Repa3 Par"       $ whnf R3.benchIdwtP rDataDwt
---    , bench "List1 Seq"       $ nf   L1.benchIdwt  lDataDwt
---    , bench "List2 Seq"       $ nf   L2.benchIdwt  lDataDwt
---    , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
---    , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
-      ]-}
+      , bench "List1 Seq"       $ nf   L1.benchIdwt  lDataDwt
+      , bench "List2 Seq"       $ nf   L2.benchIdwt  lDataDwt
+      , bench "Eval1 Par"       $ nf   E1.benchIdwt  lDataDwt
+      , bench "Eval2 Par"       $ nf   E2.benchIdwt  lDataDwt
+      ]
    , bgroup "C1"
       [
         bench "Lattice Seq"     $ whnf C1.benchLattice cDataLattice
@@ -131,7 +131,6 @@ benchmarks gen =
         bench "Lattice Seq"     $ whnf R3.benchLatticeS r3DataLattice
       , bench "Lattice Par"     $ whnf R3.benchLatticeP r3DataLattice
       ]
-{-
    , bgroup "List.Common"
       [
         bench "Lattice Seq"     $   nf LC.benchLattice     lDataLattice
@@ -142,7 +141,6 @@ benchmarks gen =
       [
         bench "Lattice Par"     $   nf EC.benchLattice lDataLattice
       ]
--}
    , bgroup "Repa built-in functions"
       [
         bench "computeS"           $ whnf    RL.benchComputeS  rDataCompute
@@ -169,17 +167,15 @@ benchConfig = defaultConfig {
            }
 
 
-{-
-
-Note [C/FFI criterion bug]
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-When benchmarking C bindings with criterion the first benchmark returns
-correct result. All other benchmarks that use FFI estimate run time
-to be longer. This does not happen always and seems to depend on CPU and size
-of processed data. These are possibly cache effects. This bug does not occur
-on some machines. If you observe any of below it means your results are affected
-by the bug:
-a) time needed to run IDWT/C1 benchmark is repeatedly longer than DWT/C1
-b) C1/Lattice takes longer than Vector1/Lattice
-
--}
+-- Note [C/FFI criterion bug]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- When benchmarking C bindings with criterion the first benchmark returns
+-- correct result. All other benchmarks that use FFI estimate run time to be
+-- longer. This does not happen always and seems to depend on CPU and size of
+-- processed data. These are possibly cache effects. This bug does not occur on
+-- some machines. If you observe any of below it means your results are affected
+-- by the bug:
+--
+-- a) time needed to run IDWT/C1 benchmark is significantly longer than DWT/C1
+-- b) C1/Lattice takes longer than Vector1/Lattice

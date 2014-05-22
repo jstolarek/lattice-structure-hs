@@ -262,27 +262,25 @@ fillBlock1P write getElem !start !end = do
           | otherwise              = start + thread * chunkLen  + chunkLeftover
 
 
-{-
+-- Note [Higher order functions interfere with fusion]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- Creating two specialized workers that differ only with forceS/forceP function
+-- is a lot of boilerplate. It would be better to implement dwtWorker as a
+-- higher order function and pass either forceS or forceP as a parameter. Such
+-- approach however interferes with fusion for unknown reason. I noticed that
+-- when I passed forceS/forceP as a parameter to dwt, but ignored it and passed
+-- concrete force to dwtWorker like this:
+--
+--   dwt force angles signal = dwtWorker forceS csl angles signal
+--
+-- then fusion worked.
 
-Note [Higher order functions interfere with fusion]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Creating two specialized workers that differ only with forceS/forceP function
-is a lot of boilerplate. It would be better to implement dwtWorker as a higher
-order function and pass either forceS or forceP as a parameter. Such approach
-however interferes with fusion for unknown reason. I noticed that when
-I passed forceS/forceP as a parameter to dwt, but ignored it and passed concrete
-force to dwtWorker like this:
 
-dwt force angles signal = dwtWorker forceS csl angles signal
-
-then fusion worked.
-
-
-Note [Preventing division by 0]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Guards are needed because n is strict. If it were lazy, backpermute would not
-perform computations for empty array and thus n wouldn't be calculated. However
-when n is forced with a bang pattern it is always evaluated and hence it will
-cause division by 0 error for `mod` operator.
-
--}
+-- Note [Preventing division by 0]
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+-- Guards are needed because n is strict. If it were lazy, backpermute would not
+-- perform computations for empty array and thus n wouldn't be
+-- calculated. However when n is forced with a bang pattern it is always
+-- evaluated and hence it will cause division by 0 error for `mod` operator.
