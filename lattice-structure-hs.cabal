@@ -1,4 +1,4 @@
-name:               wavelet-hs
+name:               lattice-structure-hs
 version:            0.0.1
 license:            BSD3
 license-file:       LICENSE
@@ -73,7 +73,7 @@ test-suite wavelet-hs-test
                     HUnit,
                     mtl,
                     parallel,
-                    QuickCheck >= 2.4.2 && < 2.6,
+                    QuickCheck,
                     repa,
                     test-framework,
                     test-framework-hunit,
@@ -106,7 +106,7 @@ benchmark wavelet-hs-bench
                     random,
                     repa,
                     vector,
-                    wavelet-hs
+                    lattice-structure-hs
   ghc-options:      -Wall
                     -O2
                     -rtsopts
