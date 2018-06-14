@@ -1,6 +1,8 @@
 Orthogonal lattice structure in Haskell
 ---------------------------------------
 
+**IMPORTANT:** This repository is now [hosted on BitBucket](https://bitbucket.org/jstolarek/lattice-structure-hs).
+
 This repository contains my failed attempt at implementing parallel orthogonal
 lattice structure in Haskell. I'm making my work public in hope that someone
 might be able to solve the problems I was unable to solve. See
