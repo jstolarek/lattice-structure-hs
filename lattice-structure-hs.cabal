@@ -20,7 +20,7 @@ extra-source-files: README.md
 
 source-repository head
    type:     git
-   location: git://github.com/jstolarek/lattice-structure-hs
+   location: git://bitbucket.com/jstolarek/lattice-structure-hs
 
 Flag sse3
   Description: use SSE3 to compute DWT with C implementation
